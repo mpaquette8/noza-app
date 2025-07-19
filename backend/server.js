@@ -15,7 +15,9 @@ app.use(helmet());
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://hermes-ai-app.vercel.app'
+    'http://localhost:3001',
+    'https://hermes-ai-app.vercel.app',
+    process.env.FRONTEND_URL
   ],
   credentials: true
 }));
