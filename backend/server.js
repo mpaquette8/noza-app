@@ -13,7 +13,10 @@ const PORT = process.env.PORT || 3001;
 // Middleware de sécurité
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://hermes-ai-app.vercel.app'  // ← Votre URL Vercel ici !
+  ],
   credentials: true
 }));
 
