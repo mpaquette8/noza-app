@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noza - Générateur de Cours</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Hermès</h1>
+            <p>Générateur de cours et leçons personnalisés sur mesure</p>
+        </header>
+        <div class="main-content">
+            <div class="configuration-panel">
+                <h2 style="margin-bottom: 20px; color: #F0F0F0;">Configuration du Cours</h2>
+                <div class="form-group">
+                    <label for="subject">Sujet du cours</label>
+                    <div class="subject-input-container">
+                        <textarea id="subject" placeholder="Ex: Le modèle d'évaluation d'actifs financiers (CAPM), La photosynthèse, Introduction à React.js...">Modèle Black and Scholes</textarea>
+                        <button type="button" class="random-subject-btn" id="randomSubjectBtn" title="Générer un sujet aléatoire">
+                            <i data-lucide="shuffle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Niveau de vulgarisation</label>
+                    <div class="radio-group">
+                        <div class="radio-option" data-level="beginner">
+                            <input type="radio" name="level" value="beginner" id="beginner">
+                            <div>
+                                <strong>Débutant</strong><br>
+                                <small>Explication simple, sans jargon technique</small>
+                            </div>
+                        </div>
+                        <div class="radio-option" data-level="intermediate">
+                            <input type="radio" name="level" value="intermediate" id="intermediate">
+                            <div>
+                                <strong>Intermédiaire</strong><br>
+                                <small>Explication détaillée avec vocabulaire technique de base</small>
+                            </div>
+                        </div>
+                        <div class="radio-option" data-level="expert">
+                            <input type="radio" name="level" value="expert" id="expert">
+                            <div>
+                                <strong>Expert</strong><br>
+                                <small>Explication approfondie pour un public averti</small>
+                            </div>
+                        </div>
+                        <div class="radio-option selected" data-level="hybrid">
+                            <input type="radio" name="level" value="hybrid" id="hybrid" checked>
+                            <div>
+                                <strong>Hybride (Recommandé)</strong><br>
+                                <small>Contenu expert enrichi d'analogies et d'exemples</small>
+                            </div>
+                        </div>
+                        <div class="radio-option" data-level="hybridExpert">
+                            <input type="radio" name="level" value="hybridExpert" id="hybridExpert">
+                            <div>
+                                <strong>Hybride Très Expert</strong><br>
+                                <small>Contenu très technique + vulgarisation accessible à tous</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Longueur du cours</label>
+                    <div class="length-selector">
+                        <div class="length-btn" data-length="short">
+                            <strong>Court</strong><br>
+                            <small>~500 mots</small>
+                        </div>
+                        <div class="length-btn active" data-length="medium">
+                            <strong>Moyen</strong><br>
+                            <small>~1500 mots</small>
+                        </div>
+                        <div class="length-btn" data-length="long">
+                            <strong>Long</strong><br>
+                            <small>~3000+ mots</small>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="generate-btn" id="generateBtn">
+                    <i data-lucide="sparkles"></i>
+                    Générer le cours
+                </button>
+            </div>
+
+            <div class="course-display">
+                <div class="tabs">
+                    <div class="tab active" data-tab="course">Cours</div>
+                    <div class="tab" data-tab="history">Historique</div>
+                    <div class="tab" data-tab="paths">Parcours</div>
+                </div>
+
+                <div class="tab-content" id="courseTab">
+                    <div class="empty-state" id="emptyState">
+                        <i data-lucide="book-open"></i>
+                        <h3>Prêt à apprendre ?</h3>
+                        <p>Configurez votre cours dans le panneau de gauche et cliquez sur "Générer le cours" pour commencer.</p>
+                    </div>
+                    <div class="course-content" id="courseContent" style="display: none;">
+                        <div class="chat-interface">
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input-container">
+                                <textarea class="chat-input" id="chatInput" placeholder="Une question sur ce cours ? Demandez-moi des précisions..." rows="2"></textarea>
+                                <button class="chat-send-btn" id="chatSendBtn">
+                                    <i data-lucide="send"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="quizSection" style="display: none;"></div>
+                        <div class="course-actions">
+                            <button class="action-btn" id="exportPdf">
+                                <i data-lucide="file-text"></i>
+                                Exporter PDF
+                            </button>
+                            <button class="action-btn" id="exportDocx">
+                                <i data-lucide="file-text"></i>
+                                Exporter DOCX
+                            </button>
+                            <button class="action-btn" id="copyContent">
+                                <i data-lucide="copy"></i>
+                                Copier
+                            </button>
+                            <button class="action-btn" id="generateQuiz">
+                                <i data-lucide="help-circle"></i>
+                                Quiz
+                            </button>
+                        </div>
+                        <div id="generatedCourse"></div>
+                    </div>
+                </div>
+                <div class="tab-content" id="historyTab" style="display: none;">
+                    <div class="empty-state">
+                        <i data-lucide="history"></i>
+                        <h3>Aucun historique</h3>
+                        <p>Vos cours générés apparaîtront ici automatiquement.</p>
+                    </div>
+                </div>
+                <div class="tab-content" id="pathsTab" style="display: none;">
+                    <div class="empty-state">
+                        <i data-lucide="map"></i>
+                        <h3>Aucun parcours</h3>
+                        <p>Créez des parcours d'apprentissage en sauvegardant vos cours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
