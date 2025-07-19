@@ -8,7 +8,7 @@ require('dotenv').config();
 const apiRoutes = require('./routes/api');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 // Middleware de sécurité
 app.use(helmet());
@@ -38,9 +38,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
-const HOST = '0.0.0.0';
-app.listen(PORT, HOST, () => {
-  console.log(`🚀 Serveur démarré sur ${HOST}:${PORT}`);
-  console.log(`📱 Frontend: http://localhost:${PORT}`);
-  console.log(`🔧 API: http://localhost:${PORT}/api`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Serveur démarré sur 0.0.0.0:${PORT}`);
+  console.log(`🔧 API disponible sur le port ${PORT}`);
 });
