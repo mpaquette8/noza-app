@@ -1,8 +1,8 @@
 // Configuration API
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'hermes-app.up.railway.app/api'  // À remplacer plus tard
+const API_BASE_URL = window.location.hostname.includes('vercel.app') 
+  ? 'https://hermes-app.up.railway.app/api'
   : window.location.origin + '/api';
-  
+
 function initializeLucide() {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
