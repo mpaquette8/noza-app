@@ -1,6 +1,6 @@
 // Configuration API
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://votre-app-railway.up.railway.app/api'  // À remplacer plus tard
+  ? 'hermes-app.up.railway.app/api'  // À remplacer plus tard
   : window.location.origin + '/api';
   
 function initializeLucide() {
