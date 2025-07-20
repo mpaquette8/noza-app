@@ -1,15 +1,13 @@
-
 {
   "name": "hermes-app",
-  "version": "1.0.0",
+  "version": "1.0.0", 
   "description": "Application Hermès complète - Railway",
   "main": "backend/server.js",
   "scripts": {
     "start": "cd backend && node server.js",
     "build": "cd backend && npm install",
-    "dev": "cd backend && npm run dev",
-    "railway-build": "cd backend && npm install"
-  },
+    "dev": "cd backend && npm run dev"
+  },  ← AJOUTEZ CETTE VIRGULE
   "engines": {
     "node": ">=18.0.0"
   },
