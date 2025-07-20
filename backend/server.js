@@ -17,6 +17,15 @@ app.use(cors({
   credentials: true
 }));
 
+// Route de test santé
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY
+  });
+});
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
