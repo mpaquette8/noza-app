@@ -1,13 +1,18 @@
+
 {
-  "name": "noza-app",
+  "name": "hermes-app",
   "version": "1.0.0",
-  "description": "Application Noza complète",
+  "description": "Application Hermès complète - Railway",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "cd backend && npm start",
+    "start": "cd backend && node server.js",
     "build": "cd backend && npm install",
-    "dev": "cd backend && npm run dev"
+    "dev": "cd backend && npm run dev",
+    "railway-build": "cd backend && npm install"
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "keywords": ["hermes", "ai", "education", "railway"],
+  "author": "Votre nom"
 }
