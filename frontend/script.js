@@ -28,6 +28,7 @@ function initializeApp() {
     document.getElementById('exportPdf').addEventListener('click', exportPdf);
     document.getElementById('exportDocx').addEventListener('click', exportDocx);
     document.getElementById('randomSubjectBtn').addEventListener('click', generateRandomSubject);
+    document.getElementById('generateBtn').addEventListener('click', generateCourse);
     
     // Chat interface
     const chatInput = document.getElementById('chatInput');
@@ -47,6 +48,8 @@ function initializeApp() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
+
+    initializeGauges();
 
     // Ajouter le bouton d'effacement du chat
     addClearChatButton();
@@ -1015,6 +1018,88 @@ async function resetQuiz() {
         
         // En cas d'erreur, fermer le quiz
         closeQuiz();
+    }
+}
+
+// === GESTION DES JAUGES ===
+const detailLevels = {
+    1: { name: 'Synthèse', description: 'Cours concis avec les points essentiels (~500 mots).' },
+    2: { name: 'Détaillé', description: 'Cours complet avec explications approfondies (~1500 mots).' },
+    3: { name: 'Exhaustif', description: 'Analyse très complète avec références (~3000+ mots).' }
+};
+
+const vulgarizationLevels = {
+    1: { name: 'Expert', description: 'Vocabulaire spécialisé pour professionnels du domaine.' },
+    2: { name: 'Technique', description: 'Approche technique avec explications des termes spécialisés.' },
+    3: { name: 'Accessible', description: 'Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.' },
+    4: { name: 'Grand Public', description: 'Langage simple, vulgarisation complète accessible à tous.' }
+};
+
+const combinations = {
+    '1-1': { icon: '⚡', text: 'Synthèse expert - Résumé technique' },
+    '1-4': { icon: '🎯', text: 'Synthèse grand public - Vue d\'ensemble accessible' },
+    '2-2': { icon: '🔧', text: 'Cours technique détaillé' },
+    '2-3': { icon: '🎯', text: 'Cours détaillé et accessible' },
+    '3-1': { icon: '🎓', text: 'Analyse exhaustive expert' },
+    '3-4': { icon: '📚', text: 'Guide complet grand public' }
+};
+
+function updateDetailGauge() {
+    const slider = document.getElementById('detailSlider');
+    const value = parseInt(slider.value);
+    const level = detailLevels[value];
+    
+    document.getElementById('detailValue').textContent = level.name;
+    document.getElementById('detailDescription').innerHTML = 
+        `<strong>${level.name} :</strong> ${level.description}`;
+    
+    const percentage = ((value - 1) / 2) * 100;
+    document.getElementById('detailTrack').style.width = `${percentage}%`;
+    
+    updateCombination();
+}
+
+function updateVulgarizationGauge() {
+    const slider = document.getElementById('vulgarizationSlider');
+    const value = parseInt(slider.value);
+    const level = vulgarizationLevels[value];
+    
+    document.getElementById('vulgarizationValue').textContent = level.name;
+    document.getElementById('vulgarizationDescription').innerHTML = 
+        `<strong>${level.name} :</strong> ${level.description}`;
+    
+    const percentage = ((value - 1) / 3) * 100;
+    document.getElementById('vulgarizationTrack').style.width = `${percentage}%`;
+    
+    updateCombination();
+}
+
+function updateCombination() {
+    const detailVal = document.getElementById('detailSlider').value;
+    const vulgarVal = document.getElementById('vulgarizationSlider').value;
+    const key = `${detailVal}-${vulgarVal}`;
+    
+    const combination = combinations[key] || { 
+        icon: '⚙️', 
+        text: `Configuration personnalisée` 
+    };
+    
+    document.querySelector('.combination-icon').textContent = combination.icon;
+    document.getElementById('combinationText').textContent = combination.text;
+}
+
+function initializeGauges() {
+    const detailSlider = document.getElementById('detailSlider');
+    const vulgarizationSlider = document.getElementById('vulgarizationSlider');
+    
+    if (detailSlider) {
+        detailSlider.addEventListener('input', updateDetailGauge);
+        updateDetailGauge();
+    }
+    
+    if (vulgarizationSlider) {
+        vulgarizationSlider.addEventListener('input', updateVulgarizationGauge);
+        updateVulgarizationGauge();
     }
 }
 
