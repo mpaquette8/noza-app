@@ -867,7 +867,7 @@ function createSuggestionsElement(suggestions) {
     
     let suggestionsHTML = `
         <div class="message-content">
-            <strong>💡 Questions suggérées :</strong>
+            <strong>💡 Questions suggérées sur le thème de ce cours:</strong>
             <div class="suggestion-buttons">
     `;
     
