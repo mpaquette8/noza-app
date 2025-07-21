@@ -62,15 +62,9 @@ async function generateCourse() {
     const subject = document.getElementById('subject').value.trim();
     const detailLevel = document.getElementById('detailSlider').value;
     const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
-    const length = document.querySelector('.length-btn.active')?.dataset.length;
 
     if (!subject) {
         showNotification('Veuillez entrer un sujet pour le cours', 'error');
-        return;
-    }
-
-    if (!length) {
-        showNotification('Veuillez sélectionner la longueur', 'error');
         return;
     }
 
@@ -88,8 +82,7 @@ async function generateCourse() {
             body: JSON.stringify({ 
                 subject, 
                 detailLevel: parseInt(detailLevel),
-                vulgarizationLevel: parseInt(vulgarizationLevel),
-                length 
+                vulgarizationLevel: parseInt(vulgarizationLevel)
             })
         });
 
@@ -459,7 +452,7 @@ function updateHistoryDisplay() {
         historyTab.innerHTML = history.map(course => `
             <div class="history-item" onclick="loadCourseFromHistory('${course.id}')">
                 <h4>${course.subject}</h4>
-                <p>Niveau: ${course.level} | Longueur: ${course.length}</p>
+                <p>Détail: ${course.detailLevel}/3 | Vulgarisation: ${course.vulgarizationLevel}/4</p>
                 <small>${new Date(course.createdAt).toLocaleDateString()}</small>
             </div>
         `).join('');
@@ -541,14 +534,6 @@ function setupFormControls() {
             
             // Mettre à jour l'indicateur de niveau du chat
             updateChatLevelIndicator();
-        });
-    });
-
-    // Length selector
-    document.querySelectorAll('.length-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.length-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
         });
     });
 
