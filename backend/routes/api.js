@@ -295,8 +295,8 @@ Niveau de vulgarisation : ${levelInstructions[level]}
 Question de l'utilisateur : ${question}
 
 Instructions :
-- Reponds a la question en restant sur le thème du cours.
-- Si la question ne correspond pas du tout au thème du cours ou à un dérivé du thèmes: réponds en proposant le titre d'un nouveau cours gentiment.
+- Si la question porte sur le contenu du cours ci-dessus, réponds en te basant sur ce contenu
+- Si la question sort du contexte du cours, réponds avec tes connaissances générales
 - Adapte ta réponse au niveau de vulgarisation demandé
 - Garde une réponse concise (maximum 100 mots)
 - Sois utile et informatif dans tous les cas
@@ -382,7 +382,7 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 2000,
-      temperature: 0.7,
+      temperature: 0.2,
       messages: [
         {
           role: 'user',
