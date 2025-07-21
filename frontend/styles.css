@@ -321,47 +321,260 @@ body {
     padding: 16px;
     border-radius: 8px;
     border-left: 4px solid #8A2BE2;
-    color: #e6edf3; /* Texte visible sur fond sombre */
+    color: #F0F0F0 !important; /* Texte clair sur fond sombre */
+    background: rgba(138, 43, 226, 0.1) !important; /* Fond sombre subtil */
+}
+
+.special-block p,
+.special-block h1,
+.special-block h2,
+.special-block h3,
+.special-block h4,
+.special-block ul,
+.special-block ol,
+.special-block li,
+.special-block span,
+.special-block strong,
+.special-block em {
+    color: #F0F0F0 !important; /* Force le texte clair */
 }
 
 .analogy-block {
-    background: rgba(138, 43, 226, 0.1);
-    color: #e6edf3;
+    background: rgba(138, 43, 226, 0.1) !important;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(138, 43, 226, 0.3);
 }
 
 .example-block {
-    background: rgba(0, 123, 255, 0.1);
+    background: rgba(0, 123, 255, 0.1) !important;
     border-left-color: #007BFF;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(0, 123, 255, 0.3);
 }
 
 .concept-block {
-    background: rgba(40, 167, 69, 0.1);
+    background: rgba(40, 167, 69, 0.1) !important;
     border-left-color: #28a745;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
+/* Titre des blocs avec couleur contrastée */
 .block-title {
     font-weight: 600;
-    color: #8A2BE2;
+    color: #8A2BE2 !important; /* Titre coloré pour différencier */
     margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 6px;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
 }
 
-/* CORRECTION PRINCIPALE: Formules avec couleurs corrigées */
+/* Formules mathématiques avec thème sombre */
 .formula {
-    background: #21262d;
-    border: 1px solid #30363d;
-    padding: 16px;
+    background: #21262d !important; /* Fond sombre */
+    border: 2px solid #8A2BE2 !important;
+    padding: 20px;
     border-radius: 8px;
     text-align: center;
     margin: 20px 0;
     font-family: 'Times New Roman', serif;
-    font-size: 1.1rem;
-    color: #e6edf3; /* CHANGÉ: était #F0F0F0 qui ne ressortait pas assez */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 1.2rem;
+    color: #F0F0F0 !important; /* Texte clair */
+    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+/* Effet de lueur subtile pour les formules */
+.formula::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #8A2BE2, #9A3CF2, #8A2BE2);
+    border-radius: 8px;
+    opacity: 0.3;
+    z-index: -1;
+    filter: blur(4px);
+}
+/* Tous les éléments dans les formules */
+.formula p,
+.formula span,
+.formula strong,
+.formula em,
+.formula sub,
+.formula sup {
+    color: #F0F0F0 !important;
+    font-weight: 500;
+}
+/* Blocs de code améliorés */
+.code-block {
+    background: #0D1117 !important;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #F0F0F0 !important;
+    overflow-x: auto;
+}
+/* Citations avec style sombre */
+.quote-block {
+    background: rgba(138, 43, 226, 0.08) !important;
+    border-left: 4px solid #8A2BE2;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #e6edf3 !important;
+    position: relative;
+}
+
+.quote-block::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 3rem;
+    color: #8A2BE2;
+    opacity: 0.3;
+}
+
+/* Points clés / Highlights avec thème sombre */
+.highlight-block {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    color: #F0F0F0 !important;
+}
+
+/* Blocs d'avertissement */
+.warning-block {
+    background: rgba(220, 53, 69, 0.1) !important;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-left: 4px solid #dc3545;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    color: #F0F0F0 !important;
+}
+
+/* Blocs d'information */
+.info-block {
+    background: rgba(23, 162, 184, 0.1) !important;
+    border: 1px solid rgba(23, 162, 184, 0.3);
+    border-left: 4px solid #17a2b8;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    color: #F0F0F0 !important;
+}
+
+/* Blocs de succès */
+.success-block {
+    background: rgba(40, 167, 69, 0.1) !important;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    border-left: 4px solid #28a745;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    color: #F0F0F0 !important;
+}
+/* S'assurer que le contenu du cours garde un bon contraste */
+#generatedCourse {
+    color: #e6edf3;
+}
+
+#generatedCourse h1,
+#generatedCourse h2,
+#generatedCourse h3,
+#generatedCourse h4 {
+    color: #F0F0F0;
+}
+
+#generatedCourse p,
+#generatedCourse li {
+    color: #e6edf3;
+}
+
+/* Liens dans les blocs - adaptés au thème sombre */
+.special-block a,
+.formula a {
+    color: #58a6ff !important; /* Bleu clair pour les liens */
+    text-decoration: underline;
+}
+
+.special-block a:hover,
+.formula a:hover {
+    color: #79c0ff !important;
+    text-decoration: none;
+}
+
+/* Tables dans les blocs avec thème sombre */
+.special-block table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.special-block th,
+.special-block td {
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #F0F0F0 !important;
+}
+
+.special-block th {
+    background: rgba(138, 43, 226, 0.2);
+    font-weight: 600;
+}
+
+/* Listes dans les blocs */
+.special-block ul,
+.special-block ol {
+    margin: 10px 0;
+    padding-left: 25px;
+}
+
+.special-block li {
+    margin-bottom: 5px;
+    color: #F0F0F0 !important;
+}
+
+/* Amélioration des bordures gauches pour meilleure visibilité */
+.special-block {
+    border-left-width: 5px;
+    transition: all 0.3s ease;
+}
+
+.special-block:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
+}
+
+/* Icônes optionnelles pour différents types de blocs */
+.analogy-block .block-title::before {
+    content: "💡 ";
+}
+
+.example-block .block-title::before {
+    content: "📝 ";
+}
+
+.concept-block .block-title::before {
+    content: "🎯 ";
+}
+
+.formula::after {
+    content: "📐";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    opacity: 0.3;
+    font-size: 1.5rem;
 }
 
 .chat-interface {
@@ -388,6 +601,7 @@ body {
     position: relative;
     animation: messageSlideIn 0.3s ease;
 }
+
 
 @keyframes messageSlideIn {
     from {
@@ -1079,34 +1293,40 @@ body {
 
 /* CORRECTION: Nouveaux blocs spéciaux avec couleurs corrigées */
 .vulgarisation-simple-block {
-    background: rgba(220, 53, 69, 0.1);
+    background: rgba(220, 53, 69, 0.1) !important;
     border-left-color: #dc3545;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
 .daily-analogy-block {
-    background: rgba(255, 193, 7, 0.1);
+    background: rgba(255, 193, 7, 0.1) !important;
     border-left-color: #ffc107;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 .simple-terms-block {
-    background: rgba(23, 162, 184, 0.1);
+    background: rgba(23, 162, 184, 0.1) !important;
     border-left-color: #17a2b8;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(23, 162, 184, 0.3);
 }
 
 .concrete-example-block {
-    background: rgba(40, 167, 69, 0.1);
+    background: rgba(40, 167, 69, 0.1) !important;
     border-left-color: #28a745;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
 .mental-schema-block {
-    background: rgba(111, 66, 193, 0.1);
+    background: rgba(111, 66, 193, 0.1) !important;
     border-left-color: #6f42c1;
-    color: #e6edf3;
+    color: #F0F0F0 !important;
+    border: 1px solid rgba(111, 66, 193, 0.3);
 }
+
 
 /* Nouvelle option radio pour hybride expert */
 .radio-option[data-level="hybridExpert"] {
@@ -1312,6 +1532,17 @@ body {
         align-self: flex-end;
         width: 100px;
     }
+        .special-block,
+    .formula {
+        margin: 15px -10px;
+        border-radius: 0;
+    }
+    
+    .formula {
+        font-size: 1rem;
+        padding: 12px;
+    }
+
 }
 
 @media (max-width: 768px) {
