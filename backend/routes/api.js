@@ -14,15 +14,14 @@ function createPrompt(subject, detailLevel, vulgarizationLevel) {
         2: "Crée un cours détaillé (~2250 mots) avec explications approfondies et exemples",
         3: "Crée une analyse exhaustive (~4200 mots) très complète avec références"
     };
-
     const vulgarizationInstructions = {
-        1: "Utilise un vocabulaire spécialisé, concepts avancés, destiné aux experts",
-        2: "Approche technique avec explication des termes spécialisés",
-        3: "Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets",
-        4: "Langage simple, nombreuses analogies, accessible à tous sans prérequis"
+        1: "Langage simple, nombreuses analogies, accessible à tous sans prérequis",
+        2: "Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets",
+        3: "Approche technique avec explication des termes spécialisés",
+        4: "Utilise un vocabulaire spécialisé, concepts avancés, destiné aux experts"
     };
 
-    return `Tu es un expert pédagogue. Crée un cours sur : "${subject}"
+    return `Tu es un expert pédagogue qui cherche avant tout a faire comprendre. Crée un cours sur : "${subject}"
 
 NIVEAU DE DÉTAIL : ${detailInstructions[detailLevel]}
 NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
@@ -264,11 +263,11 @@ router.post('/ask-question', async (req, res) => {
 
     // Définir les instructions selon le niveau de vulgarisation
     const levelInstructions = {
-      beginner: "Réponds de manière très simple, sans jargon technique, comme si tu t'adressais à un débutant complet. Utilise des analogies simples et du vocabulaire accessible.",
-      intermediate: "Réponds de manière détaillée mais accessible, avec du vocabulaire technique de base expliqué. Équilibre entre précision et clarté.",
-      expert: "Réponds de manière technique et précise, en utilisant le vocabulaire spécialisé approprié. Assume que l'utilisateur a des connaissances avancées.",
-      hybrid: "Réponds de manière experte mais ajoute des analogies ou des exemples concrets pour faciliter la compréhension. Combine précision technique et pédagogie.",
-      hybridExpert: "Réponds de manière très technique et complète avec tous les détails nécessaires, mais ajoute systématiquement des explications simples et des analogies du quotidien. Utilise tout le vocabulaire spécialisé requis, mais explique chaque terme technique avec des mots que tout le monde peut comprendre."
+        beginner: "Réponds de manière très simple, sans jargon technique, comme si tu t'adressais à un débutant complet. Utilise des analogies simples et du vocabulaire accessible.",
+        intermediate: "Réponds de manière détaillée mais accessible, avec du vocabulaire technique de base expliqué. Équilibre entre précision et clarté.",
+        expert: "Réponds de manière technique et précise, en utilisant le vocabulaire spécialisé approprié. Assume que l'utilisateur a des connaissances avancées.",
+        hybrid: "Réponds de manière experte mais ajoute des analogies ou des exemples concrets pour faciliter la compréhension. Combine précision technique et pédagogie.",
+        hybridExpert: "Réponds de manière très technique et complète avec tous les détails nécessaires, mais ajoute systématiquement des explications simples et des analogies du quotidien."
     };
 
     // Détecter le type de question automatiquement
