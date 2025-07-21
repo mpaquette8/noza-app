@@ -27,42 +27,66 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Niveau de vulgarisation</label>
-                    <div class="radio-group">
-                        <div class="radio-option" data-level="beginner">
-                            <input type="radio" name="level" value="beginner" id="beginner">
-                            <div>
-                                <strong>Débutant</strong><br>
-                                <small>Explication simple, sans jargon technique</small>
-                            </div>
+                    <!-- Jauge Niveau de Détail -->
+                    <div class="gauge-group detail-gauge">
+                        <div class="gauge-label">
+                            <div class="gauge-title">📊 Niveau de Détail</div>
+                            <div class="gauge-value" id="detailValue">Détaillé</div>
                         </div>
-                        <div class="radio-option" data-level="intermediate">
-                            <input type="radio" name="level" value="intermediate" id="intermediate">
-                            <div>
-                                <strong>Intermédiaire</strong><br>
-                                <small>Explication détaillée avec vocabulaire technique de base</small>
-                            </div>
+                        <div class="gauge-container">
+                            <div class="gauge-track" id="detailTrack" style="width: 66%"></div>
+                            <input 
+                                type="range" 
+                                min="1" 
+                                max="3" 
+                                value="2" 
+                                class="gauge-slider" 
+                                id="detailSlider"
+                            >
                         </div>
-                        <div class="radio-option" data-level="expert">
-                            <input type="radio" name="level" value="expert" id="expert">
-                            <div>
-                                <strong>Expert</strong><br>
-                                <small>Explication approfondie pour un public averti</small>
-                            </div>
+                        <div class="gauge-labels">
+                            <span>Synthèse</span>
+                            <span>Détaillé</span>
+                            <span>Exhaustif</span>
                         </div>
-                        <div class="radio-option selected" data-level="hybrid">
-                            <input type="radio" name="level" value="hybrid" id="hybrid" checked>
-                            <div>
-                                <strong>Hybride (Recommandé)</strong><br>
-                                <small>Contenu expert enrichi d'analogies et d'exemples</small>
-                            </div>
+                        <div class="gauge-description" id="detailDescription">
+                            <strong>Détaillé :</strong> Cours complet avec explications approfondies, exemples multiples (~1500 mots).
                         </div>
-                        <div class="radio-option" data-level="hybridExpert">
-                            <input type="radio" name="level" value="hybridExpert" id="hybridExpert">
-                            <div>
-                                <strong>Hybride Très Expert</strong><br>
-                                <small>Contenu très technique + vulgarisation accessible à tous</small>
-                            </div>
+                    </div>
+                
+                    <!-- Jauge Niveau de Vulgarisation -->
+                    <div class="gauge-group vulgarization-gauge">
+                        <div class="gauge-label">
+                            <div class="gauge-title">🎓 Niveau de Vulgarisation</div>
+                            <div class="gauge-value" id="vulgarizationValue">Accessible</div>
+                        </div>
+                        <div class="gauge-container">
+                            <div class="gauge-track" id="vulgarizationTrack" style="width: 75%"></div>
+                            <input 
+                                type="range" 
+                                min="1" 
+                                max="4" 
+                                value="3" 
+                                class="gauge-slider" 
+                                id="vulgarizationSlider"
+                            >
+                        </div>
+                        <div class="gauge-labels">
+                            <span>Expert</span>
+                            <span>Technique</span>
+                            <span>Accessible</span>
+                            <span>Grand Public</span>
+                        </div>
+                        <div class="gauge-description" id="vulgarizationDescription">
+                            <strong>Accessible :</strong> Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.
+                        </div>
+                    </div>
+                
+                    <!-- Indicateur de Combinaison -->
+                    <div class="combination-indicator" id="combinationIndicator">
+                        <div class="combination-icon">🎯</div>
+                        <div class="combination-text" id="combinationText">
+                            Cours détaillé et accessible - Idéal pour approfondir un sujet
                         </div>
                     </div>
                 </div>
