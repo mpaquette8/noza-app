@@ -298,7 +298,7 @@ Instructions :
 - Si la question porte sur le contenu du cours ci-dessus, réponds en te basant sur ce contenu
 - Si la question sort du contexte du cours, réponds avec tes connaissances générales
 - Adapte ta réponse au niveau de vulgarisation demandé
-- Garde une réponse concise (maximum 100 mots)
+- Garde une réponse concise (maximum 50 mots)
 - Sois utile et informatif dans tous les cas
 
 Réponse :`;
@@ -312,7 +312,7 @@ Niveau de vulgarisation : ${levelInstructions[level]}
 Question : ${question}
 
 Instructions :
-- Donne une réponse claire et concise (maximum 150 mots)
+- Donne une réponse claire et concise (maximum 50 mots)
 - Adapte ton vocabulaire et tes explications au niveau demandé
 - Utilise des exemples concrets si nécessaire
 - Reste informatif tout en étant accessible
