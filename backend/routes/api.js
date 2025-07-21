@@ -7,7 +7,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-// Fonction pour créer le prompt selon le niveau
+// Fonction pour créer le prompt selon le niveau - VERSION AMÉLIORÉE
 function createPrompt(subject, detailLevel, vulgarizationLevel, length) {
     const detailInstructions = {
         1: "Crée une synthèse concise (~500 mots) avec les points essentiels",
@@ -28,13 +28,103 @@ NIVEAU DE DÉTAIL : ${detailInstructions[detailLevel]}
 NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
 
 STRUCTURE REQUISE :
-- Titre principal (H1)
-- Introduction claire
-- Sections avec sous-titres (H2, H3)
-- Conclusion
+1. Titre principal avec <h1>
+2. Introduction dans un bloc générique
+3. Sections principales avec des blocs thématiques spécialisés
+4. Conclusion dans un bloc conclusion
 
-FORMATAGE HTML avec classes CSS appropriées.
-Le cours doit être informatif, bien structuré et engageant.`;
+CLASSES CSS OBLIGATOIRES À UTILISER :
+
+1. BLOC GÉNÉRIQUE (pour introduction, concepts de base) :
+<div class="styled-block">
+    <div class="block-title">Titre de la section</div>
+    <p>Contenu...</p>
+</div>
+
+2. BLOC EXEMPLE PRATIQUE (pour cas concrets, applications) :
+<div class="styled-block example-block">
+    <div class="block-title">Exemple Pratique</div>
+    <p>Contenu de l'exemple...</p>
+</div>
+
+3. BLOC CONSEILS PRATIQUES (pour tips, recommandations) :
+<div class="styled-block practical-tips-block">
+    <div class="block-title">Conseils Pratiques</div>
+    <p>Conseils et recommandations...</p>
+</div>
+
+4. BLOC CONCLUSION (obligatoire en fin de cours) :
+<div class="styled-block conclusion-block">
+    <div class="block-title">Conclusion</div>
+    <p>Synthèse finale...</p>
+</div>
+
+5. BLOC CONCEPT CLÉ (pour notions importantes) :
+<div class="styled-block concept-block">
+    <div class="block-title">Concept Clé</div>
+    <p>Explication du concept...</p>
+</div>
+
+6. BLOC ANALOGIE (pour comparaisons et métaphores) :
+<div class="styled-block analogy-block">
+    <div class="block-title">Analogie</div>
+    <p>Comparaison explicative...</p>
+</div>
+
+BLOCS SPÉCIALISÉS (utilise si approprié) :
+
+7. FORMULE MATHÉMATIQUE :
+<div class="formula">
+    <p>Formule ou équation mathématique</p>
+</div>
+
+8. CITATION :
+<div class="quote-block">
+    <p>Citation importante ou définition officielle</p>
+</div>
+
+9. CODE (si applicable) :
+<div class="code-block">
+    <pre><code>Code ou pseudo-code</code></pre>
+</div>
+
+RÈGLES IMPORTANTES :
+- TOUJOURS utiliser ces classes exactes (respecte la casse)
+- TOUJOURS inclure un <div class="block-title"> dans chaque bloc styled-block
+- Utilise minimum 3-4 blocs différents pour varier la présentation
+- Le titre H1 reste en dehors des blocs
+- Assure-toi que chaque bloc a un contenu substantiel (minimum 2-3 phrases)
+- Termine OBLIGATOIREMENT par un bloc conclusion-block
+
+EXEMPLE DE STRUCTURE FINALE :
+<h1>Titre du Cours</h1>
+
+<div class="styled-block">
+    <div class="block-title">Introduction</div>
+    <p>Introduction générale...</p>
+</div>
+
+<div class="styled-block concept-block">
+    <div class="block-title">Concepts Fondamentaux</div>
+    <p>Explication des concepts...</p>
+</div>
+
+<div class="styled-block example-block">
+    <div class="block-title">Exemple Pratique</div>
+    <p>Application concrète...</p>
+</div>
+
+<div class="styled-block practical-tips-block">
+    <div class="block-title">Points Clés à Retenir</div>
+    <p>Conseils et astuces...</p>
+</div>
+
+<div class="styled-block conclusion-block">
+    <div class="block-title">Conclusion</div>
+    <p>Synthèse et perspectives...</p>
+</div>
+
+Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre les différents types de blocs.`;
 }
 
 // Fonction pour détecter le type de question
