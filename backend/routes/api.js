@@ -295,10 +295,10 @@ Niveau de vulgarisation : ${levelInstructions[level]}
 Question de l'utilisateur : ${question}
 
 Instructions :
-- Si la question porte sur le contenu du cours ci-dessus, réponds en te basant sur ce contenu
-- Si la question sort du contexte du cours, réponds avec tes connaissances générales
+- Reponds a la question en restant sur le thème du cours.
+- Si la question ne correspond pas du tout au thème du cours ou à un dérivé du thèmes: réponds en proposant le titre d'un nouveau cours gentiment.
 - Adapte ta réponse au niveau de vulgarisation demandé
-- Garde une réponse concise (maximum 150 mots)
+- Garde une réponse concise (maximum 100 mots)
 - Sois utile et informatif dans tous les cas
 
 Réponse :`;
