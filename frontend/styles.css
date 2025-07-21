@@ -523,64 +523,66 @@ body {
     color: #e6edf3;
 }
 
-/* --- Group 1: Themed Blocks (Dark BG, Glow Effect) --- */
-/* Common styles for all themed blocks in this group */
+/* ==========================================================================
+   5. UNIFIED DARK THEME BLOCKS
+   ========================================================================== */
+
+/* --- Master selector for ALL special blocks requiring the dark theme --- */
 .special-block,
 .resume-block,
 .summary-block,
-.exemple-pratique-block,
-.practical-example-block,
-.conclusion-block,
-.conseils-pratiques-block,
-.practical-tips-block,
 .key-points-block,
 .important-block,
 .note-block,
 .attention-block,
 .block,
 .content-block,
-.text-block {
+.text-block,
+.formula,
+/* CORRECTION: Add all conclusion, analogy, and example blocks to this group */
+.conclusion-block,
+.conseils-pratiques-block,
+.practical-tips-block,
+.exemple-pratique-block,
+.practical-example-block,
+.example-block,
+.concrete-example-block,
+.analogy-block,
+.daily-analogy-block,
+.concept-block,
+.vulgarisation-simple-block,
+.simple-terms-block,
+.mental-schema-block {
     margin: 20px 0;
     padding: 20px;
     border-radius: 8px;
-    border-left: 5px solid #8A2BE2;
+    border-left: 5px solid #8A2BE2; /* Default color */
     background: #21262d !important;
     color: #F0F0F0 !important;
-    border: 2px solid #8A2BE2 !important;
+    border: 2px solid #8A2BE2 !important; /* Default color */
     box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
 }
 
-.special-block:hover,
-.resume-block:hover,
-.summary-block:hover,
-.exemple-pratique-block:hover,
-.practical-example-block:hover,
-.conclusion-block:hover,
-.conseils-pratiques-block:hover,
-.practical-tips-block:hover,
-.key-points-block:hover,
-.important-block:hover,
-.note-block:hover,
-.attention-block:hover,
-.block:hover,
-.content-block:hover,
-.text-block:hover {
+/* --- Ensure all child elements are readable --- */
+[class*="-block"] *,
+.block *, .content-block *, .text-block *,
+.formula * {
+    color: #F0F0F0 !important;
+    background: transparent !important; /* Prevents nested light backgrounds */
+    font-weight: inherit;
+}
+
+/* --- Hover & Glow Effects --- */
+[class*="-block"]:hover, .block:hover, .content-block:hover, .text-block:hover, .formula:hover {
     transform: translateX(3px);
     box-shadow: 0 6px 25px rgba(138, 43, 226, 0.4);
 }
 
-/* Glow effect for Group 1 blocks */
-.special-block::before,
-.resume-block::before,
-.summary-block::before,
-.exemple-pratique-block::before,
-.practical-example-block::before,
-.conclusion-block::before,
-.conseils-pratiques-block::before,
-.practical-tips-block::before {
+/* Default glow effect */
+[class*="-block"]::before, .block::before, .content-block::before, .text-block::before, .formula::before {
     content: '';
     position: absolute;
     top: -2px;
@@ -594,35 +596,7 @@ body {
     filter: blur(4px);
 }
 
-/* Force clear text on all child elements of Group 1 blocks */
-.special-block *,
-.resume-block *,
-.summary-block *,
-.exemple-pratique-block *,
-.practical-example-block *,
-.conclusion-block *,
-.conseils-pratiques-block *,
-.practical-tips-block *,
-.key-points-block *,
-.important-block *,
-.note-block *,
-.attention-block *,
-.block *,
-.content-block *,
-.text-block * {
-    color: #F0F0F0 !important;
-    font-weight: inherit;
-}
-
-/* Common title style for Group 1 blocks */
-.special-block .block-title,
-.resume-block .block-title,
-.summary-block .block-title,
-.exemple-pratique-block .block-title,
-.practical-example-block .block-title,
-.conclusion-block .block-title,
-.conseils-pratiques-block .block-title,
-.practical-tips-block .block-title,
+/* --- Block Title Styles --- */
 .block-title {
     font-weight: 600;
     color: #8A2BE2 !important;
@@ -634,120 +608,73 @@ body {
     font-size: 1.1rem;
 }
 
+/* --- Specific Overrides for Border Colors & Glows --- */
 
-/* Overrides for specific blocks in Group 1 */
-.exemple-pratique-block,
-.practical-example-block {
+/* Example blocks = Blue */
+.exemple-pratique-block, .practical-example-block, .example-block, .concrete-example-block {
     border-color: #007BFF !important;
-    border-left-color: #007BFF;
+    border-left-color: #007BFF !important;
+}
+.exemple-pratique-block::before, .practical-example-block::before, .example-block::before, .concrete-example-block::before {
+     background: linear-gradient(45deg, #007BFF, #3498db, #007BFF);
+}
+.example-block .block-title, .concrete-example-block .block-title, .exemple-pratique-block .block-title {
+    color: #58a6ff !important;
 }
 
+/* Conclusion blocks = Green */
 .conclusion-block {
     border-color: #28a745 !important;
-    border-left-color: #28a745;
+    border-left-color: #28a745 !important;
 }
-
 .conclusion-block::before {
     background: linear-gradient(45deg, #28a745, #20c997, #28a745);
 }
-
 .conclusion-block .block-title {
     color: #40e0d0 !important;
     text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
 }
 
-.conseils-pratiques-block,
-.practical-tips-block {
+/* Tips/Conseils blocks = Orange */
+.conseils-pratiques-block, .practical-tips-block {
     border-color: #ffc107 !important;
-    border-left-color: #ffc107;
+    border-left-color: #ffc107 !important;
 }
-
-.conseils-pratiques-block::before,
-.practical-tips-block::before {
+.conseils-pratiques-block::before, .practical-tips-block::before {
     background: linear-gradient(45deg, #ffc107, #fd7e14, #ffc107);
 }
-
-.conseils-pratiques-block .block-title,
-.practical-tips-block .block-title {
+.conseils-pratiques-block .block-title, .practical-tips-block .block-title {
     color: #ffc107 !important;
     text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
-/* Icons for Group 1 block titles */
-.resume-block .block-title::before,
-.summary-block .block-title::before {
-    content: "📋 ";
-}
+/* --- Icons for Block Titles --- */
+.resume-block .block-title::before, .summary-block .block-title::before { content: "📋 "; }
+.example-block .block-title::before, .exemple-pratique-block .block-title::before { content: "🔧 "; }
+.conclusion-block .block-title::before { content: "🎯 "; }
+.conseils-pratiques-block .block-title::before { content: "💡 "; }
+.analogy-block .block-title::before { content: "🤝 "; }
+.concept-block .block-title::before { content: "🧠 "; }
 
-.exemple-pratique-block .block-title::before,
-.practical-example-block .block-title::before,
-.example-block .block-title::before {
-    content: "🔧 ";
-}
-
-.conclusion-block .block-title::before {
-    content: "🎯 ";
-}
-
-.conseils-pratiques-block .block-title::before,
-.practical-tips-block .block-title::before {
-    content: "💡 ";
-}
-
-.concept-block .block-title::before {
-    content: "🎯 ";
-}
-
-.analogy-block .block-title::before {
-    content: "💡 ";
-}
-
-
-/* Common styles for child elements inside Group 1 Blocks */
-.special-block ul, .special-block ol,
-.resume-block ul, .resume-block ol,
-.exemple-pratique-block ul, .exemple-pratique-block ol,
-.conclusion-block ul, .conclusion-block ol,
-.conseils-pratiques-block ul, .conseils-pratiques-block ol {
+/* --- Child element styling inside special blocks --- */
+[class*="-block"] ul, [class*="-block"] ol, .block ul, .block ol {
     margin: 15px 0;
     padding-left: 25px;
 }
-
-.special-block li,
-.resume-block li,
-.exemple-pratique-block li,
-.conclusion-block li,
-.conseils-pratiques-block li {
+[class*="-block"] li, .block li {
     margin-bottom: 8px;
     line-height: 1.5;
 }
-
-.special-block a,
-.resume-block a,
-.exemple-pratique-block a,
-.conclusion-block a,
-.conseils-pratiques-block a,
-.formula a {
+[class*="-block"] a, .block a {
     color: #58a6ff !important;
     text-decoration: underline;
     transition: color 0.3s ease;
 }
-
-.special-block a:hover,
-.resume-block a:hover,
-.exemple-pratique-block a:hover,
-.conclusion-block a:hover,
-.conseils-pratiques-block a:hover,
-.formula a:hover {
+[class*="-block"] a:hover, .block a:hover {
     color: #79c0ff !important;
     text-decoration: none;
 }
-
-.special-block table,
-.resume-block table,
-.exemple-pratique-block table,
-.conclusion-block table,
-.conseils-pratiques-block table {
+[class*="-block"] table, .block table {
     width: 100%;
     border-collapse: collapse;
     margin: 15px 0;
@@ -755,31 +682,16 @@ body {
     border-radius: 6px;
     overflow: hidden;
 }
-
-.special-block th, .special-block td,
-.resume-block th, .resume-block td,
-.exemple-pratique-block th, .exemple-pratique-block td,
-.conclusion-block th, .conclusion-block td,
-.conseils-pratiques-block th, .conseils-pratiques-block td {
+[class*="-block"] th, [class*="-block"] td, .block th, .block td {
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
 }
-
-.special-block th,
-.resume-block th,
-.exemple-pratique-block th,
-.conclusion-block th,
-.conseils-pratiques-block th {
+[class*="-block"] th, .block th {
     background: rgba(138, 43, 226, 0.3);
     font-weight: 600;
 }
-
-.special-block code,
-.resume-block code,
-.exemple-pratique-block code,
-.conclusion-block code,
-.conseils-pratiques-block code {
+[class*="-block"] code, .block code {
     background: #0D1117 !important;
     padding: 3px 6px;
     border-radius: 4px;
@@ -788,109 +700,33 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* --- Group 2: Alert-style Blocks (Lighter BG, Colored Border) --- */
-.analogy-block,
-.example-block,
-.concept-block,
-.vulgarisation-simple-block,
-.daily-analogy-block,
-.simple-terms-block,
-.concrete-example-block,
-.mental-schema-block,
-.quote-block,
-.highlight-block,
-.warning-block,
-.info-block,
-.success-block {
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 15px 0;
-    color: #F0F0F0 !important;
-    border-left-width: 4px;
-    border-left-style: solid;
+/* --- Other specific blocks --- */
+.formula {
+    font-family: 'Times New Roman', serif;
+    font-size: 1.2rem;
+    text-align: center;
 }
-
-.analogy-block {
-    background: rgba(138, 43, 226, 0.1) !important;
-    border: 1px solid rgba(138, 43, 226, 0.3);
-    border-left-color: #8A2BE2;
+.formula::after {
+    content: "📐";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    opacity: 0.3;
+    font-size: 1.5rem;
 }
-
-.example-block {
-    background: rgba(0, 123, 255, 0.1) !important;
-    border: 1px solid rgba(0, 123, 255, 0.3);
-    border-left-color: #007BFF;
-}
-
-.concept-block {
-    background: rgba(40, 167, 69, 0.1) !important;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-    border-left-color: #28a745;
-}
-
-.vulgarisation-simple-block {
-    background: rgba(220, 53, 69, 0.1) !important;
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    border-left-color: #dc3545;
-}
-
-.daily-analogy-block {
-    background: rgba(255, 193, 7, 0.1) !important;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-    border-left-color: #ffc107;
-}
-
-.simple-terms-block {
-    background: rgba(23, 162, 184, 0.1) !important;
-    border: 1px solid rgba(23, 162, 184, 0.3);
-    border-left-color: #17a2b8;
-}
-
-.concrete-example-block {
-    background: rgba(40, 167, 69, 0.1) !important;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-    border-left-color: #28a745;
-}
-
-.mental-schema-block {
-    background: rgba(111, 66, 193, 0.1) !important;
-    border: 1px solid rgba(111, 66, 193, 0.3);
-    border-left-color: #6f42c1;
-}
-
-.highlight-block {
-    background: rgba(255, 193, 7, 0.1) !important;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-    border-left-color: #ffc107;
-}
-
-.warning-block {
-    background: rgba(220, 53, 69, 0.1) !important;
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    border-left-color: #dc3545;
-}
-
-.info-block {
-    background: rgba(23, 162, 184, 0.1) !important;
-    border: 1px solid rgba(23, 162, 184, 0.3);
-    border-left-color: #17a2b8;
-}
-
-.success-block {
-    background: rgba(40, 167, 69, 0.1) !important;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-    border-left-color: #28a745;
-}
-
 .quote-block {
-    background: rgba(138, 43, 226, 0.08) !important;
+    margin: 20px 0;
     padding: 16px 20px;
+    border-left: 4px solid #8A2BE2;
+    background: rgba(138, 43, 226, 0.08) !important;
     font-style: italic;
     color: #e6edf3 !important;
     position: relative;
-    border-left-color: #8A2BE2;
+    border-radius: 8px;
 }
-
+.quote-block * {
+    color: #e6edf3 !important;
+}
 .quote-block::before {
     content: '"';
     position: absolute;
@@ -900,52 +736,6 @@ body {
     color: #8A2BE2;
     opacity: 0.3;
 }
-
-
-/* --- Other Themed Blocks --- */
-.formula {
-    background: #21262d !important;
-    border: 2px solid #8A2BE2 !important;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    margin: 20px 0;
-    font-family: 'Times New Roman', serif;
-    font-size: 1.2rem;
-    color: #F0F0F0 !important;
-    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.formula::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #8A2BE2, #9A3CF2, #8A2BE2);
-    border-radius: 8px;
-    opacity: 0.3;
-    z-index: -1;
-    filter: blur(4px);
-}
-
-.formula::after {
-    content: "📐";
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    opacity: 0.3;
-    font-size: 1.5rem;
-}
-
-.formula * {
-    color: #F0F0F0 !important;
-    font-weight: 500;
-}
-
 .code-block {
     background: #0D1117 !important;
     border: 1px solid #30363d;
@@ -958,7 +748,7 @@ body {
 }
 
 /* ==========================================================================
-   5. Chat Interface
+   6. Chat Interface
    ========================================================================== */
 .chat-interface {
     background: #21262d;
@@ -1246,7 +1036,7 @@ body {
 }
 
 /* ==========================================================================
-   6. Quiz System
+   7. Quiz System
    ========================================================================== */
 #quizSection {
     margin-bottom: 30px;
@@ -1471,7 +1261,7 @@ body {
 }
 
 /* ==========================================================================
-   7. Utility & History
+   8. Utility & History
    ========================================================================== */
 .tabs {
     display: flex;
@@ -1579,7 +1369,7 @@ body {
 }
 
 /* ==========================================================================
-   8. Animations
+   9. Animations
    ========================================================================== */
 @keyframes spin {
     0% {
@@ -1681,7 +1471,7 @@ body {
 
 
 /* ==========================================================================
-   9. Responsive Design
+   10. Responsive Design
    ========================================================================== */
 @media (max-width: 1024px) {
     .main-content {
@@ -1706,21 +1496,12 @@ body {
 
 @media (max-width: 768px) {
     /* --- Themed Blocks --- */
-    .special-block,
-    .resume-block,
-    .exemple-pratique-block,
-    .conclusion-block,
-    .conseils-pratiques-block,
-    .formula {
+    [class*="-block"], .block, .content-block, .text-block, .formula, .quote-block {
         margin: 15px -10px;
         border-radius: 0;
         padding: 15px;
     }
-    .special-block .block-title,
-    .resume-block .block-title,
-    .exemple-pratique-block .block-title,
-    .conclusion-block .block-title,
-    .conseils-pratiques-block .block-title {
+    .block-title {
         font-size: 1rem;
     }
     .formula {
