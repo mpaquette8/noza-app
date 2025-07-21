@@ -8,7 +8,7 @@ const anthropic = new Anthropic({
 });
 
 // Fonction pour créer le prompt selon le niveau - VERSION AMÉLIORÉE
-function createPrompt(subject, detailLevel, vulgarizationLevel, length) {
+function createPrompt(subject, detailLevel, vulgarizationLevel) {
     const detailInstructions = {
         1: "Crée une synthèse concise (~500 mots) avec les points essentiels",
         2: "Crée un cours détaillé (~1500 mots) avec explications approfondies et exemples",
@@ -193,15 +193,15 @@ function detectQuestionType(question, courseContent) {
 // Route pour générer un cours
 router.post('/generate-course', async (req, res) => {
     try {
-        const { subject, detailLevel, vulgarizationLevel, length } = req.body;
+        const { subject, detailLevel, vulgarizationLevel } = req.body;
 
-        if (!subject || !detailLevel || !vulgarizationLevel || !length) {
+        if (!subject || !detailLevel || !vulgarizationLevel) {
             return res.status(400).json({
                 error: 'Paramètres manquants'
             });
         }
 
-        const prompt = createPrompt(subject, detailLevel, vulgarizationLevel, length);
+        const prompt = createPrompt(subject, detailLevel, vulgarizationLevel);
 
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
@@ -223,7 +223,6 @@ router.post('/generate-course', async (req, res) => {
             subject,
             detailLevel,
             vulgarizationLevel,
-            length,
             content: courseContent,
             createdAt: new Date().toISOString()
         };
