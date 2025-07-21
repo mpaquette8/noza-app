@@ -16,7 +16,12 @@
         </header>
         <div class="main-content">
             <div class="configuration-panel">
-                <h2 style="margin-bottom: 20px; color: #F0F0F0;">Configuration du Cours</h2>
+                <button class="generate-btn" id="generateBtn">
+                    <i data-lucide="sparkles"></i>
+                    Générer le cours
+                </button>
+                
+                <h2 style="margin: 40px 0 20px 0; color: #F0F0F0;">Configuration du Cours</h2>
                 <div class="form-group">
                     <label for="subject">Sujet du cours</label>
                     <div class="subject-input-container">
@@ -72,10 +77,10 @@
                             >
                         </div>
                         <div class="gauge-labels">
-                            <span>Expert</span>
-                            <span>Technique</span>
-                            <span>Accessible</span>
                             <span>Grand Public</span>
+                            <span>Accessible</span>
+                            <span>Technique</span>
+                            <span>Expert</span>
                         </div>
                         <div class="gauge-description" id="vulgarizationDescription">
                             <strong>Accessible :</strong> Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.
@@ -90,11 +95,6 @@
                         </div>
                     </div>
                 </div>
-
-                <button class="generate-btn" id="generateBtn">
-                    <i data-lucide="sparkles"></i>
-                    Générer le cours
-                </button>
             </div>
 
             <div class="course-display">
