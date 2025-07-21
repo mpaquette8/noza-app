@@ -1196,3 +1196,155 @@ body {
 .message-badge.hybrid-expert-badge {
     background: linear-gradient(135deg, #dc3545, #c82333);
 }
+
+/* === SYSTÈME DE JAUGES === */
+.gauge-group {
+    margin-bottom: 25px;
+}
+
+.gauge-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.gauge-title {
+    font-weight: 500;
+    color: #F0F0F0;
+    font-size: 0.95rem;
+}
+
+.gauge-value {
+    background: rgba(138, 43, 226, 0.2);
+    border: 1px solid #8A2BE2;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    color: #8A2BE2;
+    font-weight: 500;
+    min-width: 100px;
+    text-align: center;
+}
+
+.gauge-container {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.gauge-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #21262d;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.gauge-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    cursor: pointer;
+    border: 2px solid #161b22;
+    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
+    transition: all 0.3s ease;
+}
+
+.gauge-slider::-webkit-slider-thumb:hover {
+    background: #9A3CF2;
+    transform: scale(1.1);
+}
+
+.gauge-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    cursor: pointer;
+    border: 2px solid #161b22;
+    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
+}
+
+.gauge-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #8A2BE2, #9A3CF2);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    pointer-events: none;
+}
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #8b949e;
+    margin-bottom: 10px;
+}
+
+.gauge-description {
+    background: rgba(138, 43, 226, 0.1);
+    border: 1px solid rgba(138, 43, 226, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #e6edf3;
+}
+
+/* Styles spécifiques pour chaque jauge */
+.detail-gauge .gauge-track {
+    background: linear-gradient(90deg, #28a745, #17a2b8);
+}
+
+.detail-gauge .gauge-slider::-webkit-slider-thumb {
+    background: #17a2b8;
+}
+
+.detail-gauge .gauge-value {
+    background: rgba(23, 162, 184, 0.2);
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.vulgarization-gauge .gauge-track {
+    background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+}
+
+.vulgarization-gauge .gauge-slider::-webkit-slider-thumb {
+    background: #28a745;
+}
+
+.vulgarization-gauge .gauge-value {
+    background: rgba(40, 167, 69, 0.2);
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.combination-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(138, 43, 226, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.combination-icon {
+    font-size: 1.2rem;
+}
+
+.combination-text {
+    font-size: 0.85rem;
+    color: #e6edf3;
+}
