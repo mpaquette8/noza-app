@@ -1008,9 +1008,9 @@ async function resetQuiz() {
 
 // === GESTION DES JAUGES ===
 const detailLevels = {
-    1: { name: 'Synthèse', description: 'Cours concis avec les points essentiels (~500 mots).' },
-    2: { name: 'Détaillé', description: 'Cours complet avec explications approfondies (~1500 mots).' },
-    3: { name: 'Exhaustif', description: 'Analyse très complète avec références (~3000+ mots).' }
+    1: { name: 'Synthèse', description: 'Cours concis avec les points essentiels.' },
+    2: { name: 'Détaillé', description: 'Cours complet avec explications approfondies.' },
+    3: { name: 'Exhaustif', description: 'Analyse très complète avec références.' }
 };
 
 const vulgarizationLevels = {
