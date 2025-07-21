@@ -524,7 +524,7 @@ body {
 }
 
 /* ==========================================================================
-   5. OPTIMIZED DARK THEME BLOCKS
+   5. CORRECTION OPTIMIZED DARK THEME BLOCKS - Blocs lisibles
    ========================================================================== */
 
 /* --- Base style for all special blocks using the common '.styled-block' class --- */
@@ -538,18 +538,41 @@ body {
     border-left: 4px solid #8A2BE2; /* Default color */
     position: relative;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    /* Transition only specific, performant properties */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* --- Ensure all child elements are readable --- */
-.styled-block * {
+/* --- CORRECTION: Styles plus spécifiques pour tous les éléments enfants --- */
+.styled-block *,
+.styled-block p,
+.styled-block h1,
+.styled-block h2,
+.styled-block h3,
+.styled-block h4,
+.styled-block h5,
+.styled-block h6,
+.styled-block span,
+.styled-block div,
+.styled-block strong,
+.styled-block em,
+.styled-block li {
     color: #F0F0F0 !important;
     background: transparent !important;
 }
 
+/* --- Styles spéciaux pour les liens dans les blocs --- */
+.styled-block a {
+    color: #58a6ff !important;
+    background: transparent !important;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.styled-block a:hover {
+    color: #79c0ff !important;
+    text-decoration: none;
+}
+
 /* --- OPTIMIZED Glow Effect --- */
-/* This is more performant than filter: blur() */
 .styled-block::before {
     content: '';
     position: absolute;
@@ -574,9 +597,11 @@ body {
 }
 
 /* --- Block Title Styles --- */
-.styled-block .block-title {
-    font-weight: 600;
+.styled-block .block-title,
+.styled-block .block-title * {
+    font-weight: 600 !important;
     color: #8A2BE2 !important;
+    background: transparent !important;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -585,83 +610,129 @@ body {
 }
 
 /* --- Specific Color Overrides --- */
-/* These rules are simple and fast */
-.styled-block.conclusion-block, .styled-block.conclusion {
+.styled-block.conclusion-block, 
+.styled-block.conclusion {
     border-left-color: #28a745;
 }
-.styled-block.conclusion-block::before, .styled-block.conclusion::before {
+
+.styled-block.conclusion-block::before, 
+.styled-block.conclusion::before {
     box-shadow: inset 0 0 15px 5px rgba(40, 167, 69, 0.2);
 }
-.styled-block.conclusion-block .block-title, .styled-block.conclusion .block-title {
+
+.styled-block.conclusion-block .block-title, 
+.styled-block.conclusion .block-title,
+.styled-block.conclusion-block .block-title *,
+.styled-block.conclusion .block-title * {
     color: #40e0d0 !important;
+    background: transparent !important;
 }
 
-.styled-block.exemple-pratique-block, .styled-block.example-block {
+.styled-block.exemple-pratique-block, 
+.styled-block.example-block {
     border-left-color: #007BFF;
 }
-.styled-block.exemple-pratique-block::before, .styled-block.example-block::before {
+
+.styled-block.exemple-pratique-block::before, 
+.styled-block.example-block::before {
     box-shadow: inset 0 0 15px 5px rgba(0, 123, 255, 0.2);
 }
-.styled-block.exemple-pratique-block .block-title, .styled-block.example-block .block-title {
+
+.styled-block.exemple-pratique-block .block-title, 
+.styled-block.example-block .block-title,
+.styled-block.exemple-pratique-block .block-title *,
+.styled-block.example-block .block-title * {
     color: #58a6ff !important;
+    background: transparent !important;
 }
 
-.styled-block.conseils-pratiques-block, .styled-block.practical-tips-block {
+.styled-block.conseils-pratiques-block, 
+.styled-block.practical-tips-block {
     border-left-color: #ffc107;
 }
-.styled-block.conseils-pratiques-block::before, .styled-block.practical-tips-block::before {
+
+.styled-block.conseils-pratiques-block::before, 
+.styled-block.practical-tips-block::before {
     box-shadow: inset 0 0 15px 5px rgba(255, 193, 7, 0.2);
 }
-.styled-block.conseils-pratiques-block .block-title, .styled-block.practical-tips-block .block-title {
+
+.styled-block.conseils-pratiques-block .block-title, 
+.styled-block.practical-tips-block .block-title,
+.styled-block.conseils-pratiques-block .block-title *,
+.styled-block.practical-tips-block .block-title * {
     color: #ffc107 !important;
+    background: transparent !important;
 }
 
 /* --- Icons for Block Titles --- */
-.styled-block.resume-block .block-title::before, .styled-block.summary-block .block-title::before { content: "📋 "; }
-.styled-block.example-block .block-title::before, .styled-block.exemple-pratique-block .block-title::before { content: "🔧 "; }
-.styled-block.conclusion-block .block-title::before { content: "🎯 "; }
-.styled-block.conseils-pratiques-block .block-title::before { content: "💡 "; }
-.styled-block.analogy-block .block-title::before { content: "🤝 "; }
-.styled-block.concept-block .block-title::before { content: "🧠 "; }
+.styled-block.resume-block .block-title::before, 
+.styled-block.summary-block .block-title::before { 
+    content: "📋 "; 
+}
 
+.styled-block.example-block .block-title::before, 
+.styled-block.exemple-pratique-block .block-title::before { 
+    content: "🔧 "; 
+}
+
+.styled-block.conclusion-block .block-title::before { 
+    content: "🎯 "; 
+}
+
+.styled-block.conseils-pratiques-block .block-title::before { 
+    content: "💡 "; 
+}
+
+.styled-block.analogy-block .block-title::before { 
+    content: "🤝 "; 
+}
+
+.styled-block.concept-block .block-title::before { 
+    content: "🧠 "; 
+}
 
 /* --- Child element styling inside special blocks --- */
-.styled-block ul, .styled-block ol {
+.styled-block ul, 
+.styled-block ol {
     margin: 15px 0;
     padding-left: 25px;
+    background: transparent !important;
 }
+
 .styled-block li {
     margin-bottom: 8px;
     line-height: 1.5;
+    color: #F0F0F0 !important;
+    background: transparent !important;
 }
-.styled-block a {
-    color: #58a6ff !important;
-    text-decoration: underline;
-    transition: color 0.3s ease;
-}
-.styled-block a:hover {
-    color: #79c0ff !important;
-    text-decoration: none;
-}
+
 .styled-block table {
     width: 100%;
     border-collapse: collapse;
     margin: 15px 0;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 6px;
     overflow: hidden;
 }
-.styled-block th, .styled-block td {
+
+.styled-block th, 
+.styled-block td {
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
+    color: #F0F0F0 !important;
+    background: transparent !important;
 }
+
 .styled-block th {
-    background: rgba(138, 43, 226, 0.2);
+    background: rgba(138, 43, 226, 0.2) !important;
     font-weight: 600;
+    color: #F0F0F0 !important;
 }
+
 .styled-block code {
     background: #0D1117 !important;
+    color: #F0F0F0 !important;
     padding: 3px 6px;
     border-radius: 4px;
     font-family: 'Consolas', 'Monaco', monospace;
@@ -671,17 +742,62 @@ body {
 
 /* --- Other specific blocks --- */
 .formula {
-    margin: 20px 0; padding: 20px; border-radius: 8px; background: #21262d !important; color: #F0F0F0 !important;
-    border: 1px solid #30363d; border-left: 4px solid #6f42c1; font-family: 'Times New Roman', serif; text-align: center;
+    margin: 20px 0; 
+    padding: 20px; 
+    border-radius: 8px; 
+    background: #21262d !important; 
+    color: #F0F0F0 !important;
+    border: 1px solid #30363d; 
+    border-left: 4px solid #6f42c1; 
+    font-family: 'Times New Roman', serif; 
+    text-align: center;
 }
+
+.formula * {
+    color: #F0F0F0 !important;
+    background: transparent !important;
+}
+
 .quote-block {
-    margin: 20px 0; padding: 16px 20px; border-left: 4px solid #8A2BE2; background: rgba(138, 43, 226, 0.08) !important;
-    font-style: italic; color: #e6edf3 !important; position: relative; border-radius: 8px;
+    margin: 20px 0; 
+    padding: 16px 20px; 
+    border-left: 4px solid #8A2BE2; 
+    background: rgba(138, 43, 226, 0.08) !important;
+    font-style: italic; 
+    color: #e6edf3 !important; 
+    position: relative; 
+    border-radius: 8px;
 }
-.quote-block::before { content: '"'; position: absolute; top: -10px; left: 10px; font-size: 3rem; color: #8A2BE2; opacity: 0.3; }
+
+.quote-block * {
+    color: #e6edf3 !important;
+    background: transparent !important;
+}
+
+.quote-block::before { 
+    content: '"'; 
+    position: absolute; 
+    top: -10px; 
+    left: 10px; 
+    font-size: 3rem; 
+    color: #8A2BE2; 
+    opacity: 0.3; 
+}
+
 .code-block {
-    background: #0D1117 !important; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 20px 0;
-    font-family: 'Consolas', 'Monaco', monospace; color: #F0F0F0 !important; overflow-x: auto;
+    background: #0D1117 !important; 
+    border: 1px solid #30363d; 
+    border-radius: 8px; 
+    padding: 16px; 
+    margin: 20px 0;
+    font-family: 'Consolas', 'Monaco', monospace; 
+    color: #F0F0F0 !important; 
+    overflow-x: auto;
+}
+
+.code-block * {
+    color: #F0F0F0 !important;
+    background: transparent !important;
 }
 
 /* ==========================================================================
