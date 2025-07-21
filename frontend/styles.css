@@ -1,3 +1,6 @@
+/* ==========================================================================
+   1. Global & Base Styles
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +15,9 @@ body {
     overflow-x: hidden;
 }
 
+/* ==========================================================================
+   2. Layout & Header
+   ========================================================================== */
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -46,6 +52,9 @@ body {
     min-height: 70vh;
 }
 
+/* ==========================================================================
+   3. Configuration Panel (Left Sidebar)
+   ========================================================================== */
 .configuration-panel {
     background: #161b22;
     border-radius: 12px;
@@ -55,6 +64,7 @@ body {
     height: fit-content;
 }
 
+/* --- Form Groups & Inputs --- */
 .form-group {
     margin-bottom: 25px;
 }
@@ -67,7 +77,9 @@ body {
     font-size: 0.95rem;
 }
 
-.form-group input, .form-group select, .form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid #30363d;
@@ -78,7 +90,9 @@ body {
     transition: all 0.3s ease;
 }
 
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
     border-color: #8A2BE2;
     box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
@@ -89,7 +103,7 @@ body {
     resize: vertical;
 }
 
-/* Styles pour le bouton sujet aléatoire */
+/* --- Subject Input with Random Button --- */
 .subject-input-container {
     position: relative;
     display: flex;
@@ -139,7 +153,6 @@ body {
     transform: none;
 }
 
-/* Animation pour l'icône */
 .random-subject-btn i {
     transition: transform 0.3s ease;
 }
@@ -148,6 +161,7 @@ body {
     animation: spin 0.8s ease-in-out;
 }
 
+/* --- Radio Button Groups --- */
 .radio-group {
     display: flex;
     flex-direction: column;
@@ -179,6 +193,23 @@ body {
     background: rgba(138, 43, 226, 0.15);
 }
 
+/* Special Radio Option for Hybrid Expert */
+.radio-option[data-level="hybridExpert"] {
+    border: 1px solid #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.radio-option[data-level="hybridExpert"]:hover {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.radio-option[data-level="hybridExpert"].selected {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.15);
+}
+
+/* --- Length Selector Buttons --- */
 .length-selector {
     display: flex;
     gap: 10px;
@@ -209,6 +240,159 @@ body {
     color: white;
 }
 
+/* --- Gauge Slider System --- */
+.gauge-group {
+    margin-bottom: 25px;
+}
+
+.gauge-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.gauge-title {
+    font-weight: 500;
+    color: #F0F0F0;
+    font-size: 0.95rem;
+}
+
+.gauge-value {
+    background: rgba(138, 43, 226, 0.2);
+    border: 1px solid #8A2BE2;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    color: #8A2BE2;
+    font-weight: 500;
+    min-width: 100px;
+    text-align: center;
+}
+
+.gauge-container {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.gauge-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #8A2BE2, #9A3CF2);
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+.gauge-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #21262d;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.gauge-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    cursor: pointer;
+    border: 2px solid #161b22;
+    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
+    transition: all 0.3s ease;
+}
+
+.gauge-slider::-webkit-slider-thumb:hover {
+    background: #9A3CF2;
+    transform: scale(1.1);
+}
+
+.gauge-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    cursor: pointer;
+    border: 2px solid #161b22;
+    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
+}
+
+.gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #8b949e;
+    margin-bottom: 10px;
+}
+
+.gauge-description {
+    background: rgba(138, 43, 226, 0.1);
+    border: 1px solid rgba(138, 43, 226, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #e6edf3;
+}
+
+/* Specific Gauge Styles */
+.detail-gauge .gauge-track {
+    background: linear-gradient(90deg, #28a745, #17a2b8);
+}
+
+.detail-gauge .gauge-slider::-webkit-slider-thumb {
+    background: #17a2b8;
+}
+
+.detail-gauge .gauge-value {
+    background: rgba(23, 162, 184, 0.2);
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+
+.vulgarization-gauge .gauge-track {
+    background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
+}
+
+.vulgarization-gauge .gauge-slider::-webkit-slider-thumb {
+    background: #28a745;
+}
+
+.vulgarization-gauge .gauge-value {
+    background: rgba(40, 167, 69, 0.2);
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.combination-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(138, 43, 226, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.combination-icon {
+    font-size: 1.2rem;
+}
+
+.combination-text {
+    font-size: 0.85rem;
+    color: #e6edf3;
+}
+
+
+/* --- Main Generate Button --- */
 .generate-btn {
     width: 100%;
     padding: 16px;
@@ -239,6 +423,9 @@ body {
     box-shadow: none;
 }
 
+/* ==========================================================================
+   4. Course Display Area (Right Content)
+   ========================================================================== */
 .course-display {
     background: #161b22;
     border-radius: 12px;
@@ -246,6 +433,16 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     border: 1px solid #21262d;
     min-height: 400px;
+}
+
+.course-dimmed {
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.course-dimmed:hover {
+    opacity: 0.5;
 }
 
 .course-actions {
@@ -274,105 +471,440 @@ body {
     background: rgba(138, 43, 226, 0.1);
 }
 
-.course-content {
+/* --- Generic Course Content --- */
+.course-content,
+#generatedCourse {
     line-height: 1.8;
     font-size: 1rem;
+    color: #e6edf3;
 }
 
-.course-content h1 {
+.course-content h1,
+#generatedCourse h1 {
     color: #8A2BE2;
     font-size: 2rem;
     margin-bottom: 20px;
     font-weight: 700;
 }
 
-.course-content h2 {
+.course-content h2,
+#generatedCourse h2 {
     color: #F0F0F0;
     font-size: 1.5rem;
     margin: 30px 0 15px 0;
     font-weight: 600;
 }
 
-.course-content h3 {
+.course-content h3,
+#generatedCourse h3 {
     color: #F0F0F0;
     font-size: 1.2rem;
     margin: 25px 0 12px 0;
     font-weight: 500;
 }
 
-.course-content p {
+.course-content p,
+#generatedCourse p {
     margin-bottom: 15px;
     color: #e6edf3;
 }
 
-.course-content ul, .course-content ol {
+.course-content ul,
+.course-content ol,
+#generatedCourse ul,
+#generatedCourse ol {
     margin: 15px 0;
     padding-left: 30px;
 }
 
-.course-content li {
+.course-content li,
+#generatedCourse li {
     margin-bottom: 8px;
     color: #e6edf3;
 }
 
-/* CORRECTION PRINCIPALE: Blocs spéciaux avec couleurs de texte corrigées */
-.special-block {
+/* --- Group 1: Themed Blocks (Dark BG, Glow Effect) --- */
+/* Common styles for all themed blocks in this group */
+.special-block,
+.resume-block,
+.summary-block,
+.exemple-pratique-block,
+.practical-example-block,
+.conclusion-block,
+.conseils-pratiques-block,
+.practical-tips-block,
+.key-points-block,
+.important-block,
+.note-block,
+.attention-block,
+.block,
+.content-block,
+.text-block {
     margin: 20px 0;
-    padding: 16px;
+    padding: 20px;
     border-radius: 8px;
-    border-left: 4px solid #8A2BE2;
-    color: #F0F0F0 !important; /* Texte clair sur fond sombre */
-    background: rgba(138, 43, 226, 0.1) !important; /* Fond sombre subtil */
+    border-left: 5px solid #8A2BE2;
+    background: #21262d !important;
+    color: #F0F0F0 !important;
+    border: 2px solid #8A2BE2 !important;
+    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-.special-block p,
-.special-block h1,
-.special-block h2,
-.special-block h3,
-.special-block h4,
-.special-block ul,
-.special-block ol,
+.special-block:hover,
+.resume-block:hover,
+.summary-block:hover,
+.exemple-pratique-block:hover,
+.practical-example-block:hover,
+.conclusion-block:hover,
+.conseils-pratiques-block:hover,
+.practical-tips-block:hover,
+.key-points-block:hover,
+.important-block:hover,
+.note-block:hover,
+.attention-block:hover,
+.block:hover,
+.content-block:hover,
+.text-block:hover {
+    transform: translateX(3px);
+    box-shadow: 0 6px 25px rgba(138, 43, 226, 0.4);
+}
+
+/* Glow effect for Group 1 blocks */
+.special-block::before,
+.resume-block::before,
+.summary-block::before,
+.exemple-pratique-block::before,
+.practical-example-block::before,
+.conclusion-block::before,
+.conseils-pratiques-block::before,
+.practical-tips-block::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #8A2BE2, #9A3CF2, #8A2BE2);
+    border-radius: 8px;
+    opacity: 0.2;
+    z-index: -1;
+    filter: blur(4px);
+}
+
+/* Force clear text on all child elements of Group 1 blocks */
+.special-block *,
+.resume-block *,
+.summary-block *,
+.exemple-pratique-block *,
+.practical-example-block *,
+.conclusion-block *,
+.conseils-pratiques-block *,
+.practical-tips-block *,
+.key-points-block *,
+.important-block *,
+.note-block *,
+.attention-block *,
+.block *,
+.content-block *,
+.text-block * {
+    color: #F0F0F0 !important;
+    font-weight: inherit;
+}
+
+/* Common title style for Group 1 blocks */
+.special-block .block-title,
+.resume-block .block-title,
+.summary-block .block-title,
+.exemple-pratique-block .block-title,
+.practical-example-block .block-title,
+.conclusion-block .block-title,
+.conseils-pratiques-block .block-title,
+.practical-tips-block .block-title,
+.block-title {
+    font-weight: 600;
+    color: #8A2BE2 !important;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+    font-size: 1.1rem;
+}
+
+
+/* Overrides for specific blocks in Group 1 */
+.exemple-pratique-block,
+.practical-example-block {
+    border-color: #007BFF !important;
+    border-left-color: #007BFF;
+}
+
+.conclusion-block {
+    border-color: #28a745 !important;
+    border-left-color: #28a745;
+}
+
+.conclusion-block::before {
+    background: linear-gradient(45deg, #28a745, #20c997, #28a745);
+}
+
+.conclusion-block .block-title {
+    color: #40e0d0 !important;
+    text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.conseils-pratiques-block,
+.practical-tips-block {
+    border-color: #ffc107 !important;
+    border-left-color: #ffc107;
+}
+
+.conseils-pratiques-block::before,
+.practical-tips-block::before {
+    background: linear-gradient(45deg, #ffc107, #fd7e14, #ffc107);
+}
+
+.conseils-pratiques-block .block-title,
+.practical-tips-block .block-title {
+    color: #ffc107 !important;
+    text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+/* Icons for Group 1 block titles */
+.resume-block .block-title::before,
+.summary-block .block-title::before {
+    content: "📋 ";
+}
+
+.exemple-pratique-block .block-title::before,
+.practical-example-block .block-title::before,
+.example-block .block-title::before {
+    content: "🔧 ";
+}
+
+.conclusion-block .block-title::before {
+    content: "🎯 ";
+}
+
+.conseils-pratiques-block .block-title::before,
+.practical-tips-block .block-title::before {
+    content: "💡 ";
+}
+
+.concept-block .block-title::before {
+    content: "🎯 ";
+}
+
+.analogy-block .block-title::before {
+    content: "💡 ";
+}
+
+
+/* Common styles for child elements inside Group 1 Blocks */
+.special-block ul, .special-block ol,
+.resume-block ul, .resume-block ol,
+.exemple-pratique-block ul, .exemple-pratique-block ol,
+.conclusion-block ul, .conclusion-block ol,
+.conseils-pratiques-block ul, .conseils-pratiques-block ol {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
 .special-block li,
-.special-block span,
-.special-block strong,
-.special-block em {
-    color: #F0F0F0 !important; /* Force le texte clair */
+.resume-block li,
+.exemple-pratique-block li,
+.conclusion-block li,
+.conseils-pratiques-block li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.special-block a,
+.resume-block a,
+.exemple-pratique-block a,
+.conclusion-block a,
+.conseils-pratiques-block a,
+.formula a {
+    color: #58a6ff !important;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.special-block a:hover,
+.resume-block a:hover,
+.exemple-pratique-block a:hover,
+.conclusion-block a:hover,
+.conseils-pratiques-block a:hover,
+.formula a:hover {
+    color: #79c0ff !important;
+    text-decoration: none;
+}
+
+.special-block table,
+.resume-block table,
+.exemple-pratique-block table,
+.conclusion-block table,
+.conseils-pratiques-block table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.special-block th, .special-block td,
+.resume-block th, .resume-block td,
+.exemple-pratique-block th, .exemple-pratique-block td,
+.conclusion-block th, .conclusion-block td,
+.conseils-pratiques-block th, .conseils-pratiques-block td {
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: left;
+}
+
+.special-block th,
+.resume-block th,
+.exemple-pratique-block th,
+.conclusion-block th,
+.conseils-pratiques-block th {
+    background: rgba(138, 43, 226, 0.3);
+    font-weight: 600;
+}
+
+.special-block code,
+.resume-block code,
+.exemple-pratique-block code,
+.conclusion-block code,
+.conseils-pratiques-block code {
+    background: #0D1117 !important;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Group 2: Alert-style Blocks (Lighter BG, Colored Border) --- */
+.analogy-block,
+.example-block,
+.concept-block,
+.vulgarisation-simple-block,
+.daily-analogy-block,
+.simple-terms-block,
+.concrete-example-block,
+.mental-schema-block,
+.quote-block,
+.highlight-block,
+.warning-block,
+.info-block,
+.success-block {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    color: #F0F0F0 !important;
+    border-left-width: 4px;
+    border-left-style: solid;
 }
 
 .analogy-block {
     background: rgba(138, 43, 226, 0.1) !important;
-    color: #F0F0F0 !important;
     border: 1px solid rgba(138, 43, 226, 0.3);
+    border-left-color: #8A2BE2;
 }
 
 .example-block {
     background: rgba(0, 123, 255, 0.1) !important;
-    border-left-color: #007BFF;
-    color: #F0F0F0 !important;
     border: 1px solid rgba(0, 123, 255, 0.3);
+    border-left-color: #007BFF;
 }
 
 .concept-block {
     background: rgba(40, 167, 69, 0.1) !important;
-    border-left-color: #28a745;
-    color: #F0F0F0 !important;
     border: 1px solid rgba(40, 167, 69, 0.3);
+    border-left-color: #28a745;
 }
 
-/* Titre des blocs avec couleur contrastée */
-.block-title {
-    font-weight: 600;
-    color: #8A2BE2 !important; /* Titre coloré pour différencier */
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+.vulgarisation-simple-block {
+    background: rgba(220, 53, 69, 0.1) !important;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-left-color: #dc3545;
 }
 
-/* Formules mathématiques avec thème sombre */
+.daily-analogy-block {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-left-color: #ffc107;
+}
+
+.simple-terms-block {
+    background: rgba(23, 162, 184, 0.1) !important;
+    border: 1px solid rgba(23, 162, 184, 0.3);
+    border-left-color: #17a2b8;
+}
+
+.concrete-example-block {
+    background: rgba(40, 167, 69, 0.1) !important;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    border-left-color: #28a745;
+}
+
+.mental-schema-block {
+    background: rgba(111, 66, 193, 0.1) !important;
+    border: 1px solid rgba(111, 66, 193, 0.3);
+    border-left-color: #6f42c1;
+}
+
+.highlight-block {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-left-color: #ffc107;
+}
+
+.warning-block {
+    background: rgba(220, 53, 69, 0.1) !important;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    border-left-color: #dc3545;
+}
+
+.info-block {
+    background: rgba(23, 162, 184, 0.1) !important;
+    border: 1px solid rgba(23, 162, 184, 0.3);
+    border-left-color: #17a2b8;
+}
+
+.success-block {
+    background: rgba(40, 167, 69, 0.1) !important;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    border-left-color: #28a745;
+}
+
+.quote-block {
+    background: rgba(138, 43, 226, 0.08) !important;
+    padding: 16px 20px;
+    font-style: italic;
+    color: #e6edf3 !important;
+    position: relative;
+    border-left-color: #8A2BE2;
+}
+
+.quote-block::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 3rem;
+    color: #8A2BE2;
+    opacity: 0.3;
+}
+
+
+/* --- Other Themed Blocks --- */
 .formula {
-    background: #21262d !important; /* Fond sombre */
+    background: #21262d !important;
     border: 2px solid #8A2BE2 !important;
     padding: 20px;
     border-radius: 8px;
@@ -380,12 +912,12 @@ body {
     margin: 20px 0;
     font-family: 'Times New Roman', serif;
     font-size: 1.2rem;
-    color: #F0F0F0 !important; /* Texte clair */
+    color: #F0F0F0 !important;
     box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
     position: relative;
     overflow: hidden;
 }
-/* Effet de lueur subtile pour les formules */
+
 .formula::before {
     content: '';
     position: absolute;
@@ -399,174 +931,6 @@ body {
     z-index: -1;
     filter: blur(4px);
 }
-/* Tous les éléments dans les formules */
-.formula p,
-.formula span,
-.formula strong,
-.formula em,
-.formula sub,
-.formula sup {
-    color: #F0F0F0 !important;
-    font-weight: 500;
-}
-/* Blocs de code améliorés */
-.code-block {
-    background: #0D1117 !important;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 16px;
-    margin: 20px 0;
-    font-family: 'Consolas', 'Monaco', monospace;
-    color: #F0F0F0 !important;
-    overflow-x: auto;
-}
-/* Citations avec style sombre */
-.quote-block {
-    background: rgba(138, 43, 226, 0.08) !important;
-    border-left: 4px solid #8A2BE2;
-    padding: 16px 20px;
-    margin: 20px 0;
-    font-style: italic;
-    color: #e6edf3 !important;
-    position: relative;
-}
-
-.quote-block::before {
-    content: '"';
-    position: absolute;
-    top: -10px;
-    left: 10px;
-    font-size: 3rem;
-    color: #8A2BE2;
-    opacity: 0.3;
-}
-
-/* Points clés / Highlights avec thème sombre */
-.highlight-block {
-    background: rgba(255, 193, 7, 0.1) !important;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 15px 0;
-    color: #F0F0F0 !important;
-}
-
-/* Blocs d'avertissement */
-.warning-block {
-    background: rgba(220, 53, 69, 0.1) !important;
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    border-left: 4px solid #dc3545;
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 15px 0;
-    color: #F0F0F0 !important;
-}
-
-/* Blocs d'information */
-.info-block {
-    background: rgba(23, 162, 184, 0.1) !important;
-    border: 1px solid rgba(23, 162, 184, 0.3);
-    border-left: 4px solid #17a2b8;
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 15px 0;
-    color: #F0F0F0 !important;
-}
-
-/* Blocs de succès */
-.success-block {
-    background: rgba(40, 167, 69, 0.1) !important;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-    border-left: 4px solid #28a745;
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 15px 0;
-    color: #F0F0F0 !important;
-}
-/* S'assurer que le contenu du cours garde un bon contraste */
-#generatedCourse {
-    color: #e6edf3;
-}
-
-#generatedCourse h1,
-#generatedCourse h2,
-#generatedCourse h3,
-#generatedCourse h4 {
-    color: #F0F0F0;
-}
-
-#generatedCourse p,
-#generatedCourse li {
-    color: #e6edf3;
-}
-
-/* Liens dans les blocs - adaptés au thème sombre */
-.special-block a,
-.formula a {
-    color: #58a6ff !important; /* Bleu clair pour les liens */
-    text-decoration: underline;
-}
-
-.special-block a:hover,
-.formula a:hover {
-    color: #79c0ff !important;
-    text-decoration: none;
-}
-
-/* Tables dans les blocs avec thème sombre */
-.special-block table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-}
-
-.special-block th,
-.special-block td {
-    padding: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #F0F0F0 !important;
-}
-
-.special-block th {
-    background: rgba(138, 43, 226, 0.2);
-    font-weight: 600;
-}
-
-/* Listes dans les blocs */
-.special-block ul,
-.special-block ol {
-    margin: 10px 0;
-    padding-left: 25px;
-}
-
-.special-block li {
-    margin-bottom: 5px;
-    color: #F0F0F0 !important;
-}
-
-/* Amélioration des bordures gauches pour meilleure visibilité */
-.special-block {
-    border-left-width: 5px;
-    transition: all 0.3s ease;
-}
-
-.special-block:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
-}
-
-/* Icônes optionnelles pour différents types de blocs */
-.analogy-block .block-title::before {
-    content: "💡 ";
-}
-
-.example-block .block-title::before {
-    content: "📝 ";
-}
-
-.concept-block .block-title::before {
-    content: "🎯 ";
-}
 
 .formula::after {
     content: "📐";
@@ -577,6 +941,25 @@ body {
     font-size: 1.5rem;
 }
 
+.formula * {
+    color: #F0F0F0 !important;
+    font-weight: 500;
+}
+
+.code-block {
+    background: #0D1117 !important;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #F0F0F0 !important;
+    overflow-x: auto;
+}
+
+/* ==========================================================================
+   5. Chat Interface
+   ========================================================================== */
 .chat-interface {
     background: #21262d;
     border-radius: 8px;
@@ -586,11 +969,47 @@ body {
     position: relative;
 }
 
+.chat-interface::before {
+    content: attr(data-level);
+    position: absolute;
+    top: -25px;
+    right: 0;
+    background: rgba(138, 43, 226, 0.1);
+    color: #8A2BE2;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.chat-interface[data-level="beginner"]::before {
+    content: "🟢 Mode Débutant";
+}
+
+.chat-interface[data-level="intermediate"]::before {
+    content: "🟡 Mode Intermédiaire";
+}
+
+.chat-interface[data-level="expert"]::before {
+    content: "🔴 Mode Expert";
+}
+
+.chat-interface[data-level="hybrid"]::before {
+    content: "🟣 Mode Hybride";
+}
+
+.chat-interface[data-level="hybridExpert"]::before {
+    content: "🔴 Mode Hybride Expert";
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
 .chat-messages {
     max-height: 200px;
     overflow-y: auto;
     margin-bottom: 15px;
-    display: none; /* Initially hidden */
+    display: none;
+    /* Initially hidden */
 }
 
 .chat-message {
@@ -600,18 +1019,6 @@ body {
     max-width: 80%;
     position: relative;
     animation: messageSlideIn 0.3s ease;
-}
-
-
-@keyframes messageSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .chat-message.user {
@@ -633,13 +1040,17 @@ body {
     color: #ff6b6b;
 }
 
-/* Messages de suggestions */
 .chat-message.suggestions {
     background: rgba(138, 43, 226, 0.1);
     border: 1px solid rgba(138, 43, 226, 0.3);
     border-radius: 8px;
     margin: 15px 0;
     max-width: 90%;
+}
+
+.chat-message.typing {
+    background: rgba(138, 43, 226, 0.1);
+    border: 1px solid rgba(138, 43, 226, 0.2);
 }
 
 .suggestion-buttons {
@@ -667,7 +1078,6 @@ body {
     transform: translateX(5px);
 }
 
-/* Badges pour les messages */
 .message-badges {
     display: flex;
     gap: 6px;
@@ -687,17 +1097,6 @@ body {
     animation: badgeAppear 0.5s ease 0.3s both;
 }
 
-@keyframes badgeAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
 .course-badge {
     background: linear-gradient(135deg, #8A2BE2, #9A3CF2);
 }
@@ -708,6 +1107,10 @@ body {
 
 .level-badge {
     background: #6c757d;
+}
+
+.message-badge.hybrid-expert-badge {
+    background: linear-gradient(135deg, #dc3545, #c82333);
 }
 
 .typing-dots {
@@ -729,18 +1132,12 @@ body {
     animation: typing 1.4s infinite ease-in-out;
 }
 
-.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes typing {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
+.typing-dots span:nth-child(1) {
+    animation-delay: -0.32s;
 }
 
-/* Amélioration du typing indicator */
-.chat-message.typing {
-    background: rgba(138, 43, 226, 0.1);
-    border: 1px solid rgba(138, 43, 226, 0.2);
+.typing-dots span:nth-child(2) {
+    animation-delay: -0.16s;
 }
 
 .chat-input-container {
@@ -809,7 +1206,6 @@ body {
     animation: spin 1s linear infinite;
 }
 
-/* Bouton d'effacement du chat */
 .clear-chat-btn {
     padding: 8px 12px;
     border: 1px solid #30363d;
@@ -831,133 +1227,32 @@ body {
     color: #dc3545;
 }
 
-/* Indicateur de niveau dans l'interface */
-.chat-interface::before {
-    content: attr(data-level);
-    position: absolute;
-    top: -25px;
-    right: 0;
-    background: rgba(138, 43, 226, 0.1);
-    color: #8A2BE2;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
 }
 
-.chat-interface[data-level="beginner"]::before {
-    content: "🟢 Mode Débutant";
-}
-
-.chat-interface[data-level="intermediate"]::before {
-    content: "🟡 Mode Intermédiaire";
-}
-
-.chat-interface[data-level="expert"]::before {
-    content: "🔴 Mode Expert";
-}
-
-.chat-interface[data-level="hybrid"]::before {
-    content: "🟣 Mode Hybride";
-}
-
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    color: #8b949e;
-}
-
-.loading-spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #30363d;
-    border-top: 2px solid #8A2BE2;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 10px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #8b949e;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: #30363d;
-}
-
-.tabs {
-    display: flex;
-    border-bottom: 1px solid #21262d;
-    margin-bottom: 20px;
-}
-
-.tab {
-    padding: 12px 20px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-    color: #8b949e;
-}
-
-.tab.active {
-    color: #8A2BE2;
-    border-bottom-color: #8A2BE2;
-}
-
-.tab:hover {
-    color: #F0F0F0;
-}
-
-.history-item {
+.chat-messages::-webkit-scrollbar-track {
     background: #21262d;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid #30363d;
+    border-radius: 3px;
 }
 
-.history-item:hover {
-    border-color: #8A2BE2;
-    background: rgba(138, 43, 226, 0.1);
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 3px;
 }
 
-.history-item h4 {
-    color: #F0F0F0;
-    margin-bottom: 5px;
-    font-weight: 500;
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #8A2BE2;
 }
 
-.history-item p {
-    color: #8b949e;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-}
-
-.history-item small {
-    color: #6e7681;
-    font-size: 0.8rem;
-}
-
-/* Styles pour le quiz */
+/* ==========================================================================
+   6. Quiz System
+   ========================================================================== */
 #quizSection {
     margin-bottom: 30px;
-    order: 0; /* Place le quiz avant le cours dans l'ordre d'affichage */
+    order: 0;
 }
 
-/* Container principal du quiz */
 .quiz-container {
     background: #161b22;
     border-radius: 12px;
@@ -969,18 +1264,6 @@ body {
     animation: quizSlideIn 0.5s ease;
 }
 
-@keyframes quizSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Header du quiz avec bouton de fermeture */
 .quiz-header {
     background: linear-gradient(135deg, #8A2BE2, #9A3CF2);
     color: white;
@@ -1015,7 +1298,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Questions du quiz */
 .quiz-question {
     padding: 25px;
     border-bottom: 1px solid #30363d;
@@ -1038,7 +1320,6 @@ body {
     line-height: 1.4;
 }
 
-/* Options du quiz */
 .quiz-options {
     display: grid;
     grid-template-columns: 1fr;
@@ -1112,14 +1393,12 @@ body {
     width: 100%;
 }
 
-/* Désactiver les options après sélection */
 .quiz-option:disabled,
 .quiz-option[style*="pointer-events: none"] {
     cursor: not-allowed;
     opacity: 0.8;
 }
 
-/* Explications */
 .quiz-explanation {
     margin-top: 20px;
     padding: 18px;
@@ -1132,18 +1411,6 @@ body {
     animation: explanationSlideIn 0.5s ease;
 }
 
-@keyframes explanationSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Score final */
 .quiz-score {
     text-align: center;
     padding: 30px 25px;
@@ -1151,41 +1418,6 @@ body {
     margin: 0;
     border-top: 2px solid #8A2BE2;
     animation: scoreAppear 0.8s ease;
-}
-
-/* Styles améliorés pour les boutons du quiz */
-.quiz-actions .generate-btn[disabled] {
-    background: linear-gradient(135deg, #6c757d, #5a6268);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.quiz-actions .generate-btn[disabled]:hover {
-    background: linear-gradient(135deg, #6c757d, #5a6268);
-    transform: none;
-}
-
-/* Animation pour le bouton de rechargement */
-.quiz-actions .generate-btn.loading {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-@keyframes scoreAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }
 
 .quiz-score h3 {
@@ -1215,6 +1447,15 @@ body {
     background: linear-gradient(135deg, #20c997, #17a2b8);
 }
 
+.quiz-actions .generate-btn[disabled] {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    cursor: not-allowed;
+}
+
+.quiz-actions .generate-btn.loading {
+    animation: pulse 1.5s infinite;
+}
+
 .quiz-actions .action-btn {
     background: #6c757d;
     color: white;
@@ -1229,37 +1470,94 @@ body {
     transform: translateY(-1px);
 }
 
-/* Scrollbar personnalisée pour le chat */
-.chat-messages::-webkit-scrollbar {
-    width: 6px;
+/* ==========================================================================
+   7. Utility & History
+   ========================================================================== */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #21262d;
+    margin-bottom: 20px;
 }
 
-.chat-messages::-webkit-scrollbar-track {
+.tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    color: #8b949e;
+}
+
+.tab.active {
+    color: #8A2BE2;
+    border-bottom-color: #8A2BE2;
+}
+
+.tab:hover {
+    color: #F0F0F0;
+}
+
+.history-item {
     background: #21262d;
-    border-radius: 3px;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #30363d;
 }
 
-.chat-messages::-webkit-scrollbar-thumb {
-    background: #30363d;
-    border-radius: 3px;
+.history-item:hover {
+    border-color: #8A2BE2;
+    background: rgba(138, 43, 226, 0.1);
 }
 
-.chat-messages::-webkit-scrollbar-thumb:hover {
-    background: #8A2BE2;
+.history-item h4 {
+    color: #F0F0F0;
+    margin-bottom: 5px;
+    font-weight: 500;
 }
 
-/* Indicateur visuel que le cours est en arrière-plan */
-.course-dimmed {
-    opacity: 0.3;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+.history-item p {
+    color: #8b949e;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
 }
 
-.course-dimmed:hover {
-    opacity: 0.5;
+.history-item small {
+    color: #6e7681;
+    font-size: 0.8rem;
 }
 
-/* Système de notifications */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #8b949e;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #30363d;
+    border-top: 2px solid #8A2BE2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #8b949e;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #30363d;
+}
+
 .notification {
     position: fixed;
     top: 20px;
@@ -1280,6 +1578,96 @@ body {
     background: #dc3545;
 }
 
+/* ==========================================================================
+   8. Animations
+   ========================================================================== */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes badgeAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes typing {
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+@keyframes quizSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes explanationSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scoreAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 @keyframes slideIn {
     from {
         transform: translateX(100%);
@@ -1291,306 +1679,91 @@ body {
     }
 }
 
-/* CORRECTION: Nouveaux blocs spéciaux avec couleurs corrigées */
-.vulgarisation-simple-block {
-    background: rgba(220, 53, 69, 0.1) !important;
-    border-left-color: #dc3545;
-    color: #F0F0F0 !important;
-    border: 1px solid rgba(220, 53, 69, 0.3);
-}
 
-.daily-analogy-block {
-    background: rgba(255, 193, 7, 0.1) !important;
-    border-left-color: #ffc107;
-    color: #F0F0F0 !important;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-.simple-terms-block {
-    background: rgba(23, 162, 184, 0.1) !important;
-    border-left-color: #17a2b8;
-    color: #F0F0F0 !important;
-    border: 1px solid rgba(23, 162, 184, 0.3);
-}
-
-.concrete-example-block {
-    background: rgba(40, 167, 69, 0.1) !important;
-    border-left-color: #28a745;
-    color: #F0F0F0 !important;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-}
-
-.mental-schema-block {
-    background: rgba(111, 66, 193, 0.1) !important;
-    border-left-color: #6f42c1;
-    color: #F0F0F0 !important;
-    border: 1px solid rgba(111, 66, 193, 0.3);
-}
-
-
-/* Nouvelle option radio pour hybride expert */
-.radio-option[data-level="hybridExpert"] {
-    border: 1px solid #dc3545;
-    background: rgba(220, 53, 69, 0.05);
-}
-
-.radio-option[data-level="hybridExpert"]:hover {
-    border-color: #dc3545;
-    background: rgba(220, 53, 69, 0.1);
-}
-
-.radio-option[data-level="hybridExpert"].selected {
-    border-color: #dc3545;
-    background: rgba(220, 53, 69, 0.15);
-}
-
-/* Badge pour le mode hybride expert */
-.chat-interface[data-level="hybridExpert"]::before {
-    content: "🔴 Mode Hybride Expert";
-    background: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-}
-
-/* Style pour le badge de niveau hybride expert */
-.message-badge.hybrid-expert-badge {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-}
-
-/* === SYSTÈME DE JAUGES === */
-.gauge-group {
-    margin-bottom: 25px;
-}
-
-.gauge-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.gauge-title {
-    font-weight: 500;
-    color: #F0F0F0;
-    font-size: 0.95rem;
-}
-
-.gauge-value {
-    background: rgba(138, 43, 226, 0.2);
-    border: 1px solid #8A2BE2;
-    border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 0.85rem;
-    color: #8A2BE2;
-    font-weight: 500;
-    min-width: 100px;
-    text-align: center;
-}
-
-.gauge-container {
-    position: relative;
-    margin-bottom: 8px;
-}
-
-.gauge-slider {
-    width: 100%;
-    height: 6px;
-    border-radius: 3px;
-    background: #21262d;
-    outline: none;
-    -webkit-appearance: none;
-    appearance: none;
-    cursor: pointer;
-}
-
-.gauge-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #8A2BE2;
-    cursor: pointer;
-    border: 2px solid #161b22;
-    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
-    transition: all 0.3s ease;
-}
-
-.gauge-slider::-webkit-slider-thumb:hover {
-    background: #9A3CF2;
-    transform: scale(1.1);
-}
-
-.gauge-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #8A2BE2;
-    cursor: pointer;
-    border: 2px solid #161b22;
-    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.3);
-}
-
-.gauge-track {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 6px;
-    background: linear-gradient(90deg, #8A2BE2, #9A3CF2);
-    border-radius: 3px;
-    transition: width 0.3s ease;
-    pointer-events: none;
-}
-
-.gauge-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: #8b949e;
-    margin-bottom: 10px;
-}
-
-.gauge-description {
-    background: rgba(138, 43, 226, 0.1);
-    border: 1px solid rgba(138, 43, 226, 0.2);
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    color: #e6edf3;
-}
-
-/* Styles spécifiques pour chaque jauge */
-.detail-gauge .gauge-track {
-    background: linear-gradient(90deg, #28a745, #17a2b8);
-}
-
-.detail-gauge .gauge-slider::-webkit-slider-thumb {
-    background: #17a2b8;
-}
-
-.detail-gauge .gauge-value {
-    background: rgba(23, 162, 184, 0.2);
-    border-color: #17a2b8;
-    color: #17a2b8;
-}
-
-.vulgarization-gauge .gauge-track {
-    background: linear-gradient(90deg, #dc3545, #ffc107, #28a745);
-}
-
-.vulgarization-gauge .gauge-slider::-webkit-slider-thumb {
-    background: #28a745;
-}
-
-.vulgarization-gauge .gauge-value {
-    background: rgba(40, 167, 69, 0.2);
-    border-color: #28a745;
-    color: #28a745;
-}
-
-.combination-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 15px;
-    padding: 10px;
-    background: rgba(138, 43, 226, 0.1);
-    border-radius: 6px;
-    border: 1px solid rgba(138, 43, 226, 0.2);
-}
-
-.combination-icon {
-    font-size: 1.2rem;
-}
-
-.combination-text {
-    font-size: 0.85rem;
-    color: #e6edf3;
-}
-
-/* Responsive Design */
+/* ==========================================================================
+   9. Responsive Design
+   ========================================================================== */
 @media (max-width: 1024px) {
     .main-content {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
     .configuration-panel {
         order: 1;
     }
-    
     .course-display {
         order: 2;
     }
-    
     .chat-input-container {
         flex-direction: column;
         align-items: stretch;
     }
-    
     .chat-send-btn {
         align-self: flex-end;
         width: 100px;
     }
-        .special-block,
-    .formula {
-        margin: 15px -10px;
-        border-radius: 0;
-    }
-    
-    .formula {
-        font-size: 1rem;
-        padding: 12px;
-    }
-
 }
 
 @media (max-width: 768px) {
+    /* --- Themed Blocks --- */
+    .special-block,
+    .resume-block,
+    .exemple-pratique-block,
+    .conclusion-block,
+    .conseils-pratiques-block,
+    .formula {
+        margin: 15px -10px;
+        border-radius: 0;
+        padding: 15px;
+    }
+    .special-block .block-title,
+    .resume-block .block-title,
+    .exemple-pratique-block .block-title,
+    .conclusion-block .block-title,
+    .conseils-pratiques-block .block-title {
+        font-size: 1rem;
+    }
+    .formula {
+        font-size: 1rem;
+    }
+    /* --- Quiz --- */
     .quiz-header {
         padding: 15px;
     }
-    
     .quiz-header h3 {
         font-size: 1.1rem;
     }
-    
     .quiz-question {
         padding: 15px;
     }
-    
     .quiz-actions {
         flex-direction: column;
         align-items: center;
     }
-    
     .quiz-actions .generate-btn,
     .quiz-actions .action-btn {
         width: 100%;
         max-width: 200px;
     }
-    
+    /* --- Chat --- */
     .clear-chat-btn {
         align-self: flex-end;
         width: auto;
     }
-    
     .suggestion-buttons {
         max-height: 200px;
         overflow-y: auto;
     }
-    
     .message-badges {
         justify-content: flex-start;
     }
-    
     .chat-message {
         max-width: 95%;
     }
-    
+    /* --- Gauges --- */
     .gauge-labels {
         font-size: 0.7rem;
     }
-    
     .gauge-description {
         font-size: 0.8rem;
     }
