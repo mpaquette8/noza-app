@@ -1006,27 +1006,30 @@ async function resetQuiz() {
     }
 }
 
-// === GESTION DES JAUGES ===
+// === GESTION DES JAUGES - CORRECTION ===
 const detailLevels = {
     1: { name: 'Synthèse', description: 'Cours concis avec les points essentiels.' },
     2: { name: 'Détaillé', description: 'Cours complet avec explications approfondies.' },
     3: { name: 'Exhaustif', description: 'Analyse très complète avec références.' }
 };
 
+// CORRECTION : Inverser l'ordre pour correspondre à l'interface HTML
 const vulgarizationLevels = {
-    1: { name: 'Expert', description: 'Vocabulaire spécialisé pour professionnels du domaine.' },
-    2: { name: 'Technique', description: 'Approche technique avec explications des termes spécialisés.' },
-    3: { name: 'Accessible', description: 'Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.' },
-    4: { name: 'Grand Public', description: 'Langage simple, vulgarisation complète accessible à tous.' }
+    1: { name: 'Grand Public', description: 'Langage simple, vulgarisation complète accessible à tous.' },
+    2: { name: 'Accessible', description: 'Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.' },
+    3: { name: 'Technique', description: 'Approche technique avec explications des termes spécialisés.' },
+    4: { name: 'Expert', description: 'Vocabulaire spécialisé pour professionnels du domaine.' }
 };
 
+// CORRECTION : Ajuster les combinaisons avec les nouveaux ordres
 const combinations = {
-    '1-1': { icon: '⚡', text: 'Synthèse expert - Résumé technique' },
-    '1-4': { icon: '🎯', text: 'Synthèse grand public - Vue d\'ensemble accessible' },
-    '2-2': { icon: '🔧', text: 'Cours technique détaillé' },
-    '2-3': { icon: '🎯', text: 'Cours détaillé et accessible' },
-    '3-1': { icon: '🎓', text: 'Analyse exhaustive expert' },
-    '3-4': { icon: '📚', text: 'Guide complet grand public' }
+    '1-1': { icon: '🎯', text: 'Synthèse grand public - Vue d\'ensemble accessible' },
+    '1-4': { icon: '⚡', text: 'Synthèse expert - Résumé technique' },
+    '2-1': { icon: '📚', text: 'Guide détaillé grand public' },
+    '2-2': { icon: '🎯', text: 'Cours détaillé et accessible' },
+    '2-3': { icon: '🔧', text: 'Cours technique détaillé' },
+    '3-1': { icon: '📖', text: 'Manuel complet grand public' },
+    '3-4': { icon: '🎓', text: 'Analyse exhaustive expert' }
 };
 
 function updateDetailGauge() {
@@ -1066,7 +1069,7 @@ function updateCombination() {
     
     const combination = combinations[key] || { 
         icon: '⚙️', 
-        text: `Configuration personnalisée` 
+        text: `Configuration personnalisée (Détail: ${detailLevels[detailVal].name}, Vulgarisation: ${vulgarizationLevels[vulgarVal].name})` 
     };
     
     document.querySelector('.combination-icon').textContent = combination.icon;
