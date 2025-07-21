@@ -41,7 +41,7 @@ STRUCTURE REQUISE :
 
 VOICI LES CLASSES CSS QUE TU DOIS ABSOLUMENT UTILISER :
 
-1. BLOC GÉNÉRIQUE (pour introduction, concepts de base) :
+1. BLOC GÉNÉRIQUE (pour introduction, concepts de base, pour aller plus loin) :
 <div class="styled-block">
     <div class="block-title">Titre de la section</div>
     <p>Contenu...</p>
@@ -99,6 +99,7 @@ RÈGLES IMPORTANTES :
 - TOUJOURS inclure un <div class="block-title"> dans chaque bloc styled-block
 - TOUJOURS essayer d'interpreter les differents blocs d'une formule mathématique
 - TOUJOURS faire un cours complet avec un début et une fin
+- TOUJOURS ajouter un bloc après la conclusion "Pour aller plus loin": proposer 2 ou 3 questions et cours pour rentrer dans un des détails de ce cours.
 - NE JAMAIS inclure une formule mathématique dans un autre bloc que "FORMULE MATHÉMATIQUE"
 - NE JAMAIS inclure du code informatique dans un autre bloc que "CODE"
 - Le titre H1 reste en dehors des blocs
