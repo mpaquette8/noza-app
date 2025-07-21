@@ -42,8 +42,8 @@ function initializeApp() {
 
 async function generateCourse() {
     const subject = document.getElementById('subject').value.trim();
-    const level = document.querySelector('input[name="level"]:checked').value;
-    const length = document.querySelector('.length-btn.active').dataset.length;
+    const detailLevel = document.getElementById('detailSlider').value;
+    const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
 
     if (!subject) {
         alert('Veuillez entrer un sujet pour le cours');
@@ -61,7 +61,11 @@ async function generateCourse() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ subject, level, length })
+            body: JSON.stringify({ 
+                subject, 
+                detailLevel: parseInt(detailLevel),
+                vulgarizationLevel: parseInt(vulgarizationLevel)
+            })
         });
 
         const data = await response.json();
