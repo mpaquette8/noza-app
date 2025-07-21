@@ -14,11 +14,9 @@ let currentCourse = null;
 let history = JSON.parse(localStorage.getItem('noza-history') || '[]');
 
 // Initialisation
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-    loadHistory();
-    initializeLucide();
-});
+initializeApp();
+loadHistory();
+initializeLucide();
 
 function initializeApp() {
     // Vos event listeners existants...
