@@ -57,7 +57,8 @@ function initializeApp() {
 
 async function generateCourse() {
     const subject = document.getElementById('subject').value.trim();
-    const level = document.querySelector('input[name="level"]:checked')?.value;
+    const detailLevel = document.getElementById('detailSlider').value;
+    const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
     const length = document.querySelector('.length-btn.active')?.dataset.length;
 
     if (!subject) {
@@ -65,8 +66,8 @@ async function generateCourse() {
         return;
     }
 
-    if (!level || !length) {
-        showNotification('Veuillez sélectionner le niveau et la longueur', 'error');
+    if (!length) {
+        showNotification('Veuillez sélectionner la longueur', 'error');
         return;
     }
 
@@ -81,7 +82,12 @@ async function generateCourse() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ subject, level, length })
+            body: JSON.stringify({ 
+                subject, 
+                detailLevel: parseInt(detailLevel),
+                vulgarizationLevel: parseInt(vulgarizationLevel),
+                length 
+            })
         });
 
         const data = await response.json();
@@ -99,7 +105,6 @@ async function generateCourse() {
         console.error('Erreur:', error);
         showNotification('Erreur lors de la génération du cours: ' + error.message, 'error');
     } finally {
-        // Remettre le bouton en état normal
         generateBtn.disabled = false;
         generateBtn.innerHTML = '<i data-lucide="sparkles"></i>Générer le cours';
         initializeLucide();
