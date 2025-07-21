@@ -112,15 +112,6 @@
                         <p>Configurez votre cours dans le panneau de gauche et cliquez sur "Générer le cours" pour commencer.</p>
                     </div>
                     <div class="course-content" id="courseContent" style="display: none;">
-                        <div class="chat-interface">
-                            <div class="chat-messages" id="chatMessages"></div>
-                            <div class="chat-input-container">
-                                <textarea class="chat-input" id="chatInput" placeholder="Comment je peux t'aider ?" rows="2"></textarea>
-                                <button class="chat-send-btn" id="chatSendBtn">
-                                    <i data-lucide="send"></i>
-                                </button>
-                            </div>
-                        </div>
                         <div id="quizSection" style="display: none;"></div>
                         <div class="course-actions">
                             <button class="action-btn" id="exportPdf">
@@ -141,6 +132,15 @@
                             </button>
                         </div>
                         <div id="generatedCourse"></div>
+                        <div class="chat-interface">
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input-container">
+                                <textarea class="chat-input" id="chatInput" placeholder="Comment je peux t'aider ?" rows="2"></textarea>
+                                <button class="chat-send-btn" id="chatSendBtn">
+                                    <i data-lucide="send"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="tab-content" id="historyTab" style="display: none;">
