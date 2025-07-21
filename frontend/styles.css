@@ -524,155 +524,126 @@ body {
 }
 
 /* ==========================================================================
-   5. UNIFIED DARK THEME BLOCKS
+   5. OPTIMIZED DARK THEME BLOCKS
    ========================================================================== */
 
-/* --- Master selector for ALL special blocks requiring the dark theme ---
-  This new rule is more robust. It targets:
-  - Specific classes (e.g., .conclusion-block)
-  - Simpler classes (e.g., .conclusion)
-  - Attribute selectors (e.g., [class*="conclusion"]) to catch all variations.
-*/
-.special-block, .block, .content-block, .text-block, .formula,
-.resume-block, .resume, [class*="resume"],
-.summary-block, .summary, [class*="summary"],
-.key-points-block, .key-points, [class*="key-points"],
-.important-block, .important, [class*="important"],
-.note-block, .note, [class*="note"],
-.attention-block, .attention, [class*="attention"],
-.conclusion-block, .conclusion, [class*="conclusion"],
-.conseils-pratiques-block, .conseils-pratiques, [class*="conseils"],
-.practical-tips-block, .practical-tips, [class*="tips"],
-.exemple-pratique-block, .exemple-pratique, .exemple, [class*="exemple"],
-.practical-example-block, .practical-example, .example, [class*="example"],
-.analogy-block, .analogy, [class*="analogy"],
-.daily-analogy-block,
-.concept-block, .concept, [class*="concept"],
-.vulgarisation-simple-block, .vulgarisation-simple,
-.simple-terms-block, .simple-terms,
-.mental-schema-block, .mental-schema {
+/* --- Base style for all special blocks using the common '.styled-block' class --- */
+.styled-block {
     margin: 20px 0;
     padding: 20px;
     border-radius: 8px;
-    border-left: 5px solid #8A2BE2; /* Default color */
     background: #21262d !important;
     color: #F0F0F0 !important;
-    border: 2px solid #8A2BE2 !important; /* Default color */
-    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+    border: 1px solid #30363d;
+    border-left: 4px solid #8A2BE2; /* Default color */
     position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Transition only specific, performant properties */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* --- Ensure all child elements are readable --- */
-[class*="-block"] *, .block *, .content-block *, .text-block *, .formula *,
-.resume *, .summary *, .conclusion *, .example *, .analogy *, .concept *, .note * {
+.styled-block * {
     color: #F0F0F0 !important;
-    background: transparent !important; /* Prevents nested light backgrounds */
-    font-weight: inherit;
+    background: transparent !important;
 }
 
-/* --- Hover & Glow Effects --- */
-[class*="-block"]:hover, .block:hover, .content-block:hover, .text-block:hover, .formula:hover,
-[class*="resume"]:hover, [class*="summary"]:hover, [class*="conclusion"]:hover, [class*="example"]:hover {
-    transform: translateX(3px);
-    box-shadow: 0 6px 25px rgba(138, 43, 226, 0.4);
-}
-
-/* Default glow effect */
-[class*="-block"]::before, .block::before, .content-block::before, .text-block::before, .formula::before,
-[class*="resume"]::before, [class*="summary"]::before, [class*="conclusion"]::before, [class*="example"]::before {
+/* --- OPTIMIZED Glow Effect --- */
+/* This is more performant than filter: blur() */
+.styled-block::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #8A2BE2, #9A3CF2, #8A2BE2);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     border-radius: 8px;
-    opacity: 0.2;
-    z-index: -1;
-    filter: blur(4px);
+    pointer-events: none;
+    box-shadow: inset 0 0 15px 5px rgba(138, 43, 226, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.styled-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.styled-block:hover::before {
+    opacity: 1;
 }
 
 /* --- Block Title Styles --- */
-.block-title {
+.styled-block .block-title {
     font-weight: 600;
     color: #8A2BE2 !important;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 6px;
-    text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
     font-size: 1.1rem;
 }
 
-/* --- Specific Overrides for Border Colors & Glows --- */
-/* Example blocks = Blue */
-.exemple-pratique-block, .practical-example-block, .example-block, .concrete-example-block, .exemple, .example, [class*="example"], [class*="exemple"] {
-    border-color: #007BFF !important;
-    border-left-color: #007BFF !important;
+/* --- Specific Color Overrides --- */
+/* These rules are simple and fast */
+.styled-block.conclusion-block, .styled-block.conclusion {
+    border-left-color: #28a745;
 }
-.exemple-pratique-block::before, .practical-example-block::before, .example-block::before, .concrete-example-block::before, .exemple::before, .example::before, [class*="example"]::before, [class*="exemple"]::before {
-     background: linear-gradient(45deg, #007BFF, #3498db, #007BFF);
+.styled-block.conclusion-block::before, .styled-block.conclusion::before {
+    box-shadow: inset 0 0 15px 5px rgba(40, 167, 69, 0.2);
 }
-.example-block .block-title, .concrete-example-block .block-title, .exemple-pratique-block .block-title, .example .block-title, .exemple .block-title {
+.styled-block.conclusion-block .block-title, .styled-block.conclusion .block-title {
+    color: #40e0d0 !important;
+}
+
+.styled-block.exemple-pratique-block, .styled-block.example-block {
+    border-left-color: #007BFF;
+}
+.styled-block.exemple-pratique-block::before, .styled-block.example-block::before {
+    box-shadow: inset 0 0 15px 5px rgba(0, 123, 255, 0.2);
+}
+.styled-block.exemple-pratique-block .block-title, .styled-block.example-block .block-title {
     color: #58a6ff !important;
 }
 
-/* Conclusion blocks = Green */
-.conclusion-block, .conclusion, [class*="conclusion"] {
-    border-color: #28a745 !important;
-    border-left-color: #28a745 !important;
+.styled-block.conseils-pratiques-block, .styled-block.practical-tips-block {
+    border-left-color: #ffc107;
 }
-.conclusion-block::before, .conclusion::before, [class*="conclusion"]::before {
-    background: linear-gradient(45deg, #28a745, #20c997, #28a745);
+.styled-block.conseils-pratiques-block::before, .styled-block.practical-tips-block::before {
+    box-shadow: inset 0 0 15px 5px rgba(255, 193, 7, 0.2);
 }
-.conclusion-block .block-title, .conclusion .block-title {
-    color: #40e0d0 !important;
-    text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
-}
-
-/* Tips/Conseils blocks = Orange */
-.conseils-pratiques-block, .practical-tips-block, .conseils-pratiques, [class*="conseils"], [class*="tips"] {
-    border-color: #ffc107 !important;
-    border-left-color: #ffc107 !important;
-}
-.conseils-pratiques-block::before, .practical-tips-block::before, .conseils-pratiques::before, [class*="conseils"]::before, [class*="tips"]::before {
-    background: linear-gradient(45deg, #ffc107, #fd7e14, #ffc107);
-}
-.conseils-pratiques-block .block-title, .practical-tips-block .block-title, .conseils-pratiques .block-title {
+.styled-block.conseils-pratiques-block .block-title, .styled-block.practical-tips-block .block-title {
     color: #ffc107 !important;
-    text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
 /* --- Icons for Block Titles --- */
-.resume-block .block-title::before, .summary-block .block-title::before, .resume .block-title::before, .summary .block-title::before { content: "📋 "; }
-.example-block .block-title::before, .exemple-pratique-block .block-title::before, .example .block-title::before, .exemple .block-title::before { content: "🔧 "; }
-.conclusion-block .block-title::before, .conclusion .block-title::before { content: "🎯 "; }
-.conseils-pratiques-block .block-title::before, .conseils-pratiques .block-title::before { content: "💡 "; }
-.analogy-block .block-title::before, .analogy .block-title::before { content: "🤝 "; }
-.concept-block .block-title::before, .concept .block-title::before { content: "🧠 "; }
+.styled-block.resume-block .block-title::before, .styled-block.summary-block .block-title::before { content: "📋 "; }
+.styled-block.example-block .block-title::before, .styled-block.exemple-pratique-block .block-title::before { content: "🔧 "; }
+.styled-block.conclusion-block .block-title::before { content: "🎯 "; }
+.styled-block.conseils-pratiques-block .block-title::before { content: "💡 "; }
+.styled-block.analogy-block .block-title::before { content: "🤝 "; }
+.styled-block.concept-block .block-title::before { content: "🧠 "; }
+
 
 /* --- Child element styling inside special blocks --- */
-[class*="-block"] ul, [class*="-block"] ol, .block ul, .block ol, [class*="summary"] ul, [class*="conclusion"] ul {
+.styled-block ul, .styled-block ol {
     margin: 15px 0;
     padding-left: 25px;
 }
-[class*="-block"] li, .block li, [class*="summary"] li, [class*="conclusion"] li {
+.styled-block li {
     margin-bottom: 8px;
     line-height: 1.5;
 }
-[class*="-block"] a, .block a, [class*="summary"] a, [class*="conclusion"] a {
+.styled-block a {
     color: #58a6ff !important;
     text-decoration: underline;
     transition: color 0.3s ease;
 }
-[class*="-block"] a:hover, .block a:hover, [class*="summary"] a:hover, [class*="conclusion"] a:hover {
+.styled-block a:hover {
     color: #79c0ff !important;
     text-decoration: none;
 }
-[class*="-block"] table, .block table, [class*="summary"] table, [class*="conclusion"] table {
+.styled-block table {
     width: 100%;
     border-collapse: collapse;
     margin: 15px 0;
@@ -680,70 +651,37 @@ body {
     border-radius: 6px;
     overflow: hidden;
 }
-[class*="-block"] th, [class*="-block"] td, .block th, .block td, [class*="summary"] th, [class*="summary"] td, [class*="conclusion"] th, [class*="conclusion"] td {
+.styled-block th, .styled-block td {
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
 }
-[class*="-block"] th, .block th, [class*="summary"] th, [class*="conclusion"] th {
-    background: rgba(138, 43, 226, 0.3);
+.styled-block th {
+    background: rgba(138, 43, 226, 0.2);
     font-weight: 600;
 }
-[class*="-block"] code, .block code, [class*="summary"] code, [class*="conclusion"] code {
+.styled-block code {
     background: #0D1117 !important;
     padding: 3px 6px;
     border-radius: 4px;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.9em;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #30363d;
 }
 
 /* --- Other specific blocks --- */
 .formula {
-    font-family: 'Times New Roman', serif;
-    font-size: 1.2rem;
-    text-align: center;
-}
-.formula::after {
-    content: "📐";
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    opacity: 0.3;
-    font-size: 1.5rem;
+    margin: 20px 0; padding: 20px; border-radius: 8px; background: #21262d !important; color: #F0F0F0 !important;
+    border: 1px solid #30363d; border-left: 4px solid #6f42c1; font-family: 'Times New Roman', serif; text-align: center;
 }
 .quote-block {
-    margin: 20px 0;
-    padding: 16px 20px;
-    border-left: 4px solid #8A2BE2;
-    background: rgba(138, 43, 226, 0.08) !important;
-    font-style: italic;
-    color: #e6edf3 !important;
-    position: relative;
-    border-radius: 8px;
+    margin: 20px 0; padding: 16px 20px; border-left: 4px solid #8A2BE2; background: rgba(138, 43, 226, 0.08) !important;
+    font-style: italic; color: #e6edf3 !important; position: relative; border-radius: 8px;
 }
-.quote-block * {
-    color: #e6edf3 !important;
-    background: transparent !important;
-}
-.quote-block::before {
-    content: '"';
-    position: absolute;
-    top: -10px;
-    left: 10px;
-    font-size: 3rem;
-    color: #8A2BE2;
-    opacity: 0.3;
-}
+.quote-block::before { content: '"'; position: absolute; top: -10px; left: 10px; font-size: 3rem; color: #8A2BE2; opacity: 0.3; }
 .code-block {
-    background: #0D1117 !important;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 16px;
-    margin: 20px 0;
-    font-family: 'Consolas', 'Monaco', monospace;
-    color: #F0F0F0 !important;
-    overflow-x: auto;
+    background: #0D1117 !important; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 20px 0;
+    font-family: 'Consolas', 'Monaco', monospace; color: #F0F0F0 !important; overflow-x: auto;
 }
 
 /* ==========================================================================
@@ -1495,7 +1433,7 @@ body {
 
 @media (max-width: 768px) {
     /* --- Themed Blocks --- */
-    [class*="-block"], .block, .content-block, .text-block, .formula, .quote-block {
+    .styled-block, .formula, .quote-block {
         margin: 15px -10px;
         border-radius: 0;
         padding: 15px;
