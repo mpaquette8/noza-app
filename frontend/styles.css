@@ -315,25 +315,30 @@ body {
     color: #e6edf3;
 }
 
+/* CORRECTION PRINCIPALE: Blocs spéciaux avec couleurs de texte corrigées */
 .special-block {
     margin: 20px 0;
     padding: 16px;
     border-radius: 8px;
     border-left: 4px solid #8A2BE2;
+    color: #e6edf3; /* Texte visible sur fond sombre */
 }
 
 .analogy-block {
     background: rgba(138, 43, 226, 0.1);
+    color: #e6edf3;
 }
 
 .example-block {
     background: rgba(0, 123, 255, 0.1);
     border-left-color: #007BFF;
+    color: #e6edf3;
 }
 
 .concept-block {
     background: rgba(40, 167, 69, 0.1);
     border-left-color: #28a745;
+    color: #e6edf3;
 }
 
 .block-title {
@@ -345,15 +350,18 @@ body {
     gap: 6px;
 }
 
+/* CORRECTION PRINCIPALE: Formules avec couleurs corrigées */
 .formula {
     background: #21262d;
+    border: 1px solid #30363d;
     padding: 16px;
     border-radius: 8px;
     text-align: center;
     margin: 20px 0;
     font-family: 'Times New Roman', serif;
     font-size: 1.1rem;
-    color: #F0F0F0;
+    color: #e6edf3; /* CHANGÉ: était #F0F0F0 qui ne ressortait pas assez */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .chat-interface {
@@ -730,7 +738,6 @@ body {
 }
 
 /* Styles pour le quiz */
-/* Styles pour le quiz */
 #quizSection {
     margin-bottom: 30px;
     order: 0; /* Place le quiz avant le cours dans l'ordre d'affichage */
@@ -950,8 +957,6 @@ body {
     animation: pulse 1.5s infinite;
 }
 
-
-
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -1072,76 +1077,36 @@ body {
     }
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .main-content {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .configuration-panel {
-        order: 1;
-    }
-    
-    .course-display {
-        order: 2;
-    }
-    
-    .chat-input-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .chat-send-btn {
-        align-self: flex-end;
-        width: 100px;
-    }
+/* CORRECTION: Nouveaux blocs spéciaux avec couleurs corrigées */
+.vulgarisation-simple-block {
+    background: rgba(220, 53, 69, 0.1);
+    border-left-color: #dc3545;
+    color: #e6edf3;
 }
 
-@media (max-width: 768px) {
-    .quiz-header {
-        padding: 15px;
-    }
-    
-    .quiz-header h3 {
-        font-size: 1.1rem;
-    }
-    
-    .quiz-question {
-        padding: 15px;
-    }
-    
-    .quiz-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .quiz-actions .generate-btn,
-    .quiz-actions .action-btn {
-        width: 100%;
-        max-width: 200px;
-    }
-    
-    .clear-chat-btn {
-        align-self: flex-end;
-        width: auto;
-    }
-    
-    .suggestion-buttons {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    
-    .message-badges {
-        justify-content: flex-start;
-    }
-    
-    .chat-message {
-        max-width: 95%;
-    }
+.daily-analogy-block {
+    background: rgba(255, 193, 7, 0.1);
+    border-left-color: #ffc107;
+    color: #e6edf3;
 }
 
-/* Ajoutez ces styles à votre fichier styles.css */
+.simple-terms-block {
+    background: rgba(23, 162, 184, 0.1);
+    border-left-color: #17a2b8;
+    color: #e6edf3;
+}
+
+.concrete-example-block {
+    background: rgba(40, 167, 69, 0.1);
+    border-left-color: #28a745;
+    color: #e6edf3;
+}
+
+.mental-schema-block {
+    background: rgba(111, 66, 193, 0.1);
+    border-left-color: #6f42c1;
+    color: #e6edf3;
+}
 
 /* Nouvelle option radio pour hybride expert */
 .radio-option[data-level="hybridExpert"] {
@@ -1157,32 +1122,6 @@ body {
 .radio-option[data-level="hybridExpert"].selected {
     border-color: #dc3545;
     background: rgba(220, 53, 69, 0.15);
-}
-
-/* Nouveaux blocs spéciaux pour le mode hybride expert */
-.vulgarisation-simple-block {
-    background: rgba(220, 53, 69, 0.1);
-    border-left-color: #dc3545;
-}
-
-.daily-analogy-block {
-    background: rgba(255, 193, 7, 0.1);
-    border-left-color: #ffc107;
-}
-
-.simple-terms-block {
-    background: rgba(23, 162, 184, 0.1);
-    border-left-color: #17a2b8;
-}
-
-.concrete-example-block {
-    background: rgba(40, 167, 69, 0.1);
-    border-left-color: #28a745;
-}
-
-.mental-schema-block {
-    background: rgba(111, 66, 193, 0.1);
-    border-left-color: #6f42c1;
 }
 
 /* Badge pour le mode hybride expert */
@@ -1347,4 +1286,81 @@ body {
 .combination-text {
     font-size: 0.85rem;
     color: #e6edf3;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .configuration-panel {
+        order: 1;
+    }
+    
+    .course-display {
+        order: 2;
+    }
+    
+    .chat-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .chat-send-btn {
+        align-self: flex-end;
+        width: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .quiz-header {
+        padding: 15px;
+    }
+    
+    .quiz-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .quiz-question {
+        padding: 15px;
+    }
+    
+    .quiz-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .quiz-actions .generate-btn,
+    .quiz-actions .action-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .clear-chat-btn {
+        align-self: flex-end;
+        width: auto;
+    }
+    
+    .suggestion-buttons {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .message-badges {
+        justify-content: flex-start;
+    }
+    
+    .chat-message {
+        max-width: 95%;
+    }
+    
+    .gauge-labels {
+        font-size: 0.7rem;
+    }
+    
+    .gauge-description {
+        font-size: 0.8rem;
+    }
 }
