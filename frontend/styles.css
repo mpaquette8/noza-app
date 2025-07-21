@@ -609,61 +609,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* --- Specific Color Overrides --- */
-.styled-block.conclusion-block, 
-.styled-block.conclusion {
-    border-left-color: #28a745;
-}
-
-.styled-block.conclusion-block::before, 
-.styled-block.conclusion::before {
-    box-shadow: inset 0 0 15px 5px rgba(40, 167, 69, 0.2);
-}
-
-.styled-block.conclusion-block .block-title, 
-.styled-block.conclusion .block-title,
-.styled-block.conclusion-block .block-title *,
-.styled-block.conclusion .block-title * {
-    color: #40e0d0 !important;
-    background: transparent !important;
-}
-
-.styled-block.exemple-pratique-block, 
-.styled-block.example-block {
-    border-left-color: #007BFF;
-}
-
-.styled-block.exemple-pratique-block::before, 
-.styled-block.example-block::before {
-    box-shadow: inset 0 0 15px 5px rgba(0, 123, 255, 0.2);
-}
-
-.styled-block.exemple-pratique-block .block-title, 
-.styled-block.example-block .block-title,
-.styled-block.exemple-pratique-block .block-title *,
-.styled-block.example-block .block-title * {
-    color: #58a6ff !important;
-    background: transparent !important;
-}
-
-.styled-block.conseils-pratiques-block, 
-.styled-block.practical-tips-block {
-    border-left-color: #ffc107;
-}
-
-.styled-block.conseils-pratiques-block::before, 
-.styled-block.practical-tips-block::before {
-    box-shadow: inset 0 0 15px 5px rgba(255, 193, 7, 0.2);
-}
-
-.styled-block.conseils-pratiques-block .block-title, 
-.styled-block.practical-tips-block .block-title,
-.styled-block.conseils-pratiques-block .block-title *,
-.styled-block.practical-tips-block .block-title * {
-    color: #ffc107 !important;
-    background: transparent !important;
-}
-
 /* --- Icons for Block Titles --- */
 .styled-block.resume-block .block-title::before, 
 .styled-block.summary-block .block-title::before { 
