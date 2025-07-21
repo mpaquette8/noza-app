@@ -527,32 +527,30 @@ body {
    5. UNIFIED DARK THEME BLOCKS
    ========================================================================== */
 
-/* --- Master selector for ALL special blocks requiring the dark theme --- */
-.special-block,
-.resume-block,
-.summary-block,
-.key-points-block,
-.important-block,
-.note-block,
-.attention-block,
-.block,
-.content-block,
-.text-block,
-.formula,
-/* CORRECTION: Add all conclusion, analogy, and example blocks to this group */
-.conclusion-block,
-.conseils-pratiques-block,
-.practical-tips-block,
-.exemple-pratique-block,
-.practical-example-block,
-.example-block,
-.concrete-example-block,
-.analogy-block,
+/* --- Master selector for ALL special blocks requiring the dark theme ---
+  This new rule is more robust. It targets:
+  - Specific classes (e.g., .conclusion-block)
+  - Simpler classes (e.g., .conclusion)
+  - Attribute selectors (e.g., [class*="conclusion"]) to catch all variations.
+*/
+.special-block, .block, .content-block, .text-block, .formula,
+.resume-block, .resume, [class*="resume"],
+.summary-block, .summary, [class*="summary"],
+.key-points-block, .key-points, [class*="key-points"],
+.important-block, .important, [class*="important"],
+.note-block, .note, [class*="note"],
+.attention-block, .attention, [class*="attention"],
+.conclusion-block, .conclusion, [class*="conclusion"],
+.conseils-pratiques-block, .conseils-pratiques, [class*="conseils"],
+.practical-tips-block, .practical-tips, [class*="tips"],
+.exemple-pratique-block, .exemple-pratique, .exemple, [class*="exemple"],
+.practical-example-block, .practical-example, .example, [class*="example"],
+.analogy-block, .analogy, [class*="analogy"],
 .daily-analogy-block,
-.concept-block,
-.vulgarisation-simple-block,
-.simple-terms-block,
-.mental-schema-block {
+.concept-block, .concept, [class*="concept"],
+.vulgarisation-simple-block, .vulgarisation-simple,
+.simple-terms-block, .simple-terms,
+.mental-schema-block, .mental-schema {
     margin: 20px 0;
     padding: 20px;
     border-radius: 8px;
@@ -567,22 +565,23 @@ body {
 }
 
 /* --- Ensure all child elements are readable --- */
-[class*="-block"] *,
-.block *, .content-block *, .text-block *,
-.formula * {
+[class*="-block"] *, .block *, .content-block *, .text-block *, .formula *,
+.resume *, .summary *, .conclusion *, .example *, .analogy *, .concept *, .note * {
     color: #F0F0F0 !important;
     background: transparent !important; /* Prevents nested light backgrounds */
     font-weight: inherit;
 }
 
 /* --- Hover & Glow Effects --- */
-[class*="-block"]:hover, .block:hover, .content-block:hover, .text-block:hover, .formula:hover {
+[class*="-block"]:hover, .block:hover, .content-block:hover, .text-block:hover, .formula:hover,
+[class*="resume"]:hover, [class*="summary"]:hover, [class*="conclusion"]:hover, [class*="example"]:hover {
     transform: translateX(3px);
     box-shadow: 0 6px 25px rgba(138, 43, 226, 0.4);
 }
 
 /* Default glow effect */
-[class*="-block"]::before, .block::before, .content-block::before, .text-block::before, .formula::before {
+[class*="-block"]::before, .block::before, .content-block::before, .text-block::before, .formula::before,
+[class*="resume"]::before, [class*="summary"]::before, [class*="conclusion"]::before, [class*="example"]::before {
     content: '';
     position: absolute;
     top: -2px;
@@ -609,72 +608,71 @@ body {
 }
 
 /* --- Specific Overrides for Border Colors & Glows --- */
-
 /* Example blocks = Blue */
-.exemple-pratique-block, .practical-example-block, .example-block, .concrete-example-block {
+.exemple-pratique-block, .practical-example-block, .example-block, .concrete-example-block, .exemple, .example, [class*="example"], [class*="exemple"] {
     border-color: #007BFF !important;
     border-left-color: #007BFF !important;
 }
-.exemple-pratique-block::before, .practical-example-block::before, .example-block::before, .concrete-example-block::before {
+.exemple-pratique-block::before, .practical-example-block::before, .example-block::before, .concrete-example-block::before, .exemple::before, .example::before, [class*="example"]::before, [class*="exemple"]::before {
      background: linear-gradient(45deg, #007BFF, #3498db, #007BFF);
 }
-.example-block .block-title, .concrete-example-block .block-title, .exemple-pratique-block .block-title {
+.example-block .block-title, .concrete-example-block .block-title, .exemple-pratique-block .block-title, .example .block-title, .exemple .block-title {
     color: #58a6ff !important;
 }
 
 /* Conclusion blocks = Green */
-.conclusion-block {
+.conclusion-block, .conclusion, [class*="conclusion"] {
     border-color: #28a745 !important;
     border-left-color: #28a745 !important;
 }
-.conclusion-block::before {
+.conclusion-block::before, .conclusion::before, [class*="conclusion"]::before {
     background: linear-gradient(45deg, #28a745, #20c997, #28a745);
 }
-.conclusion-block .block-title {
+.conclusion-block .block-title, .conclusion .block-title {
     color: #40e0d0 !important;
     text-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
 }
 
 /* Tips/Conseils blocks = Orange */
-.conseils-pratiques-block, .practical-tips-block {
+.conseils-pratiques-block, .practical-tips-block, .conseils-pratiques, [class*="conseils"], [class*="tips"] {
     border-color: #ffc107 !important;
     border-left-color: #ffc107 !important;
 }
-.conseils-pratiques-block::before, .practical-tips-block::before {
+.conseils-pratiques-block::before, .practical-tips-block::before, .conseils-pratiques::before, [class*="conseils"]::before, [class*="tips"]::before {
     background: linear-gradient(45deg, #ffc107, #fd7e14, #ffc107);
 }
-.conseils-pratiques-block .block-title, .practical-tips-block .block-title {
+.conseils-pratiques-block .block-title, .practical-tips-block .block-title, .conseils-pratiques .block-title {
     color: #ffc107 !important;
     text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
 /* --- Icons for Block Titles --- */
-.resume-block .block-title::before, .summary-block .block-title::before { content: "📋 "; }
-.example-block .block-title::before, .exemple-pratique-block .block-title::before { content: "🔧 "; }
-.conclusion-block .block-title::before { content: "🎯 "; }
-.conseils-pratiques-block .block-title::before { content: "💡 "; }
-.analogy-block .block-title::before { content: "🤝 "; }
-.concept-block .block-title::before { content: "🧠 "; }
+.resume-block .block-title::before, .summary-block .block-title::before, .resume .block-title::before, .summary .block-title::before { content: "📋 "; }
+.example-block .block-title::before, .exemple-pratique-block .block-title::before, .example .block-title::before, .exemple .block-title::before { content: "🔧 "; }
+.conclusion-block .block-title::before, .conclusion .block-title::before { content: "🎯 "; }
+.conseils-pratiques-block .block-title::before, .conseils-pratiques .block-title::before { content: "💡 "; }
+.analogy-block .block-title::before, .analogy .block-title::before { content: "🤝 "; }
+.concept-block .block-title::before, .concept .block-title::before { content: "🧠 "; }
 
 /* --- Child element styling inside special blocks --- */
-[class*="-block"] ul, [class*="-block"] ol, .block ul, .block ol {
+[class*="-block"] ul, [class*="-block"] ol, .block ul, .block ol, [class*="summary"] ul, [class*="conclusion"] ul {
     margin: 15px 0;
     padding-left: 25px;
 }
-[class*="-block"] li, .block li {
+[class*="-block"] li, .block li, [class*="summary"] li, [class*="conclusion"] li {
     margin-bottom: 8px;
     line-height: 1.5;
 }
-[class*="-block"] a, .block a {
+[class*="-block"] a, .block a, [class*="summary"] a, [class*="conclusion"] a {
     color: #58a6ff !important;
     text-decoration: underline;
     transition: color 0.3s ease;
 }
-[class*="-block"] a:hover, .block a:hover {
+[class*="-block"] a:hover, .block a:hover, [class*="summary"] a:hover, [class*="conclusion"] a:hover {
     color: #79c0ff !important;
     text-decoration: none;
 }
-[class*="-block"] table, .block table {
+[class*="-block"] table, .block table, [class*="summary"] table, [class*="conclusion"] table {
     width: 100%;
     border-collapse: collapse;
     margin: 15px 0;
@@ -682,16 +680,16 @@ body {
     border-radius: 6px;
     overflow: hidden;
 }
-[class*="-block"] th, [class*="-block"] td, .block th, .block td {
+[class*="-block"] th, [class*="-block"] td, .block th, .block td, [class*="summary"] th, [class*="summary"] td, [class*="conclusion"] th, [class*="conclusion"] td {
     padding: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     text-align: left;
 }
-[class*="-block"] th, .block th {
+[class*="-block"] th, .block th, [class*="summary"] th, [class*="conclusion"] th {
     background: rgba(138, 43, 226, 0.3);
     font-weight: 600;
 }
-[class*="-block"] code, .block code {
+[class*="-block"] code, .block code, [class*="summary"] code, [class*="conclusion"] code {
     background: #0D1117 !important;
     padding: 3px 6px;
     border-radius: 4px;
@@ -726,6 +724,7 @@ body {
 }
 .quote-block * {
     color: #e6edf3 !important;
+    background: transparent !important;
 }
 .quote-block::before {
     content: '"';
