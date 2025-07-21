@@ -10,9 +10,9 @@ const anthropic = new Anthropic({
 // Fonction pour créer le prompt selon le niveau - VERSION AMÉLIORÉE
 function createPrompt(subject, detailLevel, vulgarizationLevel) {
     const detailInstructions = {
-        1: "Crée une synthèse concise (~500 mots) avec les points essentiels",
-        2: "Crée un cours détaillé (~1500 mots) avec explications approfondies et exemples",
-        3: "Crée une analyse exhaustive (~3000+ mots) très complète avec références"
+        1: "Crée une synthèse concise (~750) avec les points essentiels",
+        2: "Crée un cours détaillé (~2250 mots) avec explications approfondies et exemples",
+        3: "Crée une analyse exhaustive (~4200 mots) très complète avec références"
     };
 
     const vulgarizationInstructions = {
@@ -27,13 +27,20 @@ function createPrompt(subject, detailLevel, vulgarizationLevel) {
 NIVEAU DE DÉTAIL : ${detailInstructions[detailLevel]}
 NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
 
+PEDAGOGIE: Tu dois faire un effort de pédagogie, pour que ce soit bien clair.
+
+FORMULES MATHEMATIQUES: 
+1. Tu dois bien préciser les termes.
+2. Tu dois expliquer également des sous termes, les différents blocs de la formule
+3. Tu dois faire des analogies et interprétations: faire en sorte que ce soit bien compris car c'est ta priorité.
+
 STRUCTURE REQUISE :
 1. Titre principal avec <h1>
 2. Introduction dans un bloc générique
 3. Sections principales avec des blocs thématiques spécialisés
 4. Conclusion dans un bloc conclusion
 
-CLASSES CSS OBLIGATOIRES À UTILISER :
+VOICI LES CLASSES CSS QUE TU DOIS ABSOLUMENT UTILISER :
 
 1. BLOC GÉNÉRIQUE (pour introduction, concepts de base) :
 <div class="styled-block">
@@ -91,7 +98,10 @@ BLOCS SPÉCIALISÉS (utilise si approprié) :
 RÈGLES IMPORTANTES :
 - TOUJOURS utiliser ces classes exactes (respecte la casse)
 - TOUJOURS inclure un <div class="block-title"> dans chaque bloc styled-block
-- Utilise minimum 3-4 blocs différents pour varier la présentation
+- TOUJOURS essayer d'interpreter les differents blocs d'une formule mathématique
+- TOUJOURS faire un cours complet avec un début et une fin
+- NE JAMAIS inclure une formule mathématique dans un autre bloc que "FORMULE MATHÉMATIQUE"
+- NE JAMAIS inclure du code informatique dans un autre bloc que "CODE"
 - Le titre H1 reste en dehors des blocs
 - Assure-toi que chaque bloc a un contenu substantiel (minimum 2-3 phrases)
 - Termine OBLIGATOIREMENT par un bloc conclusion-block
@@ -205,8 +215,8 @@ router.post('/generate-course', async (req, res) => {
 
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 4000,
-      temperature: 0.7,
+      max_tokens: 6000,
+      temperature: 0.2,
       messages: [
         {
           role: 'user',
