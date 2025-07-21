@@ -209,37 +209,6 @@ body {
     background: rgba(220, 53, 69, 0.15);
 }
 
-/* --- Length Selector Buttons --- */
-.length-selector {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-}
-
-.length-btn {
-    flex: 1;
-    padding: 10px 16px;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    background: #0D1117;
-    color: #F0F0F0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.length-btn:hover {
-    border-color: #8A2BE2;
-    background: rgba(138, 43, 226, 0.1);
-}
-
-.length-btn.active {
-    border-color: #8A2BE2;
-    background: #8A2BE2;
-    color: white;
-}
-
 /* --- Gauge Slider System --- */
 .gauge-group {
     margin-bottom: 25px;
