@@ -8,53 +8,32 @@ const anthropic = new Anthropic({
 });
 
 // Fonction pour créer le prompt selon le niveau
-function createPrompt(subject, level, length) {
-  const levelInstructions = {
-    beginner: "Explique de manière très simple, sans jargon technique, accessible à un débutant complet.",
-    intermediate: "Explique de manière détaillée avec du vocabulaire technique de base, pour quelqu'un qui a des connaissances préalables.",
-    expert: "Explique de manière approfondie et technique, destiné à un public expert dans le domaine.",
-    hybrid: "Explique de manière experte ET ajoute des sections [Analogie], [Exemple Concret] et [Image Conceptuelle] pour faciliter la compréhension. Le contenu doit être techniquement dense mais enrichi d'éléments pédagogiques.",
-    hybridExpert: "Explique de manière très approfondie et hautement technique, avec tous les détails techniques nécessaires, MAIS enrichi de sections [Vulgarisation Simple], [Analogie du Quotidien] et [En Termes Simples]. Le contenu doit être d'un niveau académique/recherche complet, mais chaque concept complexe doit être expliqué avec des mots simples et des exemples de la vie courante que tout le monde peut comprendre."
-  };
+function createPrompt(subject, detailLevel, vulgarizationLevel, length) {
+    const detailInstructions = {
+        1: "Crée une synthèse concise (~500 mots) avec les points essentiels",
+        2: "Crée un cours détaillé (~1500 mots) avec explications approfondies et exemples",
+        3: "Crée une analyse exhaustive (~3000+ mots) très complète avec références"
+    };
 
-  const lengthInstructions = {
-    short: "environ 500 mots (synthèse)",
-    medium: "environ 1500 mots (leçon détaillée)",
-    long: "environ 3000 mots ou plus (chapitre complet)"
-  };
+    const vulgarizationInstructions = {
+        1: "Utilise un vocabulaire spécialisé, concepts avancés, destiné aux experts",
+        2: "Approche technique avec explication des termes spécialisés",
+        3: "Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets",
+        4: "Langage simple, nombreuses analogies, accessible à tous sans prérequis"
+    };
 
-  return `Tu es un expert pédagogue. Crée un cours structuré sur le sujet suivant : "${subject}"
+    return `Tu es un expert pédagogue. Crée un cours sur : "${subject}"
 
-NIVEAU : ${levelInstructions[level]}
-LONGUEUR : ${lengthInstructions[length]}
+NIVEAU DE DÉTAIL : ${detailInstructions[detailLevel]}
+NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
 
 STRUCTURE REQUISE :
 - Titre principal (H1)
 - Introduction claire
-- Sections principales avec sous-titres (H2, H3)
+- Sections avec sous-titres (H2, H3)
 - Conclusion
 
-${level === 'hybrid' ? `
-ÉLÉMENTS SPÉCIAUX à inclure (mode Hybride) :
-- [Analogie] : Comparaisons simples pour expliquer des concepts complexes
-- [Exemple Concret] : Cas pratiques avec chiffres et calculs
-- [Image Conceptuelle] : Descriptions de diagrammes ou schémas explicatifs
-` : ''}
-
-${level === 'hybridExpert' ? `
-ÉLÉMENTS SPÉCIAUX à inclure (mode Hybride Expert) :
-- [Vulgarisation Simple] : Explication en mots simples des concepts les plus complexes
-- [Analogie du Quotidien] : Comparaisons avec des situations de la vie de tous les jours
-- [En Termes Simples] : Reformulation accessible des termes techniques
-- [Exemple Concret] : Cas pratiques avec des chiffres et situations réelles
-- [Schéma Mental] : Description d'images mentales faciles à retenir
-` : ''}
-
-FORMATAGE :
-- Utilise les balises HTML appropriées (h1, h2, h3, p, ul, li, strong)
-- Pour les formules mathématiques, utilise la classe CSS "formula"
-- Pour les blocs spéciaux, utilise les classes "special-block vulgarisation-simple-block", "daily-analogy-block", "simple-terms-block", "concrete-example-block", ou "mental-schema-block"
-
+FORMATAGE HTML avec classes CSS appropriées.
 Le cours doit être informatif, bien structuré et engageant.`;
 }
 
@@ -123,16 +102,16 @@ function detectQuestionType(question, courseContent) {
 
 // Route pour générer un cours
 router.post('/generate-course', async (req, res) => {
-  try {
-    const { subject, level, length } = req.body;
+    try {
+        const { subject, detailLevel, vulgarizationLevel, length } = req.body;
 
-    if (!subject || !level || !length) {
-      return res.status(400).json({
-        error: 'Paramètres manquants : subject, level et length sont requis'
-      });
-    }
+        if (!subject || !detailLevel || !vulgarizationLevel || !length) {
+            return res.status(400).json({
+                error: 'Paramètres manquants'
+            });
+        }
 
-    const prompt = createPrompt(subject, level, length);
+        const prompt = createPrompt(subject, detailLevel, vulgarizationLevel, length);
 
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
@@ -150,18 +129,19 @@ router.post('/generate-course', async (req, res) => {
 
     // Sauvegarder dans l'historique (en mémoire pour cette démo)
     const courseData = {
-      id: Date.now().toString(),
-      subject,
-      level,
-      length,
-      content: courseContent,
-      createdAt: new Date().toISOString()
-    };
+            id: Date.now().toString(),
+            subject,
+            detailLevel,
+            vulgarizationLevel,
+            length,
+            content: courseContent,
+            createdAt: new Date().toISOString()
+        };
 
-    res.json({
-      success: true,
-      course: courseData
-    });
+        res.json({
+            success: true,
+            course: courseData
+        });
 
   } catch (error) {
     console.error('Erreur génération cours:', error);
