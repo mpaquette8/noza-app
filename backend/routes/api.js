@@ -10,8 +10,8 @@ const anthropic = new Anthropic({
 // Fonction pour créer le prompt selon le niveau - VERSION AMÉLIORÉE
 function createPrompt(subject, detailLevel, vulgarizationLevel) {
     const detailInstructions = {
-        1: "Crée une synthèse concise (~750) avec les points essentiels",
-        2: "Crée un cours détaillé (~2250 mots) avec explications approfondies et exemples",
+        1: "Crée une synthèse concise (~200 mots) avec les points essentiels",
+        2: "Crée un cours (~1500 mots) avec explications approfondies et exemples",
         3: "Crée une analyse exhaustive (~4200 mots) très complète avec références"
     };
     const vulgarizationInstructions = {
@@ -38,10 +38,11 @@ STRUCTURE REQUISE :
 2. Introduction dans un bloc générique
 3. Sections principales avec des blocs thématiques spécialisés
 4. Conclusion dans un bloc conclusion
+5. Un bloc "Pour aller plus loin": proposer 2 ou 3 questions ou idées cours pour rentrer dans un des détails de ce cours.
 
 VOICI LES CLASSES CSS QUE TU DOIS ABSOLUMENT UTILISER :
 
-1. BLOC GÉNÉRIQUE (pour introduction, concepts de base, pour aller plus loin) :
+1. BLOC GÉNÉRIQUE (pour introduction, concepts de base) :
 <div class="styled-block">
     <div class="block-title">Titre de la section</div>
     <p>Contenu...</p>
@@ -98,8 +99,9 @@ RÈGLES IMPORTANTES :
 - TOUJOURS utiliser ces classes exactes (respecte la casse)
 - TOUJOURS inclure un <div class="block-title"> dans chaque bloc styled-block
 - TOUJOURS essayer d'interpreter les differents blocs d'une formule mathématique
-- TOUJOURS faire un cours complet avec un début et une fin
-- TOUJOURS ajouter un bloc après la conclusion "Pour aller plus loin": proposer 2 ou 3 questions et cours pour rentrer dans un des détails de ce cours.
+- TOUJOURS faire un cours complet avec un début et une fin.
+- TOUJOURS définir simplement et clairement les termes et notions du cours, même les plus basiques.
+- TOUJOURS utiliser le type de bloc "conseils pratiques" pour le bloc "Pour aller plus loin".
 - NE JAMAIS inclure une formule mathématique dans un autre bloc que "FORMULE MATHÉMATIQUE"
 - NE JAMAIS inclure du code informatique dans un autre bloc que "CODE"
 - Le titre H1 reste en dehors des blocs
@@ -322,7 +324,7 @@ Réponse :`;
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-20240620',
       max_tokens: 800,
       temperature: 0.7,
       messages: [
