@@ -29,9 +29,11 @@ NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
 PEDAGOGIE: Tu dois faire un effort de pédagogie, pour que ce soit bien clair.
 
 FORMULES MATHEMATIQUES: 
-1. Tu dois bien préciser les termes.
-2. Tu dois expliquer également des sous termes, les différents blocs de la formule
+1. Tu dois bien expliquer les termes et les symboles.
+2. Tu dois expliquer également des sous termes, les différents blocs de la formule.
 3. Tu dois faire des analogies et interprétations: faire en sorte que ce soit bien compris car c'est ta priorité.
+4. Donner d'abord l'intuition avant la formule.
+5. Donner un exemple numérique simple.
 
 STRUCTURE REQUISE :
 1. Titre principal avec <h1>
