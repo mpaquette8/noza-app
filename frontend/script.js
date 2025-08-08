@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeApp() {
     // Vos event listeners existants...
+    document.getElementById('generateBtn').textContent = 'Décrypter le sujet';
     document.getElementById('generateBtn').addEventListener('click', generateCourse);
     document.getElementById('generateQuiz').addEventListener('click', generateQuiz);
     document.getElementById('copyContent').addEventListener('click', copyContent);
@@ -64,7 +65,7 @@ async function generateCourse() {
     const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
 
     if (!subject) {
-        showNotification('Veuillez entrer un sujet pour le cours', 'error');
+        showNotification('Veuillez entrer un sujet pour le décryptage', 'error');
         return;
     }
 
@@ -569,101 +570,40 @@ function showNotification(message, type = 'success') {
 
 // Base de données de sujets aléatoires organisés par catégories
 const randomSubjects = {
-    sciences: [
-        "La photosynthèse et son rôle dans l'écosystème",
+     physique: [
+        "Pourquoi E=mc² a révolutionné le monde",
+        "Comment votre GPS utilise la relativité d'Einstein",
         "Les trous noirs et la relativité générale",
         "La mécanique quantique et le principe d'incertitude",
+        "La physique quantique sans les maths compliquées"
+    ],
+    mathematiques: [
+        "Le mystère des nombres premiers expliqué simplement",
+        "Les bases de l'arithmétique et des nombres premiers",
+        "La géométrie euclidienne expliquée simplement",
+        "Statistiques de base et leur importance",
+        "Introduction aux concepts de topologie"
+    ],
+    biologie: [
+        "Pourquoi les vaccins fonctionnent : immunologie 101",
         "L'évolution et la sélection naturelle",
         "La structure de l'ADN et la génétique",
-        "Les énergies renouvelables et leur fonctionnement",
-        "Le réchauffement climatique et ses causes",
         "Les neurones et le fonctionnement du cerveau",
+        "La neuroplasticité et l'apprentissage"
+    ],
+    terre: [
+        "Le réchauffement climatique et ses causes",
         "La théorie de la dérive des continents",
-        "Les propriétés de l'eau et son cycle naturel"
+        "Les propriétés de l'eau et son cycle naturel",
+        "Le climat et son impact sur les sociétés",
+        "Fondements de la géologie et des tremblements de terre"
     ],
-    technologie: [
-        "Introduction aux algorithmes de machine learning",
-        "Les bases de la cryptographie moderne",
-        "L'architecture des processeurs modernes",
-        "Les réseaux neuronaux et l'intelligence artificielle",
-        "La blockchain et les cryptomonnaies",
+    appliees: [
+        "Principes de base de l'ingénierie électrique",
+        "Informatique théorique : algorithmes et complexité",
+        "Introduction aux énergies renouvelables",
         "Les principes de la cybersécurité",
-        "Le développement d'applications mobiles",
-        "Les bases de données NoSQL vs SQL",
-        "L'informatique quantique et ses applications",
-        "Les protocoles de communication Internet"
-    ],
-    economie: [
-        "Le modèle d'évaluation d'actifs financiers (CAPM)",
-        "L'inflation et ses mécanismes économiques",
-        "Les marchés financiers et leur régulation",
-        "L'économie comportementale et les biais cognitifs",
-        "La théorie des jeux en économie",
-        "Les cryptomonnaies et l'économie numérique",
-        "Le commerce international et la mondialisation",
-        "Les cycles économiques et les récessions",
-        "L'économie de l'environnement et le développement durable",
-        "Les politiques monétaires des banques centrales"
-    ],
-    philosophie: [
-        "L'éthique de l'intelligence artificielle",
-        "Le libre arbitre face au déterminisme",
-        "La philosophie de l'esprit et la conscience",
-        "L'existentialisme de Sartre et Camus",
-        "L'éthique médicale et les dilemmes bioéthiques",
-        "La justice sociale selon John Rawls",
-        "Le stoïcisme et la gestion des émotions",
-        "La philosophie des sciences et l'épistémologie",
-        "L'éthique environnementale et notre rapport à la nature",
-        "La philosophie politique de Platon à nos jours"
-    ],
-    arts: [
-        "L'évolution de l'art moderne au XXe siècle",
-        "La théorie des couleurs et la psychologie visuelle",
-        "L'histoire du cinéma et ses révolutions techniques",
-        "La musique classique et ses formes compositionnelles",
-        "L'art numérique et les nouvelles technologies créatives",
-        "L'architecture gothique et ses innovations",
-        "La photographie comme art et documentation",
-        "Le street art et son impact culturel",
-        "L'opéra et l'évolution du spectacle lyrique",
-        "La bande dessinée comme forme d'expression artistique"
-    ],
-    histoire: [
-        "La révolution industrielle et ses conséquences sociales",
-        "L'Empire romain et ses stratégies d'expansion",
-        "La Renaissance et l'humanisme européen",
-        "Les révolutions du XVIIIe siècle et leurs idéologies",
-        "La guerre froide et l'équilibre de la terreur",
-        "Les civilisations précolombiennes d'Amérique",
-        "L'abolition de l'esclavage et ses répercussions",
-        "La décolonisation africaine au XXe siècle",
-        "L'histoire des sciences au Moyen Âge",
-        "Les grandes explorations maritimes européennes"
-    ],
-    psychologie: [
-        "Les mécanismes de la mémoire humaine",
-        "La psychologie positive et le bien-être",
-        "Les troubles anxieux et leurs traitements",
-        "Le développement de l'enfant selon Piaget",
-        "La psychologie sociale et l'influence du groupe",
-        "Les biais cognitifs et la prise de décision",
-        "La neuroplasticité et l'apprentissage",
-        "La psychologie du travail et la motivation",
-        "Les émotions et leur régulation",
-        "L'attachement et les relations interpersonnelles"
-    ],
-    sociologie: [
-        "L'impact des réseaux sociaux sur la société",
-        "Les inégalités sociales et la stratification",
-        "La sociologie urbaine et les métropoles modernes",
-        "L'évolution de la famille dans les sociétés occidentales",
-        "Les mouvements sociaux et le changement",
-        "La mondialisation culturelle et l'identité",
-        "L'éducation et la reproduction sociale",
-        "La sociologie du travail à l'ère numérique",
-        "Les migrations contemporaines et l'intégration",
-        "La consommation et la société de marché"
+        "Informatique quantique et ses applications"
     ]
 };
 
@@ -1015,10 +955,10 @@ const detailLevels = {
 
 // CORRECTION : Inverser l'ordre pour correspondre à l'interface HTML
 const vulgarizationLevels = {
-    1: { name: 'Grand Public', description: 'Langage simple, vulgarisation complète accessible à tous.' },
-    2: { name: 'Accessible', description: 'Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.' },
-    3: { name: 'Technique', description: 'Approche technique avec explications des termes spécialisés.' },
-    4: { name: 'Expert', description: 'Vocabulaire spécialisé pour professionnels du domaine.' }
+    1: { name: 'Grand Public', description: 'Comme expliquer à votre grand-mère' },
+    2: { name: 'Éclairé', description: 'Niveau bac scientifique' },
+    3: { name: 'Connaisseur', description: 'Niveau université' },
+    4: { name: 'Expert', description: 'Vocabulaire technique assumé' }
 };
 
 // CORRECTION : Ajuster les combinaisons avec les nouveaux ordres
