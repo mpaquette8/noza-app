@@ -410,8 +410,6 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
           error: 'Erreur lors de la génération du quiz',
           details: error.message
       });
-  } finally {
-      // Pas de finally ici car le bouton sera remis en état côté client
   }
 });
 
