@@ -10,8 +10,8 @@ const anthropic = new Anthropic({
 // Fonction pour créer le prompt selon le niveau - VERSION AMÉLIORÉE
 function createPrompt(subject, detailLevel, vulgarizationLevel) {
     const detailInstructions = {
-        1: "Crée une synthèse concise (~200 mots) avec les points essentiels",
-        2: "Crée un cours (~1500 mots) avec explications approfondies et exemples",
+        1: "Crée une synthèse concise (~750) avec les points essentiels",
+        2: "Crée un cours détaillé (~2250 mots) avec explications approfondies et exemples",
         3: "Crée une analyse exhaustive (~4200 mots) très complète avec références"
     };
     const vulgarizationInstructions = {
@@ -21,7 +21,7 @@ function createPrompt(subject, detailLevel, vulgarizationLevel) {
         4: "Utilise un vocabulaire spécialisé, concepts avancés, destiné aux experts"
     };
 
-    return `Tu es un expert pédagogue qui cherche avant tout a faire comprendre. Crée un cours sur : "${subject}"
+    return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
 
 NIVEAU DE DÉTAIL : ${detailInstructions[detailLevel]}
 NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
@@ -29,22 +29,19 @@ NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
 PEDAGOGIE: Tu dois faire un effort de pédagogie, pour que ce soit bien clair.
 
 FORMULES MATHEMATIQUES: 
-1. Tu dois bien expliquer les termes et les symboles.
-2. Tu dois expliquer également des sous termes, les différents blocs de la formule.
+1. Tu dois bien préciser les termes.
+2. Tu dois expliquer également des sous termes, les différents blocs de la formule
 3. Tu dois faire des analogies et interprétations: faire en sorte que ce soit bien compris car c'est ta priorité.
-4. Donner d'abord l'intuition avant la formule.
-5. Donner un exemple numérique simple.
 
 STRUCTURE REQUISE :
 1. Titre principal avec <h1>
 2. Introduction dans un bloc générique
 3. Sections principales avec des blocs thématiques spécialisés
 4. Conclusion dans un bloc conclusion
-5. Un bloc "Pour aller plus loin": proposer 2 ou 3 questions ou idées cours pour rentrer dans un des détails de ce cours.
 
 VOICI LES CLASSES CSS QUE TU DOIS ABSOLUMENT UTILISER :
 
-1. BLOC GÉNÉRIQUE (pour introduction, concepts de base) :
+1. BLOC GÉNÉRIQUE (pour introduction, concepts de base, pour aller plus loin) :
 <div class="styled-block">
     <div class="block-title">Titre de la section</div>
     <p>Contenu...</p>
@@ -101,9 +98,8 @@ RÈGLES IMPORTANTES :
 - TOUJOURS utiliser ces classes exactes (respecte la casse)
 - TOUJOURS inclure un <div class="block-title"> dans chaque bloc styled-block
 - TOUJOURS essayer d'interpreter les differents blocs d'une formule mathématique
-- TOUJOURS faire un cours complet avec un début et une fin.
-- TOUJOURS définir simplement et clairement les termes et notions du cours, même les plus basiques.
-- TOUJOURS utiliser le type de bloc "conseils pratiques" pour le bloc "Pour aller plus loin".
+- TOUJOURS réaliser un décryptage complet avec un début et une fin
+- TOUJOURS ajouter un bloc après la conclusion "Pour aller plus loin": proposer 2 ou 3 questions et cours pour rentrer dans un des détails de ce cours.
 - NE JAMAIS inclure une formule mathématique dans un autre bloc que "FORMULE MATHÉMATIQUE"
 - NE JAMAIS inclure du code informatique dans un autre bloc que "CODE"
 - Le titre H1 reste en dehors des blocs
@@ -326,7 +322,7 @@ Réponse :`;
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 800,
       temperature: 0.7,
       messages: [
@@ -487,34 +483,11 @@ router.get('/random-subject', async (req, res) => {
     
     // Base de sujets côté serveur
     const serverSubjects = {
-      sciences: [
-        "La photosynthèse et son rôle dans l'écosystème",
-        "Les trous noirs et la relativité générale",
-        "La mécanique quantique et le principe d'incertitude",
-        "L'évolution et la sélection naturelle",
-        "La structure de l'ADN et la génétique"
-      ],
-      technologie: [
-        "Introduction aux algorithmes de machine learning",
-        "Les bases de la cryptographie moderne",
-        "L'architecture des processeurs modernes",
-        "Les réseaux neuronaux et l'intelligence artificielle",
-        "La blockchain et les cryptomonnaies"
-      ],
-      economie: [
-        "Le modèle d'évaluation d'actifs financiers (CAPM)",
-        "L'inflation et ses mécanismes économiques",
-        "Les marchés financiers et leur régulation",
-        "L'économie comportementale et les biais cognitifs",
-        "La théorie des jeux en économie"
-      ],
-      philosophie: [
-        "L'éthique de l'intelligence artificielle",
-        "Le libre arbitre face au déterminisme",
-        "La philosophie de l'esprit et la conscience",
-        "L'existentialisme de Sartre et Camus",
-        "L'éthique médicale et les dilemmes bioéthiques"
-      ]
+      physique: [/* Physique, chimie, astronomie */],
+      mathematiques: [/* Arithmétique, nombres premiers, etc. */],
+      biologie: [/* Évolution, neurosciences */],
+      terre: [/* Climat, géologie */],
+      appliees: [/* Ingénierie, informatique théorique */]
     };
 
     let selectedCategory;
@@ -553,10 +526,11 @@ router.get('/random-subject', async (req, res) => {
 router.get('/subject-categories', (req, res) => {
   try {
     const serverSubjects = {
-      sciences: 5,
-      technologie: 5,
-      economie: 5,
-      philosophie: 5
+      physique: 5,
+      mathematiques: 5,
+      biologie: 5,
+      terre: 5,
+      appliees: 5
     };
 
     res.json({
