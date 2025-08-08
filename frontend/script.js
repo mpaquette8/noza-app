@@ -29,7 +29,6 @@ function initializeApp() {
     document.getElementById('exportPdf').addEventListener('click', exportPdf);
     document.getElementById('exportDocx').addEventListener('click', exportDocx);
     document.getElementById('randomSubjectBtn').addEventListener('click', generateRandomSubject);
-    document.getElementById('generateBtn').addEventListener('click', generateCourse);
     
     // Chat interface
     const chatInput = document.getElementById('chatInput');
