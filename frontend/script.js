@@ -273,13 +273,59 @@ function displayCourse(course) {
     initializeLucide();
 }
 
+function animateQuizResults(quiz, userAnswers, correctCount) {
+    const questions = document.querySelectorAll('.quiz-question');
+    
+    questions.forEach((questionDiv, index) => {
+        setTimeout(() => {
+            const userAnswer = userAnswers[index];
+            const isCorrect = userAnswer === quiz.questions[index].correct;
+            
+            // Animation de révélation des réponses
+            questionDiv.classList.add('question-revealed');
+            
+            // Son effet (optionnel)
+            if (isCorrect) {
+                questionDiv.classList.add('question-correct');
+            } else {
+                questionDiv.classList.add('question-incorrect');
+            }
+            
+        }, index * 300); // Délai progressif
+    });
+    
+    // Afficher le score final après toutes les animations
+    setTimeout(() => {
+        const scorePercentage = Math.round((correctCount / quiz.questions.length) * 100);
+        const quizScoreElement = document.querySelector('.quiz-score');
+        
+        if (quizScoreElement) {
+            quizScoreElement.style.display = 'block';
+            quizScoreElement.classList.add('score-animated');
+        }
+        
+        const scoreEmoji = getScoreEmoji(scorePercentage);
+        document.querySelector('.score-icon').textContent = scoreEmoji;
+        
+    }, quiz.questions.length * 300 + 500);
+}
+
+function getScoreEmoji(percentage) {
+    if (percentage >= 90) return '🏆';
+    if (percentage >= 80) return '🎉';
+    if (percentage >= 70) return '👍';
+    if (percentage >= 60) return '📚';
+    if (percentage >= 50) return '💪';
+    return '🤔';
+}
+
 function displayQuiz(quiz) {
     const quizSection = document.getElementById('quizSection');
     
     let quizHTML = `
         <div class="quiz-container">
             <div class="quiz-header">
-                <h3>📝 Quiz de Compréhension</h3>
+                <h3>📝 Quiz de Compréhension (${quiz.questions.length} questions)</h3>
                 <button class="quiz-close-btn" id="quizCloseBtn">
                     <i data-lucide="x"></i>
                 </button>
@@ -289,17 +335,23 @@ function displayQuiz(quiz) {
     quiz.questions.forEach((q, index) => {
         quizHTML += `
             <div class="quiz-question" data-question="${index}">
-                <h4>${index + 1}. ${q.question}</h4>
+                <h4><span class="question-number">${index + 1}.</span> ${q.question}</h4>
                 <div class="quiz-options">
                     ${q.options.map((option, optIndex) => `
                         <div class="quiz-option" data-question="${index}" data-option="${optIndex}">
+                            <span class="option-letter">${String.fromCharCode(65 + optIndex)})</span>
                             ${option}
                         </div>
                     `).join('')}
                 </div>
                 <div class="quiz-explanation" style="display: none;">
-                    <strong>✅ Réponse correcte :</strong> ${q.options[q.correct]}<br>
-                    <strong>💡 Explication :</strong> ${q.explanation}
+                    <div class="explanation-header">
+                        <strong>✅ Réponse correcte :</strong> 
+                        <span class="correct-answer">${String.fromCharCode(65 + q.correct)}) ${q.options[q.correct]}</span>
+                    </div>
+                    <div class="explanation-content">
+                        <strong>💡 Explication :</strong> ${q.explanation}
+                    </div>
                 </div>
             </div>
         `;
@@ -307,15 +359,16 @@ function displayQuiz(quiz) {
     
     quizHTML += `
             <div class="quiz-score" style="display: none;">
-                <h3>🎯 Résultat : <span id="scoreText"></span></h3>
+                <div class="score-icon">🎯</div>
+                <h3>Résultat : <span id="scoreText"></span></h3>
                 <div class="quiz-actions">
                     <button class="generate-btn" id="resetQuizBtn">
                         <i data-lucide="refresh-cw"></i>
-                        Recommencer le Quiz
+                        Nouveau Quiz
                     </button>
                     <button class="action-btn" id="closeQuizBtn">
                         <i data-lucide="x"></i>
-                        Fermer le Quiz
+                        Fermer
                     </button>
                 </div>
             </div>
@@ -325,14 +378,15 @@ function displayQuiz(quiz) {
     quizSection.innerHTML = quizHTML;
     quizSection.style.display = 'block';
     
-    // Ajouter les event listeners pour le quiz
+    // Ajouter les event listeners
     setupQuizListeners(quiz);
-    
-    // Ajouter les event listeners pour les boutons du quiz
     setupQuizButtonListeners();
     
-    // Faire défiler vers le quiz
-    quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Scroll vers le quiz
+    quizSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+    });
     
     initializeLucide();
 }
@@ -343,11 +397,22 @@ function setupQuizListeners(quiz) {
     
     quizOptions.forEach(option => {
         option.addEventListener('click', function() {
+            // Vérifier si le quiz est déjà terminé
+            if (this.style.pointerEvents === 'none') {
+                return;
+            }
+            
             const questionIndex = parseInt(this.dataset.question);
             const optionIndex = parseInt(this.dataset.option);
             
+            // CORRECTION: Cibler les options de la même question
+            const questionDiv = document.querySelector(`[data-question="${questionIndex}"].quiz-question`);
+            if (!questionDiv) return;
+            
+            const questionOptions = questionDiv.querySelectorAll('.quiz-option');
+            
             // Désélectionner les autres options de cette question
-            document.querySelectorAll(`[data-question="${questionIndex}"]`).forEach(opt => {
+            questionOptions.forEach(opt => {
                 opt.classList.remove('selected');
             });
             
@@ -357,7 +422,8 @@ function setupQuizListeners(quiz) {
             
             // Vérifier si toutes les questions ont été répondues
             if (Object.keys(userAnswers).length === quiz.questions.length) {
-                setTimeout(() => showQuizResults(quiz, userAnswers), 500);
+                // Délai pour que l'utilisateur voie sa sélection
+                setTimeout(() => showQuizResults(quiz, userAnswers), 800);
             }
         });
     });
@@ -392,22 +458,37 @@ function showQuizResults(quiz, userAnswers) {
         
         if (isCorrect) correctCount++;
         
-        // Marquer les réponses
-        const questionOptions = document.querySelectorAll(`[data-question="${index}"]`);
+        // CORRECTION: Cibler les bonnes options avec le bon sélecteur
+        const questionDiv = document.querySelector(`[data-question="${index}"].quiz-question`);
+        if (!questionDiv) return;
+        
+        const questionOptions = questionDiv.querySelectorAll('.quiz-option');
+        
         questionOptions.forEach((option, optIndex) => {
+            // Enlever toutes les classes d'état précédentes
+            option.classList.remove('selected', 'correct', 'incorrect');
+            
+            // Appliquer la bonne classe selon l'état
             if (optIndex === question.correct) {
+                // La bonne réponse est TOUJOURS en vert
                 option.classList.add('correct');
             } else if (optIndex === userAnswer && !isCorrect) {
+                // La réponse choisie par l'utilisateur (si fausse) est en rouge
                 option.classList.add('incorrect');
             }
+            
+            // Désactiver les clics
             option.style.pointerEvents = 'none';
+            option.style.cursor = 'not-allowed';
         });
         
         // Afficher l'explication
-        document.querySelector(`[data-question="${index}"] .quiz-explanation`).style.display = 'block';
+        const explanation = questionDiv.querySelector('.quiz-explanation');
+        if (explanation) {
+            explanation.style.display = 'block';
+        }
     });
     
-    // Afficher le score
     // Afficher le score
     const scorePercentage = Math.round((correctCount / quiz.questions.length) * 100);
     const scoreElement = document.getElementById('scoreText');
@@ -420,7 +501,17 @@ function showQuizResults(quiz, userAnswers) {
         quizScoreElement.style.display = 'block';
     }
 
-    showNotification(`Quiz terminé ! Score: ${scorePercentage}%`, 'success');
+    // Message selon le score
+    let message = `Quiz terminé ! Score: ${scorePercentage}%`;
+    if (scorePercentage >= 80) {
+        message += ' - Excellent ! 🎉';
+    } else if (scorePercentage >= 60) {
+        message += ' - Bien joué ! 👍';
+    } else {
+        message += ' - Continuez vos efforts ! 💪';
+    }
+
+    showNotification(message, 'success');
 }
 
 // Fonctions utilitaires
@@ -892,14 +983,18 @@ async function resetQuiz() {
         return;
     }
     
-    // Désactiver le bouton et montrer l'état de chargement
     const resetBtn = document.getElementById('resetQuizBtn');
+    const closeBtn = document.getElementById('closeQuizBtn');
+    
+    // Désactiver les boutons
     if (resetBtn) {
         resetBtn.disabled = true;
         resetBtn.innerHTML = '<div class="loading-spinner"></div>Génération...';
     }
+    if (closeBtn) {
+        closeBtn.disabled = true;
+    }
     
-    // Afficher l'état de chargement dans le quiz section
     const quizSection = document.getElementById('quizSection');
     if (quizSection) {
         quizSection.innerHTML = `
@@ -913,7 +1008,6 @@ async function resetQuiz() {
                 </div>
             </div>
         `;
-        quizSection.style.display = 'block';
     }
 
     try {
@@ -939,8 +1033,6 @@ async function resetQuiz() {
     } catch (error) {
         console.error('Erreur:', error);
         showNotification('Erreur lors de la génération du nouveau quiz: ' + error.message, 'error');
-        
-        // En cas d'erreur, fermer le quiz
         closeQuiz();
     }
 }
