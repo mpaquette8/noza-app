@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hermès.ai</title>
+    <title>Science+ - La science accessible à tous</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>Hermès</h1>
+            <h1>Science+</h1>
             <p>La science accessible à tous</p>
         </header>
         <div class="main-content">
@@ -36,7 +36,7 @@
                     <div class="gauge-group detail-gauge">
                         <div class="gauge-label">
                             <div class="gauge-title">📊 Niveau de Détail</div>
-                            <div class="gauge-value" id="detailValue">Synthèse</div>
+                            <div class="gauge-value" id="detailValue">Détaillé</div>
                         </div>
                         <div class="gauge-container">
                             <div class="gauge-track" id="detailTrack" style="width: 66%"></div>
@@ -44,7 +44,7 @@
                                 type="range" 
                                 min="1" 
                                 max="3" 
-                                value="1" 
+                                value="2" 
                                 class="gauge-slider" 
                                 id="detailSlider"
                             >
@@ -55,7 +55,7 @@
                             <span>Exhaustif</span>
                         </div>
                         <div class="gauge-description" id="detailDescription">
-                            <strong>Synthèse :</strong> Cours concis avec les points essentiels.
+                            <strong>Détaillé :</strong> Cours complet avec explications approfondies, exemples multiples (~1500 mots).
                         </div>
                     </div>
                 
@@ -63,7 +63,7 @@
                     <div class="gauge-group vulgarization-gauge">
                         <div class="gauge-label">
                             <div class="gauge-title">🎓 Niveau de Vulgarisation</div>
-                            <div class="gauge-value" id="vulgarizationValue">Grand Public</div>
+                            <div class="gauge-value" id="vulgarizationValue">Accessible</div>
                         </div>
                         <div class="gauge-container">
                             <div class="gauge-track" id="vulgarizationTrack" style="width: 75%"></div>
@@ -71,7 +71,7 @@
                                 type="range" 
                                 min="1" 
                                 max="4" 
-                                value="1" 
+                                value="3" 
                                 class="gauge-slider" 
                                 id="vulgarizationSlider"
                             >
@@ -79,12 +79,12 @@
                         <!-- CORRECTION : Ordre inversé pour correspondre aux valeurs -->
                         <div class="gauge-labels">
                             <span>Grand Public</span>
-                            <span>Accessible</span>
-                            <span>Technique</span>
+                            <span>Éclairé</span>
+                            <span>Connaisseur</span>
                             <span>Expert</span>
                         </div>
                         <div class="gauge-description" id="vulgarizationDescription">
-                            <strong>Grand Public :</strong> Langage simple, vulgarisation complète accessible à tous.
+                            <strong>Accessible :</strong> Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.
                         </div>
                     </div>
                 
@@ -100,9 +100,9 @@
 
             <div class="course-display">
                 <div class="tabs">
-                    <div class="tab active" data-tab="course">Cours</div>
-                    <div class="tab" data-tab="history">Historique</div>
-                    <div class="tab" data-tab="paths">Parcours</div>
+                    <div class="tab active" data-tab="course">Décryptage</div>
+                    <div class="tab" data-tab="history">Mes découvertes</div>
+                    <div class="tab" data-tab="paths">Explorations</div>
                 </div>
 
                 <div class="tab-content" id="courseTab">
