@@ -46,7 +46,7 @@
                                 type="range" 
                                 min="1" 
                                 max="3" 
-                                value="2" 
+                                value="1" 
                                 class="gauge-slider" 
                                 id="detailSlider"
                             >
@@ -57,7 +57,7 @@
                             <span>Exhaustif</span>
                         </div>
                         <div class="gauge-description" id="detailDescription">
-                            <strong>Détaillé :</strong> Cours complet avec explications approfondies, exemples multiples (~1500 mots).
+                            <strong>Synthèse :</strong> Cours concis avec les points essentiels.
                         </div>
                     </div>
                 
@@ -73,7 +73,7 @@
                                 type="range" 
                                 min="1" 
                                 max="4" 
-                                value="3" 
+                                value="1" 
                                 class="gauge-slider" 
                                 id="vulgarizationSlider"
                             >
@@ -85,7 +85,7 @@
                             <span>Expert</span>
                         </div>
                         <div class="gauge-description" id="vulgarizationDescription">
-                            <strong>Accessible :</strong> Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets.
+                            <strong>Grand Public :</strong> Comme expliquer à votre grand-mère.
                         </div>
                     </div>
                 
@@ -97,50 +97,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Section pour les niveaux de question du chat -->
-                <div class="form-group">
-                    <label>🎯 Niveau des réponses du chat</label>
-                    <div class="radio-group">
-                        <div class="radio-option" data-level="beginner">
-                            <input type="radio" name="level" value="beginner" id="beginner">
-                            <label for="beginner">
-                                <strong>🟢 Débutant</strong><br>
-                                <small>Explications très simples, sans jargon technique</small>
-                            </label>
-                        </div>
-                        <div class="radio-option selected" data-level="intermediate">
-                            <input type="radio" name="level" value="intermediate" id="intermediate" checked>
-                            <label for="intermediate">
-                                <strong>🟡 Intermédiaire</strong><br>
-                                <small>Équilibre entre précision et accessibilité</small>
-                            </label>
-                        </div>
-                        <div class="radio-option" data-level="expert">
-                            <input type="radio" name="level" value="expert" id="expert">
-                            <label for="expert">
-                                <strong>🔴 Expert</strong><br>
-                                <small>Vocabulaire technique et concepts avancés</small>
-                            </label>
-                        </div>
-                        <div class="radio-option" data-level="hybrid">
-                            <input type="radio" name="level" value="hybrid" id="hybrid">
-                            <label for="hybrid">
-                                <strong>🟣 Hybride</strong><br>
-                                <small>Expert avec analogies simples</small>
-                            </label>
-                        </div>
-                        <div class="radio-option" data-level="hybridExpert">
-                            <input type="radio" name="level" value="hybridExpert" id="hybridExpert">
-                            <label for="hybridExpert">
-                                <strong>🔴 Hybride Expert</strong><br>
-                                <small>Maximum de détails + analogies du quotidien</small>
-                            </label>
-                        </div>
-                    </div>
-                </div>
             </div>
-
             <div class="course-display">
                 <div class="tabs">
                     <div class="tab active" data-tab="course">Décryptage</div>
