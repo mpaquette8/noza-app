@@ -144,43 +144,43 @@ body::before {
     line-height: 1.5;
 }
 
-/* --- Subject Input with Random Button --- */
+/* --- Subject Input with Random Button (Version 3 - NOUVEAU) --- */
 .subject-input-container {
-    position: relative;
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
     gap: 12px;
 }
 
 .subject-input-container textarea {
-    flex: 1;
+    width: 100%;
 }
 
 .random-subject-btn {
-    padding: 14px;
-    border: 2px solid #e2e8f0;
+    padding: 12px 20px;
+    border: 2px dashed #9f7aea;
     border-radius: 12px;
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    color: white;
+    background: linear-gradient(135deg, rgba(159, 122, 234, 0.1), rgba(128, 90, 213, 0.1));
+    color: #805ad5;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 50px;
-    height: 50px;
-    flex-shrink: 0;
+    gap: 10px;
     font-weight: 600;
+    font-size: 0.95rem;
 }
 
 .random-subject-btn:hover {
-    background: linear-gradient(135deg, #38a169, #2f855a);
-    transform: translateY(-2px) rotate(180deg);
-    box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+    background: linear-gradient(135deg, #9f7aea, #805ad5);
+    color: white;
+    border-style: solid;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(159, 122, 234, 0.3);
 }
 
 .random-subject-btn:active {
-    transform: translateY(-1px) rotate(180deg) scale(0.95);
+    transform: translateY(-1px) scale(0.98);
 }
 
 .random-subject-btn:disabled {
@@ -188,11 +188,12 @@ body::before {
     color: #a0aec0;
     cursor: not-allowed;
     transform: none;
+    border-style: solid;
 }
 
 .random-subject-btn i {
     transition: transform 0.3s ease;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .random-subject-btn.spinning i {
