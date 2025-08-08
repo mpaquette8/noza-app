@@ -26,8 +26,10 @@
                     <label for="subject">Sujet à décrypter</label>
                     <div class="subject-input-container">
                         <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
-                        <button type="button" class="random-subject-btn" id="randomSubjectBtn" title="Générer un sujet aléatoire">
-                            <i data-lucide="shuffle"></i>
+                        <button type="button" class="random-subject-btn" id="randomSubjectBtn">
+                            <i data-lucide="sparkles"></i>
+                            Générer un sujet aléatoire
+                            <i data-lucide="dice-6"></i>
                         </button>
                     </div>
                 </div>
@@ -76,7 +78,6 @@
                                 id="vulgarizationSlider"
                             >
                         </div>
-                        <!-- CORRECTION : Ordre inversé pour correspondre aux valeurs -->
                         <div class="gauge-labels">
                             <span>Grand Public</span>
                             <span>Éclairé</span>
@@ -93,6 +94,48 @@
                         <div class="combination-icon">🎯</div>
                         <div class="combination-text" id="combinationText">
                             Cours détaillé et accessible - Idéal pour approfondir un sujet
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section pour les niveaux de question du chat -->
+                <div class="form-group">
+                    <label>🎯 Niveau des réponses du chat</label>
+                    <div class="radio-group">
+                        <div class="radio-option" data-level="beginner">
+                            <input type="radio" name="level" value="beginner" id="beginner">
+                            <label for="beginner">
+                                <strong>🟢 Débutant</strong><br>
+                                <small>Explications très simples, sans jargon technique</small>
+                            </label>
+                        </div>
+                        <div class="radio-option selected" data-level="intermediate">
+                            <input type="radio" name="level" value="intermediate" id="intermediate" checked>
+                            <label for="intermediate">
+                                <strong>🟡 Intermédiaire</strong><br>
+                                <small>Équilibre entre précision et accessibilité</small>
+                            </label>
+                        </div>
+                        <div class="radio-option" data-level="expert">
+                            <input type="radio" name="level" value="expert" id="expert">
+                            <label for="expert">
+                                <strong>🔴 Expert</strong><br>
+                                <small>Vocabulaire technique et concepts avancés</small>
+                            </label>
+                        </div>
+                        <div class="radio-option" data-level="hybrid">
+                            <input type="radio" name="level" value="hybrid" id="hybrid">
+                            <label for="hybrid">
+                                <strong>🟣 Hybride</strong><br>
+                                <small>Expert avec analogies simples</small>
+                            </label>
+                        </div>
+                        <div class="radio-option" data-level="hybridExpert">
+                            <input type="radio" name="level" value="hybridExpert" id="hybridExpert">
+                            <label for="hybridExpert">
+                                <strong>🔴 Hybride Expert</strong><br>
+                                <small>Maximum de détails + analogies du quotidien</small>
+                            </label>
                         </div>
                     </div>
                 </div>
