@@ -2,6 +2,8 @@
 
 // État global de l'application
 let currentCourse = null;
+let currentQuiz = null;
+let quizState = { answered: 0, correct: 0 };
 
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
@@ -224,9 +226,142 @@ function switchTab(tabName) {
     if (activeContent) activeContent.style.display = 'block';
 }
 
-// Fonctions temporaires
-function handleGenerateQuiz() {
-    utils.showNotification('Quiz - En cours d\'implémentation', 'error');
+// Générer et afficher un quiz
+async function handleGenerateQuiz() {
+    if (!courseManager || !courseManager.currentCourse) {
+        utils.showNotification('Veuillez d\u0027abord générer un cours', 'error');
+        return;
+    }
+
+    const quizBtn = document.getElementById('generateQuiz');
+    quizBtn.disabled = true;
+    quizBtn.innerHTML = '<div class="loading-spinner"></div>Génération du quiz...';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/ai/generate-quiz`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authManager.getAuthHeaders()
+            },
+            body: JSON.stringify({ courseContent: courseManager.currentCourse.content })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.quiz) {
+            currentQuiz = data.quiz;
+            displayQuiz(data.quiz);
+            utils.showNotification('Quiz généré avec succès !', 'success');
+        } else {
+            throw new Error(data.error || 'Erreur lors de la génération du quiz');
+        }
+    } catch (error) {
+        console.error('Erreur génération quiz:', error);
+        if (!utils.handleAuthError(error)) {
+            utils.showNotification('Erreur lors de la génération du quiz: ' + error.message, 'error');
+        }
+    } finally {
+        quizBtn.disabled = false;
+        quizBtn.innerHTML = '<i data-lucide="help-circle"></i>Quiz';
+        utils.initializeLucide();
+    }
+}
+
+function displayQuiz(quiz) {
+    const quizSection = document.getElementById('quizSection');
+    if (!quizSection) return;
+
+    quizState = { answered: 0, correct: 0 };
+
+    const questionsHtml = quiz.questions.map((q, qi) => {
+        const optionsHtml = q.options.map((opt, oi) => `
+            <button class="quiz-option" data-question-index="${qi}" data-option-index="${oi}">
+                <span class="option-letter">${String.fromCharCode(65 + oi)}.</span>${opt}
+            </button>
+        `).join('');
+
+        return `
+            <div class="quiz-question" data-question-index="${qi}">
+                <h4><span class="question-number">${qi + 1}.</span>${q.question}</h4>
+                <div class="quiz-options">${optionsHtml}</div>
+                <div class="quiz-explanation" style="display:none;"></div>
+            </div>
+        `;
+    }).join('');
+
+    quizSection.innerHTML = `
+        <div class="quiz-header"><h3><i data-lucide="help-circle"></i> Quiz</h3></div>
+        ${questionsHtml}
+        <div class="quiz-score" id="quizScore" style="display:none;">
+            <div class="score-icon">🎉</div>
+            <h3></h3>
+        </div>
+    `;
+    quizSection.style.display = 'block';
+
+    quizSection.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.addEventListener('click', () => handleQuizAnswer(btn));
+    });
+
+    utils.initializeLucide();
+}
+
+function handleQuizAnswer(btn) {
+    const questionIndex = parseInt(btn.dataset.questionIndex);
+    const optionIndex = parseInt(btn.dataset.optionIndex);
+    const question = currentQuiz.questions[questionIndex];
+    const questionEl = btn.closest('.quiz-question');
+
+    if (!questionEl || questionEl.classList.contains('question-revealed')) return;
+
+    questionEl.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.style.pointerEvents = 'none';
+        if (parseInt(opt.dataset.optionIndex) === question.correct) {
+            opt.classList.add('correct');
+        }
+    });
+
+    if (optionIndex === question.correct) {
+        questionEl.classList.add('question-revealed', 'question-correct');
+        quizState.correct++;
+    } else {
+        btn.classList.add('incorrect');
+        questionEl.classList.add('question-revealed', 'question-incorrect');
+    }
+
+    const explanationEl = questionEl.querySelector('.quiz-explanation');
+    if (explanationEl) {
+        explanationEl.innerHTML = `
+            <div class="explanation-header"><strong>Explication :</strong></div>
+            <div class="explanation-content">Réponse correcte : <span class="correct-answer">${String.fromCharCode(65 + question.correct)}</span><br>${question.explanation}</div>
+        `;
+        explanationEl.style.display = 'block';
+    }
+
+    quizState.answered++;
+    if (quizState.answered === currentQuiz.questions.length) {
+        showQuizScore();
+    }
+}
+
+function showQuizScore() {
+    const scoreEl = document.getElementById('quizScore');
+    if (!scoreEl) return;
+
+    const total = currentQuiz.questions.length;
+    const percentage = Math.round((quizState.correct / total) * 100);
+    let icon = '🎉';
+    if (percentage < 50) {
+        icon = '🤔';
+    } else if (percentage < 80) {
+        icon = '👏';
+    }
+
+    scoreEl.querySelector('.score-icon').textContent = icon;
+    scoreEl.querySelector('h3').textContent = `Score : ${quizState.correct}/${total}`;
+    scoreEl.style.display = 'block';
+    scoreEl.classList.add('score-animated');
 }
 
 async function generateRandomSubject() {
