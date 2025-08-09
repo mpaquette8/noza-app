@@ -115,7 +115,7 @@ async function generateCourse() {
         showNotification('Erreur lors de la génération du cours: ' + error.message, 'error');
     } finally {
         generateBtn.disabled = false;
-        generateBtn.innerHTML = '<i data-lucide="sparkles"></i>Générer le cours';
+        generateBtn.innerHTML = '<i data-lucide="sparkles"></i>Décrypter le sujet';
         initializeLucide();
     }
 }
