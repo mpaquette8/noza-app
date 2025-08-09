@@ -1,0 +1,66 @@
+// backend/src/utils/constants.js
+
+// Niveaux de détail
+const DETAIL_LEVELS = {
+  SYNTHESIS: 1,
+  DETAILED: 2,
+  EXHAUSTIVE: 3
+};
+
+// Niveaux de vulgarisation
+const VULGARIZATION_LEVELS = {
+  GENERAL_PUBLIC: 1,
+  ENLIGHTENED: 2,
+  KNOWLEDGEABLE: 3,
+  EXPERT: 4
+};
+
+// Types de questions
+const QUESTION_TYPES = {
+  COURSE_RELATED: 'course-related',
+  GENERAL: 'general',
+  AUTO: 'auto'
+};
+
+// Limites
+const LIMITS = {
+  MAX_COURSE_LENGTH: 6000,
+  MAX_QUESTION_LENGTH: 500,
+  MAX_QUIZ_QUESTIONS: 10,
+  RATE_LIMIT_WINDOW: 15 * 60 * 1000, // 15 minutes
+  RATE_LIMIT_MAX: 100,
+  MAX_HISTORY_ITEMS: 50
+};
+
+// Messages d'erreur standardisés
+const ERROR_MESSAGES = {
+  UNAUTHORIZED: 'Non autorisé',
+  FORBIDDEN: 'Accès interdit',
+  NOT_FOUND: 'Ressource non trouvée',
+  VALIDATION_ERROR: 'Données invalides',
+  SERVER_ERROR: 'Erreur serveur interne',
+  RATE_LIMIT: 'Trop de requêtes',
+  COURSE_NOT_FOUND: 'Cours non trouvé',
+  INVALID_PARAMETERS: 'Paramètres invalides'
+};
+
+// Statuts HTTP
+const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  RATE_LIMIT: 429,
+  SERVER_ERROR: 500
+};
+
+module.exports = {
+  DETAIL_LEVELS,
+  VULGARIZATION_LEVELS,
+  QUESTION_TYPES,
+  LIMITS,
+  ERROR_MESSAGES,
+  HTTP_STATUS
+};

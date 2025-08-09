@@ -1,82 +1,53 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const path = require('path');
+// backend/server.js
 require('dotenv').config();
+const { app, initializeApp } = require('./src/app');
+const { logger } = require('./src/utils/helpers');
+const { disconnectDatabase } = require('./src/config/database');
 
-// Importer toutes les routes
-const apiRoutes = require('./routes/api');
-const authRoutes = require('./routes/auth');        // NOUVEAU
-const coursesRoutes = require('./routes/courses');  // NOUVEAU
-
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware de sécurité
-app.use(helmet());
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-
-// Route de test santé
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
-    hasJwtSecret: !!process.env.JWT_SECRET,           // NOUVEAU
-    hasDatabaseUrl: !!process.env.DATABASE_URL        // NOUVEAU
-  });
-});
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limite de 100 requêtes par fenêtre
-});
-app.use('/api/', limiter);
-
-// Middleware pour parser JSON
-app.use(express.json({ limit: '10mb' }));
-
-// Servir les fichiers statiques du frontend
-app.use(express.static('../frontend'));
-
-// Routes API
-app.use('/api', apiRoutes);
-app.use('/api/auth', authRoutes);        // NOUVEAU - Routes d'authentification
-app.use('/api/courses', coursesRoutes);  // NOUVEAU - Routes des cours
-
-// Route pour servir le frontend
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
-
-// Gestion des erreurs globales (NOUVEAU)
-app.use((err, req, res, next) => {
-  console.error('Erreur serveur:', err);
-  res.status(500).json({
-    success: false,
-    error: 'Erreur serveur interne'
-  });
-});
-
 // Démarrage du serveur
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Serveur démarré sur 0.0.0.0:${PORT}`);
-  console.log(`🔧 API disponible sur le port ${PORT}`);
-  console.log(`📚 Routes disponibles:`);
-  console.log(`   - GET  /health`);
-  console.log(`   - POST /api/auth/register`);
-  console.log(`   - POST /api/auth/login`);
-  console.log(`   - GET  /api/auth/profile`);
-  console.log(`   - GET  /api/courses`);
-  console.log(`   - POST /api/courses`);
-  console.log(`   - GET  /api/courses/:id`);
-  console.log(`   - DELETE /api/courses/:id`);
-  console.log(`   - POST /api/generate-course`);
-  console.log(`   - POST /api/ask-question`);
-  console.log(`   - POST /api/generate-quiz`);
-});
+const startServer = async () => {
+  try {
+    // Initialiser l'application (DB, etc.)
+    await initializeApp();
+    
+    // Démarrer le serveur
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      logger.success(`🚀 Serveur démarré sur 0.0.0.0:${PORT}`);
+      logger.info(`🔧 API disponible sur le port ${PORT}`);
+      logger.info(`📚 Routes disponibles:`);
+      logger.info(`   - GET  /api/health`);
+      logger.info(`   - POST /api/auth/register`);
+      logger.info(`   - POST /api/auth/login`);
+      logger.info(`   - GET  /api/auth/profile`);
+      logger.info(`   - GET  /api/courses`);
+      logger.info(`   - POST /api/courses`);
+      logger.info(`   - GET  /api/courses/:id`);
+      logger.info(`   - DELETE /api/courses/:id`);
+      logger.info(`   - POST /api/ai/ask-question`);
+      logger.info(`   - POST /api/ai/generate-quiz`);
+      logger.info(`   - POST /api/ai/suggest-questions`);
+    });
+
+    // Gestion propre de l'arrêt
+    const gracefulShutdown = async (signal) => {
+      logger.info(`${signal} reçu. Arrêt en cours...`);
+      
+      server.close(async () => {
+        logger.info('Serveur HTTP fermé');
+        await disconnectDatabase();
+        process.exit(0);
+      });
+    };
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  } catch (error) {
+    logger.error('Erreur démarrage serveur', error);
+    process.exit(1);
+  }
+};
+
+startServer();
