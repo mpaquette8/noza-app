@@ -16,7 +16,14 @@ let history = JSON.parse(localStorage.getItem('noza-history') || '[]');
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
-    loadHistory();
+    
+    // Charger l'historique depuis la DB si connecté
+    if (authManager.isAuthenticated()) {
+        loadUserCourses();
+    } else {
+        loadHistory(); // Garder le localStorage comme fallback
+    }
+    
     initializeLucide();
 });
 
@@ -78,6 +85,7 @@ async function generateCourse() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...authManager.getAuthHeaders()  // AJOUT DU TOKEN
             },
             body: JSON.stringify({ 
                 subject, 
@@ -96,9 +104,14 @@ async function generateCourse() {
         } else {
             throw new Error(data.error || 'Erreur lors de la génération');
         }
-
     } catch (error) {
         console.error('Erreur:', error);
+        
+        // Vérifier si c'est une erreur d'authentification
+        if (handleAuthError(error)) {
+            return;
+        }
+        
         showNotification('Erreur lors de la génération du cours: ' + error.message, 'error');
     } finally {
         generateBtn.disabled = false;
@@ -157,6 +170,7 @@ async function askQuestion() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...authManager.getAuthHeaders()  // AJOUT
             },
             body: JSON.stringify(requestData)
         });
@@ -222,6 +236,7 @@ async function generateQuiz() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...authManager.getAuthHeaders()  // AJOUT
             },
             body: JSON.stringify({
                 courseContent: currentCourse.content
@@ -559,6 +574,32 @@ function loadCourseFromHistory(courseId) {
         displayCourse(course);
         switchTab('course');
         showNotification('Cours chargé depuis l\'historique', 'success');
+    }
+}
+
+// Fonction pour charger l'historique depuis la DB
+async function loadUserCourses() {
+    if (!authManager.isAuthenticated()) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/courses`, {
+            headers: authManager.getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            history = data.courses.map(course => ({
+                id: course.id,
+                subject: course.subject,
+                detailLevel: course.detailLevel,
+                vulgarizationLevel: course.vulgarizationLevel,
+                createdAt: course.createdAt
+            }));
+            updateHistoryDisplay();
+        }
+    } catch (error) {
+        console.error('Erreur chargement historique:', error);
     }
 }
 
@@ -1122,14 +1163,19 @@ function initializeGauges() {
     }
 }
 
+// Fonction pour gérer les erreurs d'authentification
+function handleAuthError(error) {
+    if (error.message && error.message.includes('401')) {
+        showNotification('Session expirée, veuillez vous reconnecter', 'error');
+        authManager.logout();
+        return true;
+    }
+    return false;
+}
+
 // Fonctions globales pour l'accès depuis HTML
 window.loadCourseFromHistory = loadCourseFromHistory;
 window.resetQuiz = resetQuiz;
 window.closeQuiz = closeQuiz;
 window.askSuggestedQuestion = askSuggestedQuestion;
 window.clearChatHistory = clearChatHistory;
-
-// S'assurer que les fonctions sont bien attachées aux événements
-document.addEventListener('DOMContentLoaded', function() {
-    // Les fonctions sont déjà dans le scope global via window
-});

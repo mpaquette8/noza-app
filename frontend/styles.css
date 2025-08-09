@@ -1864,3 +1864,216 @@ body::before {
         font-size: 0.9rem;
     }
 }
+
+/* === STYLES D'AUTHENTIFICATION === */
+
+.auth-section {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px auto;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e2e8f0;
+}
+
+.auth-container {
+    width: 100%;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 30px;
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #718096;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.auth-tab.active {
+    background: white;
+    color: #4299e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-tab:hover:not(.active) {
+    color: #4a5568;
+}
+
+.auth-form {
+    width: 100%;
+}
+
+.auth-form h3 {
+    color: #2d3748;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-family: inherit;
+}
+
+.auth-btn:hover {
+    background: linear-gradient(135deg, #3182ce, #2c5282);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+}
+
+.auth-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0, #718096);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.auth-error {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    padding: 12px;
+    background: #fed7d7;
+    border-radius: 8px;
+    display: none;
+    border-left: 4px solid #e53e3e;
+}
+
+.user-section {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e2e8f0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.user-info i {
+    color: #4299e1;
+    font-size: 1.5rem;
+}
+
+.logout-btn {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(135deg, #c53030, #9c2626);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(229, 62, 62, 0.3);
+}
+
+/* Loading spinner pour les boutons */
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    padding: 18px 25px;
+    border-radius: 15px;
+    color: white;
+    font-weight: 600;
+    z-index: 1000;
+    animation: slideInNotification 0.4s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    max-width: 350px;
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #e53e3e, #c53030);
+}
+
+@keyframes slideInNotification {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .auth-section {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+    
+    .user-section {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .notification {
+        left: 15px;
+        right: 15px;
+        max-width: none;
+    }
+}

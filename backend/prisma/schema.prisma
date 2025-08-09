@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"  // Remettre postgresql
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  courses      Course[]
+  chatHistories ChatHistory[]
+  
+  @@map("users")
+}
+
+model Course {
+  id                 String   @id @default(cuid())
+  subject            String
+  content            String   @db.Text
+  detailLevel        Int
+  vulgarizationLevel Int
+  createdAt          DateTime @default(now())
+  
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  chatHistories      ChatHistory[]
+  
+  @@map("courses")
+}
+
+model ChatHistory {
+  id        String   @id @default(cuid())
+  messages  Json     // Remettre Json pour PostgreSQL
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  @@map("chat_histories")
+}

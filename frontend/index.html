@@ -14,6 +14,69 @@
             <h1>Science+</h1>
             <p>La science accessible à tous</p>
         </header>
+
+        <!-- Section d'authentification -->
+        <div id="authSection" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Connexion</button>
+                    <button class="auth-tab" data-tab="register">Inscription</button>
+                </div>
+
+                <!-- Formulaire de connexion -->
+                <div id="loginForm" class="auth-form">
+                    <h3>Se connecter</h3>
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Mot de passe</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="button" class="auth-btn" id="loginBtn">
+                        <i data-lucide="log-in"></i>
+                        Se connecter
+                    </button>
+                    <div class="auth-error" id="loginError"></div>
+                </div>
+
+                <!-- Formulaire d'inscription -->
+                <div id="registerForm" class="auth-form" style="display: none;">
+                    <h3>Créer un compte</h3>
+                    <div class="form-group">
+                        <label for="registerName">Nom</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Mot de passe</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <button type="button" class="auth-btn" id="registerBtn">
+                        <i data-lucide="user-plus"></i>
+                        Créer mon compte
+                    </button>
+                    <div class="auth-error" id="registerError"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section utilisateur connecté -->
+        <div id="userSection" class="user-section">
+            <div class="user-info">
+                <i data-lucide="user-circle"></i>
+                <span class="user-name"></span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i data-lucide="log-out"></i>
+                Déconnexion
+            </button>
+        </div>
+
         <div class="main-content">
             <div class="configuration-panel">
                 <button class="generate-btn" id="generateBtn">
@@ -97,7 +160,50 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Section radio pour niveau de chat -->
+                <div class="form-group">
+                    <label>Niveau des réponses du chat</label>
+                    <div class="radio-group">
+                        <div class="radio-option" data-level="beginner">
+                            <input type="radio" name="level" value="beginner" id="levelBeginner">
+                            <div>
+                                <strong>🟢 Débutant</strong>
+                                <p>Explications très simples, sans jargon technique</p>
+                            </div>
+                        </div>
+                        <div class="radio-option selected" data-level="intermediate">
+                            <input type="radio" name="level" value="intermediate" id="levelIntermediate" checked>
+                            <div>
+                                <strong>🟡 Intermédiaire</strong>
+                                <p>Équilibre entre précision et clarté</p>
+                            </div>
+                        </div>
+                        <div class="radio-option" data-level="expert">
+                            <input type="radio" name="level" value="expert" id="levelExpert">
+                            <div>
+                                <strong>🔴 Expert</strong>
+                                <p>Vocabulaire technique et précision maximale</p>
+                            </div>
+                        </div>
+                        <div class="radio-option" data-level="hybrid">
+                            <input type="radio" name="level" value="hybrid" id="levelHybrid">
+                            <div>
+                                <strong>🟣 Hybride</strong>
+                                <p>Technique avec analogies pour faciliter la compréhension</p>
+                            </div>
+                        </div>
+                        <div class="radio-option" data-level="hybridExpert">
+                            <input type="radio" name="level" value="hybridExpert" id="levelHybridExpert">
+                            <div>
+                                <strong>🔴 Hybride Expert</strong>
+                                <p>Très technique avec explications simples et analogies</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
             <div class="course-display">
                 <div class="tabs">
                     <div class="tab active" data-tab="course">Décryptage</div>
@@ -160,6 +266,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
 const router = express.Router();
+const { authenticate } = require('../middleware/auth');
+const prisma = require('../utils/prisma');
 
 // Initialisation du client Anthropic
 const anthropic = new Anthropic({
@@ -201,7 +203,7 @@ function detectQuestionType(question, courseContent) {
 }
 
 // Route pour générer un cours
-router.post('/generate-course', async (req, res) => {
+router.post('/generate-course', authenticate, async (req, res) => {
     try {
         const { subject, detailLevel, vulgarizationLevel } = req.body;
 
@@ -213,46 +215,54 @@ router.post('/generate-course', async (req, res) => {
 
         const prompt = createPrompt(subject, detailLevel, vulgarizationLevel);
 
-    const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 6000,
-      temperature: 0.2,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
-    });
+        const response = await anthropic.messages.create({
+            model: 'claude-3-5-sonnet-20241022',
+            max_tokens: 6000,
+            temperature: 0.2,
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ]
+        });
 
-    const courseContent = response.content[0].text;
+        const courseContent = response.content[0].text;
 
-    // Sauvegarder dans l'historique (en mémoire pour cette démo)
-    const courseData = {
-            id: Date.now().toString(),
-            subject,
-            detailLevel,
-            vulgarizationLevel,
-            content: courseContent,
-            createdAt: new Date().toISOString()
-        };
+        // NOUVEAU: Sauvegarder automatiquement en base de données
+        const savedCourse = await prisma.course.create({
+            data: {
+                subject,
+                content: courseContent,
+                detailLevel: parseInt(detailLevel),
+                vulgarizationLevel: parseInt(vulgarizationLevel),
+                userId: req.user.id
+            }
+        });
 
         res.json({
             success: true,
-            course: courseData
+            course: {
+                id: savedCourse.id,
+                subject: savedCourse.subject,
+                detailLevel: savedCourse.detailLevel,
+                vulgarizationLevel: savedCourse.vulgarizationLevel,
+                content: savedCourse.content,
+                createdAt: savedCourse.createdAt
+            }
         });
 
-  } catch (error) {
-    console.error('Erreur génération cours:', error);
-    res.status(500).json({
-      error: 'Erreur lors de la génération du cours',
-      details: error.message
-    });
-  }
+    } catch (error) {
+        console.error('Erreur génération cours:', error);
+        res.status(500).json({
+            error: 'Erreur lors de la génération du cours',
+            details: error.message
+        });
+    }
 });
 
 // Route améliorée pour les questions avec intelligence contextuelle
-router.post('/ask-question', async (req, res) => {
+router.post('/ask-question', authenticate, async (req, res) => {
   try {
     const { question, courseContent, level = 'intermediate', questionType = 'auto' } = req.body;
 
@@ -350,7 +360,7 @@ Réponse :`;
 });
 
 // Route pour générer un quiz
-router.post('/generate-quiz', async (req, res) => {
+router.post('/generate-quiz', authenticate, async (req, res) => {
   try {
     const { courseContent } = req.body;
 
