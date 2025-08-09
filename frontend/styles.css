@@ -200,76 +200,6 @@ body::before {
     animation: spin 0.8s ease-in-out;
 }
 
-/* --- Radio Button Groups - Style Cartes --- */
-.radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.radio-option {
-    display: flex;
-    align-items: center;
-    padding: 16px 18px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
-    position: relative;
-}
-
-.radio-option:hover {
-    border-color: #4299e1;
-    background: #ebf8ff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(66, 153, 225, 0.2);
-}
-
-.radio-option input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
-    accent-color: #4299e1;
-}
-
-.radio-option.selected {
-    border-color: #4299e1;
-    background: linear-gradient(135deg, #ebf8ff, #bee3f8);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(66, 153, 225, 0.3);
-}
-
-.radio-option.selected::after {
-    content: '✓';
-    position: absolute;
-    right: 15px;
-    color: #4299e1;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
-/* Style spécial pour Hybrid Expert */
-.radio-option[data-level="hybridExpert"] {
-    border: 2px solid #e53e3e;
-    background: linear-gradient(135deg, #fed7d7, #fbb6ce);
-}
-
-.radio-option[data-level="hybridExpert"]:hover {
-    border-color: #e53e3e;
-    background: linear-gradient(135deg, #fbb6ce, #f687b3);
-    box-shadow: 0 5px 15px rgba(229, 62, 62, 0.3);
-}
-
-.radio-option[data-level="hybridExpert"].selected {
-    border-color: #e53e3e;
-    background: linear-gradient(135deg, #fbb6ce, #f687b3);
-}
-
-.radio-option[data-level="hybridExpert"].selected::after {
-    color: #e53e3e;
-}
-
 /* --- Gauge Slider System - Style Moderne --- */
 .gauge-group {
     margin-bottom: 30px;
@@ -901,17 +831,17 @@ body::before {
 }
 
 .chat-interface[data-level="beginner"]::before {
-    content: "🟢 Mode Débutant";
+    content: "🟢 Grand Public";
     background: linear-gradient(135deg, #48bb78, #38a169);
 }
 
 .chat-interface[data-level="intermediate"]::before {
-    content: "🟡 Mode Intermédiaire";
+    content: "🟡 Éclairé";
     background: linear-gradient(135deg, #ed8936, #dd6b20);
 }
 
 .chat-interface[data-level="expert"]::before {
-    content: "🔴 Mode Expert";
+    content: "🔴 Connaisseur";
     background: linear-gradient(135deg, #e53e3e, #c53030);
 }
 
@@ -921,7 +851,7 @@ body::before {
 }
 
 .chat-interface[data-level="hybridExpert"]::before {
-    content: "🔴 Mode Hybride Expert";
+    content: "🔴 Expert";
     background: linear-gradient(135deg, #e53e3e, #c53030);
 }
 
