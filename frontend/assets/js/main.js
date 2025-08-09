@@ -229,7 +229,7 @@ function switchTab(tabName) {
 // Générer et afficher un quiz
 async function handleGenerateQuiz() {
     if (!courseManager || !courseManager.currentCourse) {
-        utils.showNotification('Veuillez d\u0027abord générer un cours', 'error');
+        utils.showNotification('Veuillez d\'abord générer un cours', 'error');
         return;
     }
 
