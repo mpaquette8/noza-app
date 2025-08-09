@@ -151,8 +151,9 @@ async function askQuestion() {
     appendToChat(typingElement);
 
     try {
-        // Récupérer le niveau sélectionné
-        const selectedLevel = document.querySelector('input[name="level"]:checked')?.value || 'intermediate';
+        // Récupérer le niveau de vulgarisation du cours
+        const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
+        const selectedLevel = mapVulgarizationToLevel(vulgarizationLevel);
         
         // Préparer les données pour l'API
         const requestData = {
@@ -221,6 +222,17 @@ async function askQuestion() {
     }
 }
 
+// Fonction pour mapper le niveau de vulgarisation vers les niveaux de chat
+function mapVulgarizationToLevel(vulgarizationLevel) {
+    const levelMap = {
+        '1': 'beginner',      // Grand Public
+        '2': 'intermediate',   // Éclairé
+        '3': 'expert',        // Connaisseur
+        '4': 'hybridExpert'   // Expert
+    };
+    return levelMap[vulgarizationLevel] || 'intermediate';
+}
+
 async function generateQuiz() {
     if (!currentCourse) {
         showNotification('Générez d\'abord un cours pour créer un quiz', 'error');
@@ -284,6 +296,9 @@ function displayCourse(course) {
     // Masquer le quiz s'il était affiché
     document.getElementById('quizSection').style.display = 'none';
     document.getElementById('quizSection').innerHTML = '';
+    
+    // Mettre à jour l'indicateur du niveau de chat basé sur la vulgarisation
+    updateChatLevelIndicator();
     
     initializeLucide();
 }
@@ -655,20 +670,8 @@ function switchTab(tabName) {
     document.getElementById(`${tabName}Tab`).style.display = 'block';
 }
 
-// Configuration des contrôles de formulaire
+// Configuration des contrôles de formulaire (VERSION SIMPLIFIÉE)
 function setupFormControls() {
-    // Radio buttons
-    document.querySelectorAll('.radio-option').forEach(option => {
-        option.addEventListener('click', function() {
-            document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
-            this.classList.add('selected');
-            this.querySelector('input[type="radio"]').checked = true;
-            
-            // Mettre à jour l'indicateur de niveau du chat
-            updateChatLevelIndicator();
-        });
-    });
-
     // Tabs
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -795,64 +798,6 @@ function typewriterEffect(element, text, callback) {
     typeWriter();
 }
 
-// Modifier la fonction initializeApp pour ajouter l'event listener
-function initializeAppWithRandomSubject() {
-    // Tous vos event listeners existants...
-    document.getElementById('generateBtn').addEventListener('click', generateCourse);
-    document.getElementById('generateQuiz').addEventListener('click', generateQuiz);
-    document.getElementById('copyContent').addEventListener('click', copyContent);
-    document.getElementById('exportPdf').addEventListener('click', exportPdf);
-    document.getElementById('exportDocx').addEventListener('click', exportDocx);
-    
-    // Nouveau event listener pour le bouton sujet aléatoire
-    document.getElementById('randomSubjectBtn').addEventListener('click', generateRandomSubject);
-    
-    // Chat interface
-    const chatInput = document.getElementById('chatInput');
-    const chatSendBtn = document.getElementById('chatSendBtn');
-    
-    chatInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            askQuestion();
-        }
-    });
-    
-    chatSendBtn.addEventListener('click', askQuestion);
-
-    // Auto-resize chat input
-    chatInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-    });
-
-    // Setup form controls
-    setupFormControls();
-}
-
-// Fonction pour ajouter plus de sujets à une catégorie (utile pour l'expansion)
-function addSubjectsToCategory(category, newSubjects) {
-    if (randomSubjects[category]) {
-        randomSubjects[category].push(...newSubjects);
-    } else {
-        randomSubjects[category] = newSubjects;
-    }
-}
-
-// Fonction pour obtenir des statistiques sur les sujets
-function getSubjectsStats() {
-    const stats = {};
-    let total = 0;
-    
-    for (const [category, subjects] of Object.entries(randomSubjects)) {
-        stats[category] = subjects.length;
-        total += subjects.length;
-    }
-    
-    stats.total = total;
-    return stats;
-}
-
 // Nouvelle fonction pour créer des messages améliorés
 function createEnhancedMessageElement(content, type, metadata = {}) {
     const div = document.createElement('div');
@@ -872,11 +817,11 @@ function createEnhancedMessageElement(content, type, metadata = {}) {
         
         if (metadata.level) {
             const levelLabels = {
-                beginner: '🟢 Débutant',
-                intermediate: '🟡 Intermédiaire', 
-                expert: '🔴 Expert',
+                beginner: '🟢 Grand Public',
+                intermediate: '🟡 Éclairé', 
+                expert: '🔴 Connaisseur',
                 hybrid: '🟣 Hybride',
-                hybridExpert: '🔴 Hybride Expert'
+                hybridExpert: '🔴 Expert'
             };
             
             const badgeClass = metadata.level === 'hybridExpert' ? 'hybrid-expert-badge' : 'level-badge';
@@ -892,10 +837,11 @@ function createEnhancedMessageElement(content, type, metadata = {}) {
     return div;
 }
 
-// Ajoutez cette fonction pour mettre à jour l'attribut data-level du chat
+// Fonction mise à jour pour l'indicateur de niveau du chat
 function updateChatLevelIndicator() {
     const chatInterface = document.querySelector('.chat-interface');
-    const selectedLevel = document.querySelector('input[name="level"]:checked')?.value;
+    const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
+    const selectedLevel = mapVulgarizationToLevel(vulgarizationLevel);
     
     if (chatInterface && selectedLevel) {
         chatInterface.setAttribute('data-level', selectedLevel);
@@ -907,7 +853,8 @@ async function suggestFollowUpQuestions() {
     if (!currentCourse) return;
 
     try {
-        const selectedLevel = document.querySelector('input[name="level"]:checked')?.value || 'intermediate';
+        const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
+        const selectedLevel = mapVulgarizationToLevel(vulgarizationLevel);
         
         const response = await fetch(`${API_BASE_URL}/suggest-questions`, {
             method: 'POST',
@@ -1132,6 +1079,7 @@ function updateVulgarizationGauge() {
     document.getElementById('vulgarizationTrack').style.width = `${percentage}%`;
     
     updateCombination();
+    updateChatLevelIndicator(); // Mettre à jour l'indicateur du chat
 }
 
 function updateCombination() {
