@@ -63,8 +63,17 @@ class CourseController {
   async generateCourse(req, res) {
     try {
       const { subject, detailLevel, vulgarizationLevel, style, duration, intent } = req.body;
-      const isLegacyPayload = (style == null && duration == null && intent == null) &&
-        (detailLevel != null || vulgarizationLevel != null);
+
+      const deprecatedFields = [];
+      if (detailLevel != null) deprecatedFields.push('detailLevel');
+      if (vulgarizationLevel != null) deprecatedFields.push('vulgarizationLevel');
+      const hasDeprecatedParams = deprecatedFields.length > 0;
+
+      if (hasDeprecatedParams) {
+        logger.warn('Utilisation de paramètres dépréciés', { deprecatedFields });
+      }
+
+      const isLegacyPayload = (style == null && duration == null && intent == null) && hasDeprecatedParams;
 
       // Conversion et valeurs par défaut
       const params = mapLegacyParams({ detailLevel, vulgarizationLevel, style, duration, intent });
@@ -111,6 +120,12 @@ class CourseController {
       });
 
       const { response, statusCode } = createResponse(true, { course: savedCourse }, null, HTTP_STATUS.CREATED);
+
+      if (hasDeprecatedParams) {
+        response.deprecatedParams = deprecatedFields;
+        res.set('X-Deprecated-Params', deprecatedFields.join(','));
+      }
+
       res.status(statusCode).json(response);
     } catch (error) {
       logger.error('Erreur génération cours', error);
