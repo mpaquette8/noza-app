@@ -75,6 +75,7 @@ async function handleGenerateCourse() {
             );
             if (course) {
                 currentCourse = course;
+                displayCourseMetadata(course.style, course.duration, course.intent);
             }
         }
     } finally {
@@ -82,6 +83,26 @@ async function handleGenerateCourse() {
         generateBtn.innerHTML = '<i data-lucide="sparkles"></i>Décrypter le sujet';
         utils.initializeLucide();
     }
+}
+
+function displayCourseMetadata(style, duration, intent) {
+    const container = document.getElementById('generatedCourse');
+    if (!container) return;
+
+    const badgesContainer = document.createElement('div');
+    badgesContainer.className = 'message-badges';
+    badgesContainer.innerHTML = `
+        <span class="message-badge course-badge">${style}</span>
+        <span class="message-badge general-badge">${duration}</span>
+        <span class="message-badge level-badge">${intent}</span>
+    `;
+
+    const existing = container.querySelector('.message-badges');
+    if (existing) {
+        existing.remove();
+    }
+
+    container.prepend(badgesContainer);
 }
 
 function setupChatEventListeners() {
@@ -460,3 +481,4 @@ function typewriterEffect(element, text, callback) {
 // Exposer globalement
 window.currentCourse = currentCourse;
 window.handleGenerateCourse = handleGenerateCourse;
+window.displayCourseMetadata = displayCourseMetadata;
