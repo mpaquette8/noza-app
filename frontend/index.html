@@ -97,66 +97,30 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <!-- Jauge Niveau de Détail -->
-                    <div class="gauge-group detail-gauge">
-                        <div class="gauge-label">
-                            <div class="gauge-title">📊 Niveau de Détail</div>
-                            <div class="gauge-value" id="detailValue">Détaillé</div>
+                    <div class="new-selector-container">
+                        <div class="selector-group">
+                            <div class="selector-title">🖋️ Style</div>
+                            <div class="selector-buttons">
+                                <button data-type="style" data-value="academique" class="active">Académique</button>
+                                <button data-type="style" data-value="conversationnel">Conversationnel</button>
+                                <button data-type="style" data-value="creatif">Créatif</button>
+                            </div>
                         </div>
-                        <div class="gauge-container">
-                            <div class="gauge-track" id="detailTrack" style="width: 66%"></div>
-                            <input 
-                                type="range" 
-                                min="1" 
-                                max="3" 
-                                value="1" 
-                                class="gauge-slider" 
-                                id="detailSlider"
-                            >
+                        <div class="selector-group">
+                            <div class="selector-title">⏱️ Durée</div>
+                            <div class="selector-buttons">
+                                <button data-type="duration" data-value="courte" class="active">Courte</button>
+                                <button data-type="duration" data-value="moyenne">Moyenne</button>
+                                <button data-type="duration" data-value="longue">Longue</button>
+                            </div>
                         </div>
-                        <div class="gauge-labels">
-                            <span>Synthèse</span>
-                            <span>Détaillé</span>
-                            <span>Exhaustif</span>
-                        </div>
-                        <div class="gauge-description" id="detailDescription">
-                            <strong>Synthèse :</strong> Cours concis avec les points essentiels.
-                        </div>
-                    </div>
-                
-                    <!-- Jauge Niveau de Vulgarisation -->
-                    <div class="gauge-group vulgarization-gauge">
-                        <div class="gauge-label">
-                            <div class="gauge-title">🎓 Niveau de Vulgarisation</div>
-                            <div class="gauge-value" id="vulgarizationValue">Accessible</div>
-                        </div>
-                        <div class="gauge-container">
-                            <div class="gauge-track" id="vulgarizationTrack" style="width: 75%"></div>
-                            <input 
-                                type="range" 
-                                min="1" 
-                                max="4" 
-                                value="1" 
-                                class="gauge-slider" 
-                                id="vulgarizationSlider"
-                            >
-                        </div>
-                        <div class="gauge-labels">
-                            <span>Grand Public</span>
-                            <span>Éclairé</span>
-                            <span>Connaisseur</span>
-                            <span>Expert</span>
-                        </div>
-                        <div class="gauge-description" id="vulgarizationDescription">
-                            <strong>Grand Public :</strong> Comme expliquer à votre grand-mère.
-                        </div>
-                    </div>
-                
-                    <!-- Indicateur de Combinaison -->
-                    <div class="combination-indicator" id="combinationIndicator">
-                        <div class="combination-icon">🎯</div>
-                        <div class="combination-text" id="combinationText">
-                            Cours détaillé et accessible - Idéal pour approfondir un sujet
+                        <div class="selector-group">
+                            <div class="selector-title">🎯 Intention</div>
+                            <div class="selector-buttons">
+                                <button data-type="intent" data-value="informer" class="active">Informer</button>
+                                <button data-type="intent" data-value="convaincre">Convaincre</button>
+                                <button data-type="intent" data-value="divertir">Divertir</button>
+                            </div>
                         </div>
                     </div>
                 </div>

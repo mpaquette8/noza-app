@@ -5,6 +5,13 @@ let currentCourse = null;
 let currentQuiz = null;
 let quizState = { answered: 0, correct: 0 };
 
+// Configuration par défaut pour les nouveaux sélecteurs
+let currentConfig = {
+    style: 'academique',
+    duration: 'courte',
+    intent: 'informer'
+};
+
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initialisation Hermès App');
@@ -25,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeApp() {
     // Configuration initiale de l'interface
-    initializeGauges();
+    setupNewSelectors();
     setupFormControls();
 }
 
@@ -48,8 +55,6 @@ function setupEventListeners() {
 // Gestionnaires d'événements principaux
 async function handleGenerateCourse() {
     const subject = document.getElementById('subject').value.trim();
-    const detailLevel = document.getElementById('detailSlider').value;
-    const vulgarizationLevel = document.getElementById('vulgarizationSlider').value;
 
     if (!subject) {
         utils.showNotification('Veuillez entrer un sujet pour le décryptage', 'error');
@@ -62,7 +67,12 @@ async function handleGenerateCourse() {
 
     try {
         if (courseManager) {
-            const course = await courseManager.generateCourse(subject, detailLevel, vulgarizationLevel);
+            const course = await courseManager.generateCourse(
+                subject,
+                currentConfig.style,
+                currentConfig.duration,
+                currentConfig.intent
+            );
             if (course) {
                 currentCourse = course;
             }
@@ -103,6 +113,27 @@ async function askQuestion() {
 
     // TODO: Implémenter la logique de chat
     utils.showNotification('Chat - En cours d\'implémentation', 'error');
+}
+
+// Gestion des nouveaux sélecteurs de configuration
+function setupNewSelectors() {
+    document.querySelectorAll('.selector-group button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.dataset.type;
+            const value = btn.dataset.value;
+            updateSelection(type, value, btn);
+        });
+    });
+}
+
+function updateSelection(type, value, selectedBtn) {
+    currentConfig[type] = value;
+    document.querySelectorAll(`.selector-group button[data-type="${type}"]`).forEach(btn => {
+        btn.classList.remove('active');
+    });
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
 }
 
 // Jauges et contrôles (copiés de votre ancien script)
