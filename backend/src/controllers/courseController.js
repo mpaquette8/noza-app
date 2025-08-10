@@ -77,11 +77,12 @@ class CourseController {
       // Sanitisation
       const sanitizedSubject = sanitizeInput(subject);
 
-      // Génération du cours avec anciens paramètres
+      // Génération du cours
       const courseContent = await anthropicService.generateCourse(
         sanitizedSubject,
-        parseInt(params.detailLevel),
-        parseInt(params.vulgarizationLevel)
+        params.style,
+        params.duration,
+        params.intent
       );
 
       // Sauvegarde en base
