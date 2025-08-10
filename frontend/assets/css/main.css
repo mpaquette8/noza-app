@@ -209,6 +209,47 @@ body::before {
     animation: spin 0.8s ease-in-out;
 }
 
+/* --- Nouveaux sélecteurs de configuration --- */
+.new-selector-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.selector-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.selector-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.selector-group button {
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #2d3748;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.selector-group button:hover {
+    background: #edf2f7;
+}
+
+.selector-group button.active {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    border-color: #3182ce;
+}
+
 /* --- Gauge Slider System - Style Moderne --- */
 .gauge-group {
     margin-bottom: 30px;
