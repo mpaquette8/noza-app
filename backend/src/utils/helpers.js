@@ -1,5 +1,5 @@
 // backend/src/utils/helpers.js
-const { ERROR_MESSAGES, HTTP_STATUS } = require('./constants');
+const { ERROR_MESSAGES, HTTP_STATUS, STYLES, DURATIONS, INTENTS } = require('./constants');
 
 // Formatage de réponse standardisé
 const createResponse = (success, data = null, error = null, statusCode = HTTP_STATUS.OK) => {
@@ -21,22 +21,47 @@ const createResponse = (success, data = null, error = null, statusCode = HTTP_ST
 };
 
 // Validation des paramètres
-const validateCourseParams = (subject, detailLevel, vulgarizationLevel) => {
+const validateCourseParams = (subject, style, duration, intent) => {
   const errors = [];
-  
+
   if (!subject || typeof subject !== 'string' || subject.trim().length === 0) {
     errors.push('Le sujet est requis');
   }
-  
-  if (!detailLevel || ![1, 2, 3].includes(parseInt(detailLevel))) {
-    errors.push('Niveau de détail invalide (1-3)');
+
+  if (!style || !Object.values(STYLES).includes(style)) {
+    errors.push('Style invalide');
   }
-  
-  if (!vulgarizationLevel || ![1, 2, 3, 4].includes(parseInt(vulgarizationLevel))) {
-    errors.push('Niveau de vulgarisation invalide (1-4)');
+
+  if (!duration || !Object.values(DURATIONS).includes(duration)) {
+    errors.push('Durée invalide');
   }
-  
+
+  if (!intent || !Object.values(INTENTS).includes(intent)) {
+    errors.push('Intention invalide');
+  }
+
   return errors;
+};
+
+// Conversion des anciens paramètres vers les nouveaux
+const mapLegacyParams = ({ detailLevel, vulgarizationLevel, style, duration, intent }) => {
+  const durationMap = { 1: DURATIONS.SHORT, 2: DURATIONS.MEDIUM, 3: DURATIONS.LONG };
+  const intentMap = { 1: INTENTS.DISCOVER, 2: INTENTS.LEARN, 3: INTENTS.MASTER, 4: INTENTS.EXPERT };
+
+  const finalStyle = style || STYLES.NEUTRAL;
+  const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
+  const finalIntent = intent || intentMap[vulgarizationLevel] || INTENTS.LEARN;
+
+  const finalDetail = detailLevel || parseInt(Object.keys(durationMap).find(key => durationMap[key] === finalDuration));
+  const finalVulgarization = vulgarizationLevel || parseInt(Object.keys(intentMap).find(key => intentMap[key] === finalIntent));
+
+  return {
+    style: finalStyle,
+    duration: finalDuration,
+    intent: finalIntent,
+    detailLevel: finalDetail,
+    vulgarizationLevel: finalVulgarization
+  };
 };
 
 // Sanitisation des entrées
@@ -74,6 +99,7 @@ const logger = {
 module.exports = {
   createResponse,
   validateCourseParams,
+  mapLegacyParams,
   sanitizeInput,
   asyncHandler,
   logger
