@@ -1,7 +1,29 @@
 // backend/src/services/anthropicService.js
 const Anthropic = require('@anthropic-ai/sdk');
 const { logger } = require('../utils/helpers');
-const { LIMITS } = require('../utils/constants');
+const { LIMITS, STYLES, DURATIONS, INTENTS } = require('../utils/constants');
+
+// Mapping duration presets to approximate word counts
+const DURATION_TO_WORDS = {
+  [DURATIONS.SHORT]: 750,
+  [DURATIONS.MEDIUM]: 2250,
+  [DURATIONS.LONG]: 4200
+};
+
+// Instructions to adapt tone and style
+const STYLE_INSTRUCTIONS = {
+  [STYLES.NEUTRAL]: "Utilise un ton neutre et informatif.",
+  [STYLES.PEDAGOGICAL]: "Adopte un ton pédagogique, clair et structuré.",
+  [STYLES.STORYTELLING]: "Présente les informations sous la forme d'un récit engageant."
+};
+
+// Additional guidance based on learner intent
+const INTENT_ENHANCEMENTS = {
+  [INTENTS.DISCOVER]: "Mets l'accent sur la découverte des notions principales.",
+  [INTENTS.LEARN]: "Développe les concepts pour faciliter l'apprentissage.",
+  [INTENTS.MASTER]: "Fournis des détails approfondis et des exemples concrets pour maîtriser le sujet.",
+  [INTENTS.EXPERT]: "Approfondis chaque aspect avec un niveau d'expertise avancé."
+};
 
 class AnthropicService {
   constructor() {
@@ -14,142 +36,38 @@ class AnthropicService {
     });
   }
 
-  // Créer un prompt selon le niveau
-  createPrompt(subject, detailLevel, vulgarizationLevel) {
-    const detailInstructions = {
-        1: "Crée une synthèse concise (~750 mots) avec les points essentiels",
-        2: "Crée un cours détaillé (~2250 mots) avec explications approfondies et exemples",
-        3: "Crée une analyse exhaustive (~4200 mots) très complète avec références"
-    };
-    const vulgarizationInstructions = {
-        1: "Langage simple, nombreuses analogies, accessible à tous sans prérequis",
-        2: "Explications claires avec vocabulaire technique expliqué, analogies et exemples concrets",
-        3: "Approche technique avec explication des termes spécialisés",
-        4: "Utilise un vocabulaire spécialisé, concepts avancés, destiné aux experts"
-    };
+  
+  // Obtenir la contrainte de longueur selon la durée souhaitée
+  getDurationConstraint(duration) {
+    const words = DURATION_TO_WORDS[duration];
+    return words ? `Le cours doit contenir environ ${words} mots.` : '';
+  }
+
+  // Créer un prompt selon les paramètres fournis
+  createPrompt(subject, style, duration, intent) {
+    const styleInstruction = STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS[STYLES.NEUTRAL];
+    const intentInstruction = INTENT_ENHANCEMENTS[intent] || '';
+    const durationConstraint = this.getDurationConstraint(duration);
 
     return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
 
-NIVEAU DE DÉTAIL : ${detailInstructions[detailLevel]}
-NIVEAU DE VULGARISATION : ${vulgarizationInstructions[vulgarizationLevel]}
+${styleInstruction}
+${intentInstruction}
+${durationConstraint}
 
-PEDAGOGIE: Tu dois faire un effort de pédagogie, pour que ce soit bien clair.
-
-FORMULES MATHEMATIQUES: 
-1. Tu dois bien préciser les termes.
-2. Tu dois expliquer également des sous termes, les différents blocs de la formule
-3. Tu dois faire des analogies et interprétations: faire en sorte que ce soit bien compris car c'est ta priorité.
-
-STRUCTURE REQUISE :
-1. Titre principal avec <h1>
-2. Introduction dans un bloc générique
-3. Sections principales avec des blocs thématiques spécialisés
-4. Conclusion dans un bloc conclusion
-
-VOICI LES CLASSES CSS QUE TU DOIS ABSOLUMENT UTILISER :
-
-1. BLOC GÉNÉRIQUE (pour introduction, concepts de base, pour aller plus loin) :
-<div class="styled-block">
-    <div class="block-title">Titre de la section</div>
-    <p>Contenu...</p>
-</div>
-
-2. BLOC EXEMPLE PRATIQUE (pour cas concrets, applications) :
-<div class="styled-block example-block">
-    <div class="block-title">Exemple Pratique</div>
-    <p>Contenu de l'exemple...</p>
-</div>
-
-3. BLOC CONSEILS PRATIQUES (pour tips, recommandations) :
-<div class="styled-block practical-tips-block">
-    <div class="block-title">Conseils Pratiques</div>
-    <p>Conseils et recommandations...</p>
-</div>
-
-4. BLOC CONCLUSION (obligatoire en fin de cours) :
-<div class="styled-block conclusion-block">
-    <div class="block-title">Conclusion</div>
-    <p>Synthèse finale...</p>
-</div>
-
-5. BLOC CONCEPT CLÉ (pour notions importantes) :
-<div class="styled-block concept-block">
-    <div class="block-title">Concept Clé</div>
-    <p>Explication du concept...</p>
-</div>
-
-6. BLOC ANALOGIE (pour comparaisons et métaphores) :
-<div class="styled-block analogy-block">
-    <div class="block-title">Analogie</div>
-    <p>Comparaison explicative...</p>
-</div>
-
-BLOCS SPÉCIALISÉS (utilise si approprié) :
-
-7. FORMULE MATHÉMATIQUE :
-<div class="formula">
-    <p>Formule ou équation mathématique</p>
-</div>
-
-8. CITATION :
-<div class="quote-block">
-    <p>Citation importante ou définition officielle</p>
-</div>
-
-9. CODE (si applicable) :
-<div class="code-block">
-    <pre><code>Code ou pseudo-code</code></pre>
-</div>
-
-RÈGLES IMPORTANTES :
-- TOUJOURS utiliser ces classes exactes (respecte la casse)
-- TOUJOURS inclure un <div class="block-title"> dans chaque bloc styled-block
-- TOUJOURS essayer d'interpreter les differents blocs d'une formule mathématique
-- TOUJOURS réaliser un décryptage complet avec un début et une fin
-- TOUJOURS ajouter un bloc après la conclusion "Pour aller plus loin": proposer 2 ou 3 questions et cours pour rentrer dans un des détails de ce cours.
-- NE JAMAIS inclure une formule mathématique dans un autre bloc que "FORMULE MATHÉMATIQUE"
-- NE JAMAIS inclure du code informatique dans un autre bloc que "CODE"
-- Le titre H1 reste en dehors des blocs
-- Assure-toi que chaque bloc a un contenu substantiel (minimum 2-3 phrases)
-- Termine OBLIGATOIREMENT par un bloc conclusion-block
-
-EXEMPLE DE STRUCTURE FINALE :
-<h1>Titre du Cours</h1>
-
-<div class="styled-block">
-    <div class="block-title">Introduction</div>
-    <p>Introduction générale...</p>
-</div>
-
-<div class="styled-block concept-block">
-    <div class="block-title">Concepts Fondamentaux</div>
-    <p>Explication des concepts...</p>
-</div>
-
-<div class="styled-block example-block">
-    <div class="block-title">Exemple Pratique</div>
-    <p>Application concrète...</p>
-</div>
-
-<div class="styled-block practical-tips-block">
-    <div class="block-title">Points Clés à Retenir</div>
-    <p>Conseils et astuces...</p>
-</div>
-
-<div class="styled-block conclusion-block">
-    <div class="block-title">Conclusion</div>
-    <p>Synthèse et perspectives...</p>
-</div>
-
-Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre les différents types de blocs.`;
+Structure :
+- Titre principal avec <h1>
+- Contenu organisé en blocs <div class="styled-block"> avec <div class="block-title">.
+- Utilise les variantes example-block, practical-tips-block, conclusion-block, concept-block et analogy-block si nécessaire.
+- Termine par un bloc conclusion-block.`;
   }
 
   // Générer un cours
-  async generateCourse(subject, detailLevel, vulgarizationLevel) {
+  async generateCourse(subject, style, duration, intent) {
     try {
-      const prompt = this.createPrompt(subject, detailLevel, vulgarizationLevel);
-      
-      logger.info('Génération cours', { subject, detailLevel, vulgarizationLevel });
+      const prompt = this.createPrompt(subject, style, duration, intent);
+
+      logger.info('Génération cours', { subject, style, duration, intent });
 
       const response = await this.client.messages.create({
         model: 'claude-3-5-sonnet-20241022',
