@@ -1,9 +1,8 @@
 // backend/src/controllers/courseController.js
 const { prisma } = require('../config/database');
-const { createResponse, validateCourseParams, sanitizeInput, logger } = require('../utils/helpers');
+const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../utils/helpers');
 const { HTTP_STATUS, ERROR_MESSAGES, LIMITS } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
-const { asyncHandler } = require('../utils/helpers');
 
 class CourseController {
   // Récupérer tous les cours de l'utilisateur
@@ -18,6 +17,9 @@ class CourseController {
           subject: true,
           detailLevel: true,
           vulgarizationLevel: true,
+          style: true,
+          duration: true,
+          intent: true,
           createdAt: true
         }
       });
@@ -60,10 +62,13 @@ class CourseController {
   // Générer un nouveau cours
   async generateCourse(req, res) {
     try {
-      const { subject, detailLevel, vulgarizationLevel } = req.body;
+      const { subject, detailLevel, vulgarizationLevel, style, duration, intent } = req.body;
+
+      // Conversion et valeurs par défaut
+      const params = mapLegacyParams({ detailLevel, vulgarizationLevel, style, duration, intent });
 
       // Validation
-      const validationErrors = validateCourseParams(subject, detailLevel, vulgarizationLevel);
+      const validationErrors = validateCourseParams(subject, params.style, params.duration, params.intent);
       if (validationErrors.length > 0) {
         const { response, statusCode } = createResponse(false, null, validationErrors.join(', '), HTTP_STATUS.BAD_REQUEST);
         return res.status(statusCode).json(response);
@@ -72,11 +77,11 @@ class CourseController {
       // Sanitisation
       const sanitizedSubject = sanitizeInput(subject);
 
-      // Génération du cours
+      // Génération du cours avec anciens paramètres
       const courseContent = await anthropicService.generateCourse(
         sanitizedSubject,
-        parseInt(detailLevel),
-        parseInt(vulgarizationLevel)
+        parseInt(params.detailLevel),
+        parseInt(params.vulgarizationLevel)
       );
 
       // Sauvegarde en base
@@ -84,8 +89,11 @@ class CourseController {
         data: {
           subject: sanitizedSubject,
           content: courseContent,
-          detailLevel: parseInt(detailLevel),
-          vulgarizationLevel: parseInt(vulgarizationLevel),
+          detailLevel: parseInt(params.detailLevel),
+          vulgarizationLevel: parseInt(params.vulgarizationLevel),
+          style: params.style,
+          duration: params.duration,
+          intent: params.intent,
           userId: req.user.id
         }
       });

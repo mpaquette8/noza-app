@@ -15,6 +15,28 @@ const VULGARIZATION_LEVELS = {
   EXPERT: 4
 };
 
+// Styles d'expression
+const STYLES = {
+  NEUTRAL: 'neutral',
+  PEDAGOGICAL: 'pedagogical',
+  STORYTELLING: 'storytelling'
+};
+
+// Durées estimées des cours
+const DURATIONS = {
+  SHORT: 'short',
+  MEDIUM: 'medium',
+  LONG: 'long'
+};
+
+// Intentions d'apprentissage
+const INTENTS = {
+  DISCOVER: 'discover',
+  LEARN: 'learn',
+  MASTER: 'master',
+  EXPERT: 'expert'
+};
+
 // Types de questions
 const QUESTION_TYPES = {
   COURSE_RELATED: 'course-related',
@@ -62,5 +84,8 @@ module.exports = {
   QUESTION_TYPES,
   LIMITS,
   ERROR_MESSAGES,
-  HTTP_STATUS
+  HTTP_STATUS,
+  STYLES,
+  DURATIONS,
+  INTENTS
 };

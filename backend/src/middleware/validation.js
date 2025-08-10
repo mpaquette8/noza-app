@@ -1,7 +1,7 @@
 // backend/src/middleware/validation.js
 const { body, validationResult } = require('express-validator');
 const { createResponse } = require('../utils/helpers');
-const { HTTP_STATUS } = require('../utils/constants');
+const { HTTP_STATUS, STYLES, DURATIONS, INTENTS } = require('../utils/constants');
 
 // Middleware pour gérer les erreurs de validation
 const handleValidationErrors = (req, res, next) => {
@@ -48,10 +48,24 @@ const courseValidation = [
     .trim()
     .isLength({ min: 1 })
     .withMessage('Le sujet est requis'),
+  body('style')
+    .optional()
+    .isIn(Object.values(STYLES))
+    .withMessage('Style invalide'),
+  body('duration')
+    .optional()
+    .isIn(Object.values(DURATIONS))
+    .withMessage('Durée invalide'),
+  body('intent')
+    .optional()
+    .isIn(Object.values(INTENTS))
+    .withMessage('Intention invalide'),
   body('detailLevel')
+    .optional()
     .isInt({ min: 1, max: 3 })
     .withMessage('Niveau de détail invalide'),
   body('vulgarizationLevel')
+    .optional()
     .isInt({ min: 1, max: 4 })
     .withMessage('Niveau de vulgarisation invalide'),
   handleValidationErrors
