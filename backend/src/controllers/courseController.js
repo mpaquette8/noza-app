@@ -63,6 +63,8 @@ class CourseController {
   async generateCourse(req, res) {
     try {
       const { subject, detailLevel, vulgarizationLevel, style, duration, intent } = req.body;
+      const isLegacyPayload = (style == null && duration == null && intent == null) &&
+        (detailLevel != null || vulgarizationLevel != null);
 
       // Conversion et valeurs par défaut
       const params = mapLegacyParams({ detailLevel, vulgarizationLevel, style, duration, intent });
@@ -99,7 +101,14 @@ class CourseController {
         }
       });
 
-      logger.success('Cours généré et sauvegardé', { courseId: savedCourse.id, userId: req.user.id });
+      logger.success('Cours généré et sauvegardé', {
+        courseId: savedCourse.id,
+        userId: req.user.id,
+        style: params.style,
+        duration: params.duration,
+        intent: params.intent,
+        isLegacyPayload
+      });
 
       const { response, statusCode } = createResponse(true, { course: savedCourse }, null, HTTP_STATUS.CREATED);
       res.status(statusCode).json(response);

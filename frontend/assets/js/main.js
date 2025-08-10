@@ -55,6 +55,8 @@ function setupEventListeners() {
 // Gestionnaires d'événements principaux
 async function handleGenerateCourse() {
     const subject = document.getElementById('subject').value.trim();
+    const subjectLength = subject.length;
+    const isLegacyPayload = !currentConfig.style && !currentConfig.duration && !currentConfig.intent;
 
     if (!subject) {
         utils.showNotification('Veuillez entrer un sujet pour le décryptage', 'error');
@@ -76,6 +78,16 @@ async function handleGenerateCourse() {
             if (course) {
                 currentCourse = course;
                 displayCourseMetadata(course.style, course.duration, course.intent);
+
+                if (typeof gtag === 'function') {
+                    gtag('event', 'course_generation', {
+                        style: currentConfig.style,
+                        duration: currentConfig.duration,
+                        intent: currentConfig.intent,
+                        isLegacyPayload,
+                        subject_length: subjectLength
+                    });
+                }
             }
         }
     } finally {
