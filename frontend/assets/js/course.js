@@ -2,21 +2,22 @@
 
 // Mapping for human-readable labels and icons
 const STYLE_LABELS = {
-  academique: 'Académique',
-  conversationnel: 'Conversationnel',
-  creatif: 'Créatif'
+  neutral: 'Neutre',
+  pedagogical: 'Pédagogique',
+  storytelling: 'Narratif'
 };
 
 const DURATION_LABELS = {
-  courte: 'Courte',
-  moyenne: 'Moyenne',
-  longue: 'Longue'
+  short: 'Courte',
+  medium: 'Moyenne',
+  long: 'Longue'
 };
 
 const INTENT_LABELS = {
-  informer: 'Informer',
-  convaincre: 'Convaincre',
-  divertir: 'Divertir'
+  discover: 'Découvrir',
+  learn: 'Apprendre',
+  master: 'Maîtriser',
+  expert: 'Expert'
 };
 
 class CourseManager {
@@ -28,18 +29,26 @@ class CourseManager {
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
     try {
+      const payload = {
+        subject: utils.sanitizeInput(subject)
+      };
+      if (style && STYLE_LABELS[style]) {
+        payload.style = utils.sanitizeInput(style);
+      }
+      if (duration && DURATION_LABELS[duration]) {
+        payload.duration = utils.sanitizeInput(duration);
+      }
+      if (intent && INTENT_LABELS[intent]) {
+        payload.intent = utils.sanitizeInput(intent);
+      }
+
       const response = await fetch(`${API_BASE_URL}/courses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...authManager.getAuthHeaders()
         },
-        body: JSON.stringify({
-          subject: utils.sanitizeInput(subject),
-          style: utils.sanitizeInput(style),
-          duration: utils.sanitizeInput(duration),
-          intent: utils.sanitizeInput(intent)
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();

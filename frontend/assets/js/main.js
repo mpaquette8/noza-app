@@ -7,9 +7,9 @@ let quizState = { answered: 0, correct: 0 };
 
 // Configuration par défaut pour les nouveaux sélecteurs
 let currentConfig = {
-    style: 'academique',
-    duration: 'courte',
-    intent: 'informer'
+    style: 'neutral',
+    duration: 'short',
+    intent: 'discover'
 };
 
 // Initialisation de l'application
@@ -77,7 +77,10 @@ async function handleGenerateCourse() {
             );
             if (course) {
                 currentCourse = course;
-                displayCourseMetadata(course.style, course.duration, course.intent);
+                const styleLabel = STYLE_LABELS[course.style] || course.style;
+                const durationLabel = DURATION_LABELS[course.duration] || course.duration;
+                const intentLabel = INTENT_LABELS[course.intent] || course.intent;
+                displayCourseMetadata(styleLabel, durationLabel, intentLabel);
 
                 if (typeof gtag === 'function') {
                     gtag('event', 'course_generation', {
