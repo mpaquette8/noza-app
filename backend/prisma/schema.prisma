@@ -25,10 +25,12 @@ model Course {
   id                 String   @id @default(cuid())
   subject            String
   content            String   @db.Text
-  detailLevel        Int
-  vulgarizationLevel Int
+  /// @deprecated Use style, duration, and intent instead
+  detailLevel        Int?
+  /// @deprecated Use style, duration, and intent instead
+  vulgarizationLevel Int?
   style              String
-  duration           String
+  duration           Int
   intent             String
   createdAt          DateTime @default(now())
   
