@@ -1,5 +1,24 @@
 // frontend/assets/js/course.js
 
+// Mapping for human-readable labels and icons
+const STYLE_LABELS = {
+  academique: 'Académique',
+  conversationnel: 'Conversationnel',
+  creatif: 'Créatif'
+};
+
+const DURATION_LABELS = {
+  courte: 'Courte',
+  moyenne: 'Moyenne',
+  longue: 'Longue'
+};
+
+const INTENT_LABELS = {
+  informer: 'Informer',
+  convaincre: 'Convaincre',
+  divertir: 'Divertir'
+};
+
 class CourseManager {
   constructor() {
     this.currentCourse = null;
@@ -98,7 +117,17 @@ class CourseManager {
 
   // Ajouter à l'historique
   addToHistory(course) {
-    this.history.unshift(course);
+    const entry = {
+      id: course.id,
+      subject: course.subject,
+      content: course.content,
+      style: course.style,
+      duration: course.duration,
+      intent: course.intent,
+      createdAt: course.createdAt || new Date().toISOString()
+    };
+
+    this.history.unshift(entry);
     if (this.history.length > 10) {
       this.history = this.history.slice(0, 10);
     }
@@ -119,15 +148,25 @@ class CourseManager {
         </div>
       `;
     } else {
-      historyTab.innerHTML = this.history.map(course => `
+      historyTab.innerHTML = this.history.map(course => {
+        const styleLabel = STYLE_LABELS[course.style] || course.style;
+        const durationLabel = DURATION_LABELS[course.duration] || course.duration;
+        const intentLabel = INTENT_LABELS[course.intent] || course.intent;
+
+        return `
         <div class="history-item" onclick="courseManager.loadCourseFromHistory('${course.id}')">
           <h4>${course.subject}</h4>
-          <p>Style: ${course.style} | Durée: ${course.duration} | Intention: ${course.intent}</p>
+          <p>
+            <span><i data-lucide="pen-line"></i> ${styleLabel}</span>
+            | <span><i data-lucide="clock"></i> ${durationLabel}</span>
+            | <span><i data-lucide="target"></i> ${intentLabel}</span>
+          </p>
           <small>${new Date(course.createdAt).toLocaleDateString()}</small>
         </div>
-      `).join('');
+        `;
+      }).join('');
     }
-    
+
     utils.initializeLucide();
   }
 
@@ -138,7 +177,10 @@ class CourseManager {
       this.currentCourse = course;
       this.displayCourse(course);
       if (typeof displayCourseMetadata === 'function') {
-        displayCourseMetadata(course.style, course.duration, course.intent);
+        const styleLabel = STYLE_LABELS[course.style] || course.style;
+        const durationLabel = DURATION_LABELS[course.duration] || course.duration;
+        const intentLabel = INTENT_LABELS[course.intent] || course.intent;
+        displayCourseMetadata(styleLabel, durationLabel, intentLabel);
       }
       utils.showNotification('Cours chargé depuis l\'historique', 'success');
     }
