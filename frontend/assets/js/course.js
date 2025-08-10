@@ -7,7 +7,7 @@ class CourseManager {
   }
 
   // Générer un cours
-  async generateCourse(subject, detailLevel, vulgarizationLevel) {
+  async generateCourse(subject, style, duration, intent) {
     try {
       const response = await fetch(`${API_BASE_URL}/courses`, {
         method: 'POST',
@@ -15,21 +15,27 @@ class CourseManager {
           'Content-Type': 'application/json',
           ...authManager.getAuthHeaders()
         },
-        body: JSON.stringify({ 
-          subject: utils.sanitizeInput(subject), 
-          detailLevel: parseInt(detailLevel),
-          vulgarizationLevel: parseInt(vulgarizationLevel)
+        body: JSON.stringify({
+          subject: utils.sanitizeInput(subject),
+          style: utils.sanitizeInput(style),
+          duration: utils.sanitizeInput(duration),
+          intent: utils.sanitizeInput(intent)
         })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        this.currentCourse = data.course;
-        this.displayCourse(data.course);
-        this.addToHistory(data.course);
+        this.currentCourse = {
+          ...data.course,
+          style: data.course?.style || style,
+          duration: data.course?.duration || duration,
+          intent: data.course?.intent || intent
+        };
+        this.displayCourse(this.currentCourse);
+        this.addToHistory(this.currentCourse);
         utils.showNotification('Cours généré avec succès !', 'success');
-        return data.course;
+        return this.currentCourse;
       } else {
         throw new Error(data.error || 'Erreur lors de la génération');
       }
@@ -78,8 +84,9 @@ class CourseManager {
         this.history = data.courses.map(course => ({
           id: course.id,
           subject: course.subject,
-          detailLevel: course.detailLevel,
-          vulgarizationLevel: course.vulgarizationLevel,
+          style: course.style,
+          duration: course.duration,
+          intent: course.intent,
           createdAt: course.createdAt
         }));
         this.updateHistoryDisplay();
@@ -115,7 +122,7 @@ class CourseManager {
       historyTab.innerHTML = this.history.map(course => `
         <div class="history-item" onclick="courseManager.loadCourseFromHistory('${course.id}')">
           <h4>${course.subject}</h4>
-          <p>Détail: ${course.detailLevel}/3 | Vulgarisation: ${course.vulgarizationLevel}/4</p>
+          <p>Style: ${course.style} | Durée: ${course.duration} | Intention: ${course.intent}</p>
           <small>${new Date(course.createdAt).toLocaleDateString()}</small>
         </div>
       `).join('');
@@ -130,6 +137,9 @@ class CourseManager {
     if (course) {
       this.currentCourse = course;
       this.displayCourse(course);
+      if (typeof displayCourseMetadata === 'function') {
+        displayCourseMetadata(course.style, course.duration, course.intent);
+      }
       utils.showNotification('Cours chargé depuis l\'historique', 'success');
     }
   }
