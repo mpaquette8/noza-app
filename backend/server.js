@@ -3,6 +3,7 @@ require('dotenv').config();
 const { app, initializeApp } = require('./src/app');
 const { logger } = require('./src/utils/helpers');
 const { disconnectDatabase } = require('./src/config/database');
+const { ensureMigrations } = require('./scripts/check-migrations');
 
 const PORT = process.env.PORT || 3000;
 let server;
@@ -51,6 +52,10 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 const startServer = async () => {
   try {
     validateEnv();
+
+    // Vérifier et appliquer les migrations
+    logger.info('Vérification des migrations de base de données...');
+    await ensureMigrations();
 
     // Initialiser l'application (DB, etc.)
     await initializeApp();
