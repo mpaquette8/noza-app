@@ -5,15 +5,58 @@ const { logger } = require('./src/utils/helpers');
 const { disconnectDatabase } = require('./src/config/database');
 
 const PORT = process.env.PORT || 3000;
+let server;
+
+// Vérification des variables d'environnement requises
+const validateEnv = () => {
+  let hasError = false;
+
+  if (!process.env.DATABASE_URL) {
+    logger.error('DATABASE_URL non défini. Impossible de démarrer le serveur.');
+    hasError = true;
+  }
+  if (!process.env.JWT_SECRET) {
+    logger.error('JWT_SECRET non défini. Impossible de démarrer le serveur.');
+    hasError = true;
+  }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    logger.warn('ANTHROPIC_API_KEY non défini. Fonctionnalités IA désactivées.');
+  }
+
+  if (hasError) {
+    process.exit(1);
+  }
+};
+
+// Gestion propre de l'arrêt
+const gracefulShutdown = async (signal) => {
+  logger.info(`${signal} reçu. Arrêt en cours...`);
+
+  if (server) {
+    server.close(async () => {
+      logger.info('Serveur HTTP fermé');
+      await disconnectDatabase();
+      process.exit(0);
+    });
+  } else {
+    await disconnectDatabase();
+    process.exit(0);
+  }
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Démarrage du serveur
 const startServer = async () => {
   try {
+    validateEnv();
+
     // Initialiser l'application (DB, etc.)
     await initializeApp();
-    
+
     // Démarrer le serveur
-    const server = app.listen(PORT, '0.0.0.0', () => {
+    server = app.listen(PORT, '0.0.0.0', () => {
       logger.success(`🚀 Serveur démarré sur 0.0.0.0:${PORT}`);
       logger.info(`🔧 API disponible sur le port ${PORT}`);
       logger.info(`📚 Routes disponibles:`);
@@ -29,21 +72,6 @@ const startServer = async () => {
       logger.info(`   - POST /api/ai/generate-quiz`);
       logger.info(`   - POST /api/ai/suggest-questions`);
     });
-
-    // Gestion propre de l'arrêt
-    const gracefulShutdown = async (signal) => {
-      logger.info(`${signal} reçu. Arrêt en cours...`);
-      
-      server.close(async () => {
-        logger.info('Serveur HTTP fermé');
-        await disconnectDatabase();
-        process.exit(0);
-      });
-    };
-
-    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-
   } catch (error) {
     logger.error('Erreur démarrage serveur', error);
     process.exit(1);
