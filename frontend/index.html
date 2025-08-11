@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science+ - La science accessible à tous</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Science+</h1>
+            <p>La science accessible à tous</p>
+        </header>
+
+        <!-- Section d'authentification -->
+        <div id="authSection" class="auth-section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Connexion</button>
+                    <button class="auth-tab" data-tab="register">Inscription</button>
+                </div>
+
+                <!-- Formulaire de connexion -->
+                <div id="loginForm" class="auth-form">
+                    <h3>Se connecter</h3>
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Mot de passe</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="button" class="auth-btn" id="loginBtn">
+                        <i data-lucide="log-in"></i>
+                        Se connecter
+                    </button>
+                    <div class="auth-error" id="loginError"></div>
+                </div>
+
+                <!-- Formulaire d'inscription -->
+                <div id="registerForm" class="auth-form" style="display: none;">
+                    <h3>Créer un compte</h3>
+                    <div class="form-group">
+                        <label for="registerName">Nom</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Mot de passe</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <button type="button" class="auth-btn" id="registerBtn">
+                        <i data-lucide="user-plus"></i>
+                        Créer mon compte
+                    </button>
+                    <div class="auth-error" id="registerError"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section utilisateur connecté -->
+        <div id="userSection" class="user-section">
+            <div class="user-info">
+                <i data-lucide="user-circle"></i>
+                <span class="user-name"></span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i data-lucide="log-out"></i>
+                Déconnexion
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="configuration-panel">
+                <button class="generate-btn" id="generateBtn">
+                    <i data-lucide="sparkles"></i>
+                    Décrypter le sujet
+                </button>
+                
+                <h2 style="margin: 40px 0 20px 0; color: #F0F0F0;">Configuration</h2>
+                <div class="form-group">
+                    <label for="subject">Sujet à décrypter</label>
+                    <div class="subject-input-container">
+                        <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
+                        <button type="button" class="random-subject-btn" id="randomSubjectBtn">
+                            <i data-lucide="sparkles"></i>
+                            Générer un sujet aléatoire
+                            <i data-lucide="dice-6"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="new-selector-container">
+                        <div class="selector-group">
+                            <div class="selector-title">🖋️ Style</div>
+                            <div class="selector-buttons">
+                                <button data-type="style" data-value="neutral" class="active">Neutre</button>
+                                <button data-type="style" data-value="pedagogical">Pédagogique</button>
+                                <button data-type="style" data-value="storytelling">Narratif</button>
+                            </div>
+                        </div>
+                        <div class="selector-group">
+                            <div class="selector-title">⏱️ Durée</div>
+                            <div class="selector-buttons">
+                                <button data-type="duration" data-value="short" class="active">Courte</button>
+                                <button data-type="duration" data-value="medium">Moyenne</button>
+                                <button data-type="duration" data-value="long">Longue</button>
+                            </div>
+                        </div>
+                        <div class="selector-group">
+                            <div class="selector-title">🎯 Intention</div>
+                            <div class="selector-buttons">
+                                <button data-type="intent" data-value="discover" class="active">Découvrir</button>
+                                <button data-type="intent" data-value="learn">Apprendre</button>
+                                <button data-type="intent" data-value="master">Maîtriser</button>
+                                <button data-type="intent" data-value="expert">Expert</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="course-display">
+                <div class="tabs">
+                    <div class="tab active" data-tab="course">Décryptage</div>
+                    <div class="tab" data-tab="history">Mes découvertes</div>
+                    <div class="tab" data-tab="paths">Explorations</div>
+                </div>
+
+                <div class="tab-content" id="courseTab">
+                    <div class="empty-state" id="emptyState">
+                        <i data-lucide="book-open"></i>
+                        <h3>Prêt à comprendre ?</h3>
+                        <p>Configurez votre cours dans le panneau de gauche et cliquez sur "Générer le cours" pour commencer.</p>
+                    </div>
+                    <div class="course-content" id="courseContent" style="display: none;">
+                        <div id="quizSection" style="display: none;"></div>
+                        <div class="course-actions">
+                            <button class="action-btn" id="exportPdf">
+                                <i data-lucide="file-text"></i>
+                                Exporter PDF
+                            </button>
+                            <button class="action-btn" id="exportDocx">
+                                <i data-lucide="file-text"></i>
+                                Exporter DOCX
+                            </button>
+                            <button class="action-btn" id="copyContent">
+                                <i data-lucide="copy"></i>
+                                Copier
+                            </button>
+                            <button class="action-btn" id="generateQuiz">
+                                <i data-lucide="help-circle"></i>
+                                Quiz
+                            </button>
+                        </div>
+                        <div id="generatedCourse"></div>
+                        <div class="chat-interface">
+                            <div class="chat-messages" id="chatMessages"></div>
+                            <div class="chat-input-container">
+                                <textarea class="chat-input" id="chatInput" placeholder="Comment je peux t'aider ?" rows="2"></textarea>
+                                <button class="chat-send-btn" id="chatSendBtn">
+                                    <i data-lucide="send"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="historyTab" style="display: none;">
+                    <div class="empty-state">
+                        <i data-lucide="history"></i>
+                        <h3>Aucun historique</h3>
+                        <p>Vos cours générés apparaîtront ici automatiquement.</p>
+                    </div>
+                </div>
+                <div class="tab-content" id="pathsTab" style="display: none;">
+                    <div class="empty-state">
+                        <i data-lucide="map"></i>
+                        <h3>Aucun parcours</h3>
+                        <p>Créez des parcours d'apprentissage en sauvegardant vos cours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts - Dans l'ordre de dépendance -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/course.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
