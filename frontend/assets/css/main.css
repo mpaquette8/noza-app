@@ -14,7 +14,6 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     min-height: 100vh;
-    height: 100vh;
 }
 
 /* Overlay pour améliorer la lisibilité */
@@ -37,7 +36,7 @@ body::before {
     max-width: none;
     margin: 0;
     padding: 15px;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -469,9 +468,10 @@ body::before {
     background: white;
     border-radius: 15px;
     padding: 20px;
+    padding-bottom: 40px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     border: 2px solid #e2e8f0;
-    height: calc(100vh - 120px);
+    min-height: calc(100vh - 120px);
     overflow-y: auto;
     position: relative;
     display: flex;
@@ -1742,12 +1742,12 @@ body::before {
 @media (max-width: 768px) {
     body {
         font-size: 0.9rem;
-        height: 100vh;
+        min-height: 100vh;
     }
-    
+
     .container {
         padding: 8px;
-        height: 100vh;
+        min-height: 100vh;
     }
     
     .header {
