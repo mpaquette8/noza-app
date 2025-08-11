@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const { logger } = require('../src/utils/helpers');
 
 function run(command) {
   return new Promise((resolve) => {
@@ -13,7 +14,7 @@ async function hasPendingMigrations() {
   const output = `${stdout}\n${stderr}`.toLowerCase();
 
   if (error) {
-    console.error('Could not determine migration status.');
+    logger.error('Could not determine migration status.');
     return { pending: true, unknown: true };
   }
 
@@ -49,25 +50,25 @@ async function hasPendingMigrations() {
 async function deployMigrations() {
   const { error, stdout, stderr } = await run('npx prisma migrate deploy');
   if (error) {
-    console.error('Migration deploy failed.');
-    console.error(stderr || stdout);
+    logger.error('Migration deploy failed.');
+    logger.error(stderr || stdout);
     return false;
   }
-  console.log('Migrations deployed successfully.');
+  logger.success('Migrations deployed successfully.');
   return true;
 }
 
 async function ensureMigrations() {
   const status = await hasPendingMigrations();
   if (!status.pending && !status.unknown) {
-    console.log('Database schema is up to date.');
+    logger.success('Database schema is up to date.');
     return true;
   }
 
   if (status.unknown) {
-    console.warn('Unable to determine migration status, attempting to deploy migrations...');
+    logger.warn('Unable to determine migration status, attempting to deploy migrations...');
   } else {
-    console.log('Pending migrations detected, deploying...');
+    logger.info('Pending migrations detected, deploying...');
   }
 
   const success = await deployMigrations();
@@ -79,7 +80,7 @@ async function ensureMigrations() {
 
 if (require.main === module) {
   ensureMigrations().catch((err) => {
-    console.error('Error ensuring migrations:', err);
+    logger.error('Error ensuring migrations:', err);
     process.exit(1);
   });
 }
