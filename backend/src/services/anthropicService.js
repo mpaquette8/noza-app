@@ -44,23 +44,169 @@ class AnthropicService {
   }
 
   // Créer un prompt selon les paramètres fournis
-  createPrompt(subject, style, duration, intent) {
-    const styleInstruction = STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS[STYLES.NEUTRAL];
-    const intentInstruction = INTENT_ENHANCEMENTS[intent] || '';
-    const durationConstraint = this.getDurationConstraint(duration);
+  // Remplace UNIQUEMENT le contenu de createPrompt par ceci
+createPrompt(subject, style, duration, intent) {
+  const styleInstruction = STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS[STYLES.NEUTRAL];
+  const intentInstruction = INTENT_ENHANCEMENTS[intent] || '';
+  const durationConstraint = this.getDurationConstraint(duration);
 
-    return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
+  return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
 
 ${styleInstruction}
 ${intentInstruction}
 ${durationConstraint}
 
-Structure :
-- Titre principal avec <h1>
-- Contenu organisé en blocs <div class="styled-block"> avec <div class="block-title">.
-- Utilise les variantes example-block, practical-tips-block, conclusion-block, concept-block et analogy-block si nécessaire.
-- Termine par un bloc conclusion-block.`;
-  }
+OBJECTIF GÉNÉRAL :
+- Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre différents types de blocs.
+
+CONTRAINTES DE MISE EN FORME (HTML + CSS fournis) :
+- Le <h1> du titre principal est EN DEHORS de tout bloc.
+- Tout le reste du contenu est structuré UNIQUEMENT via les blocs ci-dessous.
+- Chaque bloc .styled-block DOIT contenir un <div class="block-title"> avec un intitulé clair.
+- Utilise une alternance de blocs pour le rythme visuel (générique → concept → exemple → conseils → analogie, etc.).
+
+BLOCS DISPONIBLES (tu DOIS utiliser ces classes EXACTES, casse incluse) :
+1) BLOC GÉNÉRIQUE (intro, notions de base, pour aller plus loin) :
+<div class="styled-block">
+  <div class="block-title">Titre de la section</div>
+  <p>Contenu substantiel (≥ 2–3 phrases)…</p>
+</div>
+
+2) BLOC CONCEPT CLÉ (notions importantes) :
+<div class="styled-block concept-block">
+  <div class="block-title">Concept Clé</div>
+  <p>Explication claire, contexte, limites…</p>
+</div>
+
+3) BLOC EXEMPLE PRATIQUE (cas concrets, applications) :
+<div class="styled-block example-block">
+  <div class="block-title">Exemple Pratique</div>
+  <p>Cas, étapes, résultat attendu…</p>
+</div>
+
+4) BLOC CONSEILS PRATIQUES (tips, checklists, erreurs fréquentes) :
+<div class="styled-block practical-tips-block">
+  <div class="block-title">Conseils Pratiques</div>
+  <ul>
+    <li>Conseil 1…</li>
+    <li>Conseil 2…</li>
+  </ul>
+</div>
+
+5) BLOC ANALOGIE (comparaisons/métaphores pour comprendre) :
+<div class="styled-block analogy-block">
+  <div class="block-title">Analogie</div>
+  <p>Comparaison explicative…</p>
+</div>
+
+6) BLOC CONCLUSION (obligatoire à la fin) :
+<div class="styled-block conclusion-block">
+  <div class="block-title">Conclusion</div>
+  <p>Synthèse et points à retenir…</p>
+</div>
+
+BLOCS SPÉCIALISÉS :
+7) FORMULE MATHÉMATIQUE (exclusif aux équations) :
+<div class="formula">
+  <p>Formule ou équation (LaTeX inline/texte)…</p>
+</div>
+
+8) CITATION (définition officielle, source, énoncé marquant) :
+<div class="quote-block">
+  <p>“Citation exacte…” — Auteur/Source</p>
+</div>
+
+9) CODE (si pertinent) :
+<div class="code-block">
+  <pre><code>// Code ou pseudo-code
+</code></pre>
+</div>
+
+RÈGLES IMPORTANTES :
+- TOUJOURS inclure un <div class="block-title"> dans chaque .styled-block.
+- TOUJOURS interpréter les blocs d’une formule : après chaque <div class="formula">, ajoute un bloc générique qui décompose les termes (symboles, unités, intuition).
+- NE JAMAIS mettre une formule dans un autre bloc que <div class="formula">.
+- NE JAMAIS mettre du code hors <div class="code-block">.
+- Chaque bloc doit avoir un contenu substantiel (≥ 2–3 phrases).
+- Le cours doit démarrer par une INTRO dans un bloc générique et se terminer par un bloc conclusion-block.
+- Après la conclusion, AJOUTE OBLIGATOIREMENT un bloc “Pour aller plus loin” (générique) avec 2–3 questions de réflexion et 2–3 pistes de cours/lectures.
+
+STRUCTURE REQUISE (ordre conseillé) :
+<h1>Titre du Cours</h1>
+
+<div class="styled-block">
+  <div class="block-title">Introduction</div>
+  <p>Contexte, objectifs d’apprentissage, plan…</p>
+</div>
+
+<div class="styled-block concept-block">
+  <div class="block-title">Concepts Fondamentaux</div>
+  <p>Définitions, idées clés, cadre…</p>
+</div>
+
+<div class="styled-block">
+  <div class="block-title">Décomposition & Pédagogie</div>
+  <p>Progression pas-à-pas, erreurs fréquentes, liens entre notions…</p>
+</div>
+
+<div class="formula">
+  <p>Équation/Relation importante (si applicable)</p>
+</div>
+
+<div class="styled-block">
+  <div class="block-title">Interprétation de la Formule</div>
+  <p>Signification des termes, unités, intuition, cas limites…</p>
+</div>
+
+<div class="styled-block example-block">
+  <div class="block-title">Exemple Pratique</div>
+  <p>Application guidée, étapes, résultat et vérifications…</p>
+</div>
+
+<div class="styled-block practical-tips-block">
+  <div class="block-title">Conseils Pratiques</div>
+  <ul>
+    <li>Heuristiques, checklists, pièges à éviter…</li>
+  </ul>
+</div>
+
+<div class="styled-block analogy-block">
+  <div class="block-title">Analogie</div>
+  <p>Mise en perspective pour l’intuition…</p>
+</div>
+
+<div class="quote-block">
+  <p>Définition, théorème, ou citation utile (optionnel)</p>
+</div>
+
+<div class="code-block">
+  <pre><code>// Démo ou pseudo-code (si pertinent)
+</code></pre>
+</div>
+
+<div class="styled-block conclusion-block">
+  <div class="block-title">Conclusion</div>
+  <p>Récapitulatif, points d’ancrage, prochaines étapes…</p>
+</div>
+
+<div class="styled-block">
+  <div class="block-title">Pour aller plus loin</div>
+  <ul>
+    <li>Question 1…</li>
+    <li>Question 2…</li>
+    <li>Question 3…</li>
+  </ul>
+  <p>Suggestions de lectures/cours : Ressource A, Ressource B, Ressource C…</p>
+</div>
+
+CONTRAINTES DE STYLE & TON :
+- Pédagogie active : exemples concrets, analogies, définitions claires.
+- Vocabulaire adapté au style demandé ; explique les termes spécialisés dès leur première apparition.
+- Fluidité rédactionnelle (transitions entre sections) et mise en évidence des points clés.
+
+RENDU ATTENDU :
+- Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).`;
+}
 
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
