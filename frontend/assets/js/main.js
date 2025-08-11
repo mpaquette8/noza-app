@@ -138,6 +138,19 @@ function setupChatEventListeners() {
     }
 }
 
+function addChatMessage(text, type) {
+    const chatMessages = document.getElementById('chatMessages');
+    if (!chatMessages) return null;
+
+    const message = document.createElement('div');
+    message.className = `chat-message ${type}`;
+    message.textContent = text;
+    chatMessages.appendChild(message);
+    chatMessages.style.display = 'block';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return message;
+}
+
 async function askQuestion() {
     const chatInput = document.getElementById('chatInput');
     const question = chatInput.value.trim();
@@ -147,8 +160,36 @@ async function askQuestion() {
         return;
     }
 
-    // TODO: Implémenter la logique de chat
-    utils.showNotification('Chat - En cours d\'implémentation', 'error');
+    addChatMessage(question, 'user');
+
+    const typingMessage = addChatMessage('...', 'assistant typing');
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/ai/ask-question`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authManager.getAuthHeaders()
+            },
+            body: JSON.stringify({
+                question,
+                courseContent: currentCourse?.content
+            })
+        });
+
+        const data = await response.json();
+        if (data.success && data.answer) {
+            addChatMessage(data.answer, 'assistant');
+        } else {
+            addChatMessage(data.error || 'Erreur lors de la récupération de la réponse.', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur chat:', error);
+        addChatMessage('Une erreur est survenue lors de l\'appel.', 'error');
+    } finally {
+        if (typingMessage) typingMessage.remove();
+        chatInput.value = '';
+    }
 }
 
 // Gestion des nouveaux sélecteurs de configuration
