@@ -30,7 +30,7 @@ model Course {
   /// @deprecated Use style, duration, and intent instead
   vulgarizationLevel Int?
   style              String
-  duration           Int
+  duration           String   // ← Changé de Int à String
   intent             String
   createdAt          DateTime @default(now())
   
