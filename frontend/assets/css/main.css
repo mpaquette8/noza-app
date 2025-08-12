@@ -2048,6 +2048,7 @@ body::before {
     width: 100%;
     display: block;
     min-height: 50px; /* Réserver l'espace pour éviter les jumps */
+    min-width: 300px;
 }
 
 /* Conteneur pour le bouton Google officiel */
@@ -2055,6 +2056,7 @@ body::before {
 #googleSignInButtonRegister {
     width: 100%;
     display: block;
+    min-width: 300px;
 }
 
 /* Styles pour les boutons Google officiels */
@@ -2062,18 +2064,22 @@ body::before {
 #googleSignInButtonRegister > div {
     width: 100% !important;
     max-width: none !important;
+    min-width: 300px !important;
 }
 
 #googleSignInButton iframe,
 #googleSignInButtonRegister iframe {
     width: 100% !important;
     height: 50px !important;
+    min-width: 300px !important;
 }
 
 /* Boutons de fallback (backup) */
 .google-auth-btn-fallback {
     width: 100%;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 14px 18px;
     border: 2px solid #dadce0;
     border-radius: 12px;
@@ -2086,6 +2092,8 @@ body::before {
     font-weight: 500;
     font-family: inherit;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    min-width: 300px;
+    min-height: 50px;
 }
 
 .google-auth-btn-fallback:hover {
