@@ -58,6 +58,11 @@ app.use(
   })
 );
 
+app.use((_, res, next) => {
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 app.use(cors({
   origin: true,
   credentials: true
