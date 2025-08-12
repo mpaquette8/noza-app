@@ -13,8 +13,47 @@ const apiRoutes = require('./routes');
 
 const app = express();
 
-// Middleware de sécurité
-app.use(helmet());
+// ⭐ MODIFIÉ : Configuration Helmet avec CSP personnalisé
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'", // Pour les scripts inline (temporaire)
+        "https://unpkg.com", // Pour Lucide icons
+        "https://accounts.google.com", // Pour Google Auth
+        "https://apis.google.com" // Pour Google APIs
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'", // Pour les styles inline
+        "https://fonts.googleapis.com", // Pour Google Fonts
+        "https://accounts.google.com" // Pour les styles Google Auth
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com" // Pour Google Fonts
+      ],
+      connectSrc: [
+        "'self'",
+        "https://accounts.google.com", // Pour Google Auth
+        "https://apis.google.com" // Pour Google APIs
+      ],
+      frameSrc: [
+        "'self'",
+        "https://accounts.google.com" // Pour les popups Google
+      ],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https://lh3.googleusercontent.com", // Pour les avatars Google
+        "https://*.googleusercontent.com" // Autres images Google
+      ]
+    },
+  },
+}));
+
 app.use(cors({
   origin: true,
   credentials: true
@@ -29,6 +68,13 @@ const limiter = rateLimit({
     error: 'Trop de requêtes, veuillez réessayer plus tard'
   }
 });
+
+// Exposer la config Google au front
+app.get('/api/config/google', (req, res) => {
+  res.json({ clientId: process.env.GOOGLE_CLIENT_ID || '' });
+});
+
+
 app.use('/api/', limiter);
 
 // Middleware pour parser JSON

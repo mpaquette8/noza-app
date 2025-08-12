@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"  // Remettre postgresql
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,7 +11,10 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
-  password  String
+  password  String?  // ← Devient optionnel pour les comptes Google
+  avatar    String?  // ← Nouveau : URL de la photo de profil Google
+  googleId  String?  @unique // ← Nouveau : ID Google unique
+  provider  String   @default("email") // ← Nouveau : "email" ou "google"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -30,7 +33,7 @@ model Course {
   /// @deprecated Use style, duration, and intent instead
   vulgarizationLevel Int?
   style              String
-  duration           String   // ← Changé de Int à String
+  duration           String
   intent             String
   createdAt          DateTime @default(now())
   
@@ -44,7 +47,7 @@ model Course {
 
 model ChatHistory {
   id        String   @id @default(cuid())
-  messages  Json     // Remettre Json pour PostgreSQL
+  messages  Json
   createdAt DateTime @default(now())
   
   userId    String

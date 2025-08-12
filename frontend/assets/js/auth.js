@@ -8,7 +8,53 @@ class AuthManager {
         this.updateUI();
     }
 
-    // CONNEXION
+    // ⭐ NOUVELLE MÉTHODE : Authentification Google
+    async handleGoogleLogin(googleResponse) {
+        try {
+            console.log('Traitement connexion Google...', googleResponse);
+            
+            if (!googleResponse.credential) {
+                throw new Error('Token Google manquant');
+            }
+
+            // Envoyer le token à notre API
+            const response = await fetch(`${API_BASE_URL}/auth/google`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    credential: googleResponse.credential 
+                })
+            });
+
+            const data = await response.json();
+            console.log('Réponse auth Google:', data);
+
+            if (data.success) {
+                this.token = data.token;
+                this.user = data.user;
+                localStorage.setItem('authToken', this.token);
+                localStorage.setItem('user', JSON.stringify(this.user));
+                this.updateUI();
+                
+                showNotification('Connexion Google réussie !', 'success');
+                
+                // Charger les cours de l'utilisateur
+                if (typeof courseManager !== 'undefined' && courseManager.loadUserCourses) {
+                    courseManager.loadUserCourses();
+                }
+                
+                return { success: true };
+            } else {
+                throw new Error(data.error || 'Erreur connexion Google');
+            }
+        } catch (error) {
+            console.error('Erreur connexion Google:', error);
+            showNotification('Erreur connexion Google: ' + error.message, 'error');
+            return { success: false, error: error.message };
+        }
+    }
+
+    // CONNEXION email (existant)
     async login(email, password) {
         try {
             console.log('Tentative de connexion pour:', email);
@@ -38,7 +84,7 @@ class AuthManager {
         }
     }
 
-    // INSCRIPTION
+    // INSCRIPTION email (existant)
     async register(name, email, password) {
         try {
             console.log('Tentative d\'inscription pour:', { name, email });
@@ -75,6 +121,12 @@ class AuthManager {
         this.user = null;
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
+        
+        // ⭐ NOUVEAU : Déconnexion Google aussi
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            google.accounts.id.disableAutoSelect();
+        }
+        
         this.updateUI();
         window.location.reload();
     }
@@ -89,7 +141,7 @@ class AuthManager {
         return this.token ? { 'Authorization': `Bearer ${this.token}` } : {};
     }
 
-    // METTRE À JOUR L'INTERFACE
+    // ⭐ MODIFIÉ : METTRE À JOUR L'INTERFACE avec support avatar
     updateUI() {
         const authSection = document.getElementById('authSection');
         const userSection = document.getElementById('userSection');
@@ -102,9 +154,27 @@ class AuthManager {
             if (authSection) authSection.style.display = 'none';
             if (userSection) {
                 userSection.style.display = 'flex';
+                
+                // Nom utilisateur
                 const userNameElement = userSection.querySelector('.user-name');
                 if (userNameElement) {
                     userNameElement.textContent = this.user.name;
+                }
+                
+                // ⭐ NOUVEAU : Gestion avatar Google
+                const userAvatar = document.getElementById('userAvatar');
+                const userDefaultIcon = document.getElementById('userDefaultIcon');
+                
+                if (this.user.avatar && userAvatar && userDefaultIcon) {
+                    // Utilisateur avec avatar (Google)
+                    userAvatar.src = this.user.avatar;
+                    userAvatar.alt = this.user.name;
+                    userAvatar.style.display = 'block';
+                    userDefaultIcon.style.display = 'none';
+                } else if (userAvatar && userDefaultIcon) {
+                    // Utilisateur sans avatar (email)
+                    userAvatar.style.display = 'none';
+                    userDefaultIcon.style.display = 'block';
                 }
             }
             if (mainContent) mainContent.style.display = 'grid';
@@ -138,7 +208,21 @@ function setupAuthListeners() {
         });
     });
 
-    // Connexion
+    // ⭐ NOUVEAU : Bouton Google pour inscription
+    const googleRegisterBtn = document.getElementById('googleRegisterBtn');
+    if (googleRegisterBtn) {
+        googleRegisterBtn.addEventListener('click', function() {
+            console.log('Déclenchement connexion Google manuelle...');
+            
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                google.accounts.id.prompt();
+            } else {
+                showNotification('Service Google non disponible', 'error');
+            }
+        });
+    }
+
+    // Connexion email (existant)
     const loginBtn = document.getElementById('loginBtn');
     if (loginBtn) {
         loginBtn.addEventListener('click', async function() {
@@ -177,7 +261,7 @@ function setupAuthListeners() {
         });
     }
 
-    // Inscription
+    // Inscription email (existant)
     const registerBtn = document.getElementById('registerBtn');
     if (registerBtn) {
         registerBtn.addEventListener('click', async function() {
@@ -228,7 +312,7 @@ function setupAuthListeners() {
         });
     }
 
-    // Gestion de la touche Entrée
+    // Gestion de la touche Entrée (existant)
     const loginEmail = document.getElementById('loginEmail');
     const loginPassword = document.getElementById('loginPassword');
     const registerName = document.getElementById('registerName');

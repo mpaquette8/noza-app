@@ -6,6 +6,7 @@
     <title>Science+ - La science accessible à tous</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
@@ -26,6 +27,26 @@
                 <!-- Formulaire de connexion -->
                 <div id="loginForm" class="auth-form">
                     <h3>Se connecter</h3>
+                    
+                    <!-- Bouton Google officiel -->
+                    <div class="google-auth-container">
+                        <div id="googleSignInButton"></div>
+                        <button type="button" class="google-auth-btn-fallback" id="googleLoginBtn" style="display: none;">
+                            <svg class="google-icon" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Se connecter avec Google
+                        </button>
+                    </div>
+
+                    <div class="auth-separator">
+                        <span>ou</span>
+                    </div>
+
+                    <!-- Formulaire email existant -->
                     <div class="form-group">
                         <label for="loginEmail">Email</label>
                         <input type="email" id="loginEmail" required>
@@ -44,6 +65,26 @@
                 <!-- Formulaire d'inscription -->
                 <div id="registerForm" class="auth-form" style="display: none;">
                     <h3>Créer un compte</h3>
+                    
+                    <!-- Bouton Google pour inscription -->
+                    <div class="google-auth-container">
+                        <div id="googleSignInButtonRegister"></div>
+                        <button type="button" class="google-auth-btn-fallback" id="googleRegisterBtn" style="display: none;">
+                            <svg class="google-icon" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            S'inscrire avec Google
+                        </button>
+                    </div>
+
+                    <div class="auth-separator">
+                        <span>ou</span>
+                    </div>
+
+                    <!-- Formulaire email existant -->
                     <div class="form-group">
                         <label for="registerName">Nom</label>
                         <input type="text" id="registerName" required>
@@ -68,7 +109,8 @@
         <!-- Section utilisateur connecté -->
         <div id="userSection" class="user-section">
             <div class="user-info">
-                <i data-lucide="user-circle"></i>
+                <img id="userAvatar" class="user-avatar" src="" alt="" style="display: none;">
+                <i data-lucide="user-circle" id="userDefaultIcon"></i>
                 <span class="user-name"></span>
             </div>
             <button class="logout-btn" id="logoutBtn">
@@ -196,5 +238,213 @@
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/course.js"></script>
     <script src="assets/js/main.js"></script>
+
+    <!-- Configuration Google Auth -->
+    <script>
+    // Votre Client ID Google
+    // const GOOGLE_CLIENT_ID = '1053222527627-ocse29f2n1hjil4gad63gj4jvb0peksn.apps.googleusercontent.com';
+
+    // Variables globales
+    let googleReady = false;
+    let googleButtonsRendered = false;   // <-- nouveau
+    let googleInitialized = false;       // <-- nouveau
+
+
+    async function startGoogleAuth() {
+        console.log('🚀 Démarrage Google Auth...');
+
+        // 1) Récupérer le client_id depuis le back
+        let cfg;
+        try {
+            const res = await fetch('/api/config/google', { credentials: 'include' });
+            cfg = await res.json();
+            if (!cfg?.clientId) throw new Error('clientId manquant');
+            window.GOOGLE_CLIENT_ID = cfg.clientId;
+        } catch (e) {
+            console.error('❌ Impossible de charger le client_id Google depuis /api/config/google', e);
+            return; // on ne peut pas initialiser sans client_id
+        }
+
+        // 2) Procéder à l’init GSI comme avant
+        initGoogleAuth();
+
+        // Stratégies de retry (tu les avais déjà)
+        setTimeout(() => { if (!googleReady && !googleInitialized) initGoogleAuth(); }, 2000);
+        setTimeout(() => { if (!googleReady && !googleInitialized) initGoogleAuth(); }, 5000);
+        setTimeout(() => { if (!googleReady && !googleButtonsRendered) createFallbackButtons();  }, 8000);
+    }
+
+    // Callback Google simplifié - DOIT être global
+    function handleCredentialResponse(response) {
+        console.log('✅ Google response:', response);
+        
+        // Vérifier que nous avons un token
+        if (!response || !response.credential) {
+            console.error('❌ Pas de credential dans la réponse Google');
+            return;
+        }
+        
+        // Envoyer à AuthManager
+        if (window.authManager && typeof window.authManager.handleGoogleLogin === 'function') {
+            console.log('📤 Envoi vers AuthManager...');
+            window.authManager.handleGoogleLogin(response);
+        } else {
+            console.error('❌ AuthManager non disponible');
+            // Retry après 1 seconde
+            setTimeout(() => {
+                if (window.authManager && typeof window.authManager.handleGoogleLogin === 'function') {
+                    window.authManager.handleGoogleLogin(response);
+                }
+            }, 1000);
+        }
+    }
+
+    // Initialisation Google simple et robuste
+    function initGoogleAuth() {
+        console.log('🔄 Tentative d\'initialisation Google...');
+        if (googleInitialized) {
+            return; // déjà initialisé
+        }
+        // Vérifier que l'API est chargée
+        if (typeof google === 'undefined') {
+            console.log('⏳ Google API pas encore chargée, retry...');
+            setTimeout(initGoogleAuth, 1000);
+            return;
+        }
+        
+        if (!google.accounts || !google.accounts.id) {
+            console.log('⏳ Google Accounts API pas prête, retry...');
+            setTimeout(initGoogleAuth, 1000);
+            return;
+        }
+
+        try {
+            console.log('⚙️ Configuration Google Identity...');
+            
+            // Configuration simplifiée
+            console.log('ClientID utilisé:', window.GOOGLE_CLIENT_ID);
+            console.log('Origin courant:', window.location.origin);
+            google.accounts.id.initialize({
+                client_id: window.GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse,
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
+            googleInitialized = true
+            // Créer les boutons manuellement avec une approche différente
+            createGoogleButtons();
+            
+            googleReady = true;
+            console.log('✅ Google Auth prêt !');
+            
+        } catch (error) {
+            console.error('❌ Erreur init Google:', error);
+            createFallbackButtons();
+        }
+    }
+
+    // Créer les boutons Google avec l'API renderButton
+    function createGoogleButtons() {
+        if (googleButtonsRendered) {
+            return; // évite tout double rendu
+        }
+        try {
+            const loginContainer = document.getElementById('googleSignInButton');
+            if (loginContainer && !loginContainer.hasChildNodes()) {
+                google.accounts.id.renderButton(loginContainer, {
+                theme: 'outline',
+                size: 'large',
+                type: 'standard',
+                shape: 'rectangular',
+                text: 'signin_with',
+                logo_alignment: 'left',
+                width: loginContainer.offsetWidth || 300
+                });
+            }
+            const registerContainer = document.getElementById('googleSignInButtonRegister');
+            if (registerContainer && !registerContainer.hasChildNodes()) {
+                google.accounts.id.renderButton(registerContainer, {
+                theme: 'outline',
+                size: 'large',
+                type: 'standard',
+                shape: 'rectangular',
+                text: 'signup_with',
+                logo_alignment: 'left',
+                width: registerContainer.offsetWidth || 300
+                });
+            }
+            googleButtonsRendered = true;
+            console.log('✅ Boutons Google créés (une seule fois)');
+        } catch (error) {
+            console.error('❌ Erreur création boutons:', error);
+            createFallbackButtons();
+        }
+    }
+
+    // Créer des boutons de fallback qui utilisent prompt()
+    function createFallbackButtons() {
+        console.log('🔄 Création boutons fallback...');
+        
+        const loginFallback = document.getElementById('googleLoginBtn');
+        const registerFallback = document.getElementById('googleRegisterBtn');
+        
+        if (loginFallback) {
+            loginFallback.style.display = 'flex';
+            loginFallback.onclick = triggerGooglePrompt;
+        }
+        
+        if (registerFallback) {
+            registerFallback.style.display = 'flex';
+            registerFallback.onclick = triggerGooglePrompt;
+        }
+    }
+
+    // Déclencher la popup Google manuellement
+    function triggerGooglePrompt() {
+        console.log('🔄 Déclenchement popup Google...');
+        
+        if (!googleReady || !google || !google.accounts || !google.accounts.id) {
+            alert('Service Google non disponible. Utilisez la connexion par email.');
+            return;
+        }
+        
+        try {
+            // Utiliser prompt() qui est plus fiable que renderButton
+            google.accounts.id.prompt((notification) => {
+                console.log('Google prompt notification:', notification);
+                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                    console.log('Popup Google fermée ou ignorée');
+                }
+            });
+        } catch (error) {
+            console.error('❌ Erreur prompt Google:', error);
+            alert('Erreur lors de l\'ouverture de Google. Essayez la connexion par email.');
+        }
+    }
+
+    // Fonction de debug
+    function debugGoogle() {
+        console.log('=== DEBUG GOOGLE ===');
+        console.log('typeof google:', typeof google);
+        console.log('google?.accounts?.id:', google?.accounts?.id);
+        console.log('googleReady:', googleReady);
+        console.log('CLIENT_ID:', window.GOOGLE_CLIENT_ID);
+        console.log('handleCredentialResponse:', typeof handleCredentialResponse);
+    }
+
+    // Attendre que la page soit complètement chargée
+    if (document.readyState === 'complete') {
+        startGoogleAuth();
+    } else {
+        window.addEventListener('load', startGoogleAuth);
+    }
+
+    // Exposer les fonctions globalement
+    window.handleCredentialResponse = handleCredentialResponse;
+    window.debugGoogle = debugGoogle;
+    window.triggerGooglePrompt = triggerGooglePrompt;
+
+    console.log('📝 Script Google Auth chargé');
+    </script>
 </body>
 </html>

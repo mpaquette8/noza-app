@@ -7,11 +7,14 @@ const { asyncHandler } = require('../utils/helpers');
 
 const router = express.Router();
 
-// Routes publiques
+// Routes publiques existantes
 router.post('/register', registerValidation, asyncHandler(authController.register));
 router.post('/login', loginValidation, asyncHandler(authController.login));
 
-// Routes protégées
+// NOUVELLE ROUTE : Authentification Google
+router.post('/google', asyncHandler(authController.googleAuth));
+
+// Routes protégées existantes
 router.get('/profile', authenticate, asyncHandler(authController.getProfile));
 
 module.exports = router;
