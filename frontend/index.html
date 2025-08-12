@@ -333,7 +333,8 @@
             googleInitialized = true
             // Créer les boutons manuellement avec une approche différente
             createGoogleButtons();
-            
+            setupGoogleButtonObservers();
+
             googleReady = true;
             console.log('✅ Google Auth prêt !');
             
@@ -387,6 +388,39 @@
             console.error('❌ Erreur création boutons:', error);
             createFallbackButtons();
         }
+    }
+
+    // Forcer la dimension et observer les changements sur les boutons Google
+    function enforceGoogleButtonDimensions(container) {
+        if (!container) return;
+        container.style.width = '100%';
+        container.style.minWidth = '300px';
+        container.style.minHeight = '50px';
+        const inner = container.querySelector('div');
+        if (inner) {
+            inner.style.width = '100%';
+            inner.style.minWidth = '300px';
+        }
+        const iframe = container.querySelector('iframe');
+        if (iframe) {
+            iframe.style.width = '100%';
+            iframe.style.minWidth = '300px';
+            iframe.style.height = '50px';
+        }
+    }
+
+    function setupGoogleButtonObservers() {
+        const ids = ['googleSignInButton', 'googleSignInButtonRegister'];
+        ids.forEach(id => {
+            const container = document.getElementById(id);
+            if (!container) return;
+            const apply = () => enforceGoogleButtonDimensions(container);
+            apply();
+            const resizeObs = new ResizeObserver(apply);
+            resizeObs.observe(container);
+            const mutationObs = new MutationObserver(apply);
+            mutationObs.observe(container, { childList: true, subtree: true });
+        });
     }
 
     // Créer des boutons de fallback qui utilisent prompt()
