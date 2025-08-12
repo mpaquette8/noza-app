@@ -350,6 +350,15 @@
         }
         try {
             const loginContainer = document.getElementById('googleSignInButton');
+            const registerContainer = document.getElementById('googleSignInButtonRegister');
+
+            // Utilise une largeur uniforme pour les deux boutons.
+            // Quand le formulaire d'inscription est masqué, son offsetWidth vaut 0.
+            const buttonWidth =
+                loginContainer?.offsetWidth ||
+                registerContainer?.offsetWidth ||
+                300;
+
             if (loginContainer && !loginContainer.hasChildNodes()) {
                 google.accounts.id.renderButton(loginContainer, {
                 theme: 'outline',
@@ -358,10 +367,9 @@
                 shape: 'rectangular',
                 text: 'signin_with',
                 logo_alignment: 'left',
-                width: loginContainer.offsetWidth || 300
+                width: buttonWidth
                 });
             }
-            const registerContainer = document.getElementById('googleSignInButtonRegister');
             if (registerContainer && !registerContainer.hasChildNodes()) {
                 google.accounts.id.renderButton(registerContainer, {
                 theme: 'outline',
@@ -370,7 +378,7 @@
                 shape: 'rectangular',
                 text: 'signup_with',
                 logo_alignment: 'left',
-                width: registerContainer.offsetWidth || 300
+                width: buttonWidth
                 });
             }
             googleButtonsRendered = true;
