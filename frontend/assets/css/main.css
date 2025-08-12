@@ -2045,8 +2045,8 @@ body::before {
 /* Container Google Auth */
 .google-auth-container {
     margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
+    width: 100%;
+    display: block;
     min-height: 50px; /* Réserver l'espace pour éviter les jumps */
 }
 
@@ -2054,8 +2054,7 @@ body::before {
 #googleSignInButton,
 #googleSignInButtonRegister {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    display: block;
 }
 
 /* Styles pour les boutons Google officiels */
@@ -2074,6 +2073,7 @@ body::before {
 /* Boutons de fallback (backup) */
 .google-auth-btn-fallback {
     width: 100%;
+    display: block;
     padding: 14px 18px;
     border: 2px solid #dadce0;
     border-radius: 12px;
@@ -2081,10 +2081,7 @@ body::before {
     color: #3c4043;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+    text-align: center;
     font-size: 1rem;
     font-weight: 500;
     font-family: inherit;
@@ -2139,7 +2136,6 @@ body::before {
     .google-auth-btn-fallback {
         font-size: 0.9rem;
         padding: 12px 16px;
-        gap: 10px;
     }
     
     .google-icon {
