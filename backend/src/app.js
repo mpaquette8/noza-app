@@ -50,7 +50,8 @@ app.use(
           "data:",
           "https://lh3.googleusercontent.com", // Pour les avatars Google
           "https://*.googleusercontent.com" // Autres images Google
-        ]
+        ],
+        requireTrustedTypesFor: [] // Désactive 'require-trusted-types-for'
       }
     },
     crossOriginEmbedderPolicy: false,
