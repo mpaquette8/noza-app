@@ -124,7 +124,7 @@ class AuthManager {
 
         // ⭐ Déconnexion Google et nettoyage des boutons
         if (window.GoogleAuth) {
-            if (GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
+            if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
                 GoogleAuth.reset();
             }
             GoogleAuth.disableAutoSelect();
@@ -211,10 +211,12 @@ function setupAuthListeners() {
 
             // Réinitialiser et recharger GoogleAuth lors du changement de vue
             if (window.GoogleAuth) {
-                if (GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
+                if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
                     GoogleAuth.reset();
                 }
-                if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
+                if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+                    GoogleAuth.promptLogin();
+                } else if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
                     GoogleAuth.init(response => authManager.handleGoogleLogin(response))
                         .then(() => {
                             if (GoogleAuth.state === GoogleAuth.STATES.READY) {
@@ -358,10 +360,13 @@ document.addEventListener('DOMContentLoaded', function() {
     separators.forEach(el => el.style.display = 'none');
 
     if (window.GoogleAuth) {
-        if (GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
+        if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
             GoogleAuth.reset();
         }
-        if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
+        if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+            separators.forEach(el => el.style.display = 'block');
+            GoogleAuth.promptLogin();
+        } else if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
             GoogleAuth.init(response => authManager.handleGoogleLogin(response))
                 .then(() => {
                     if (GoogleAuth.state === GoogleAuth.STATES.READY) {
