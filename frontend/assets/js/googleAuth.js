@@ -61,9 +61,13 @@ const GoogleAuth = (() => {
                     logo_alignment: 'left',
                     width
                 });
-                container.parentElement?.classList.remove('loading');
             } catch (err) {
                 console.error('GoogleAuth renderButton error:', err);
+                if (!document.querySelector('.google-auth-fallback')) {
+                    showEmailFallback();
+                }
+            } finally {
+                container.parentElement?.classList.remove('loading');
             }
         });
         googleButtonsRendered = true;
