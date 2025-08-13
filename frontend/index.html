@@ -353,12 +353,14 @@
             const loginContainer = document.getElementById('googleSignInButton');
             const registerContainer = document.getElementById('googleSignInButtonRegister');
 
-            // Utilise une largeur uniforme pour les deux boutons.
-            // Quand le formulaire d'inscription est masqué, son offsetWidth vaut 0.
-            const buttonWidth =
+            // Détermine dynamiquement la largeur des boutons.
+            // Si un conteneur est masqué, son offsetWidth vaut 0, on utilise alors la largeur de fenêtre.
+            const buttonWidth = Math.min(
                 loginContainer?.offsetWidth ||
-                registerContainer?.offsetWidth ||
-                300;
+                    registerContainer?.offsetWidth ||
+                    window.innerWidth - 40,
+                300
+            );
 
             if (loginContainer && !loginContainer.hasChildNodes()) {
                 google.accounts.id.renderButton(loginContainer, {
@@ -393,18 +395,26 @@
     // Forcer la dimension et observer les changements sur les boutons Google
     function enforceGoogleButtonDimensions(container) {
         if (!container) return;
+        const availableWidth =
+            container.offsetWidth ||
+            container.parentElement?.offsetWidth ||
+            window.innerWidth - 40;
+        const minWidth = Math.min(availableWidth, 300) + 'px';
         container.style.width = '100%';
-        container.style.minWidth = '300px';
+        container.style.maxWidth = '100%';
+        container.style.minWidth = minWidth;
         container.style.minHeight = '50px';
         const inner = container.querySelector('div');
         if (inner) {
             inner.style.width = '100%';
-            inner.style.minWidth = '300px';
+            inner.style.maxWidth = '100%';
+            inner.style.minWidth = minWidth;
         }
         const iframe = container.querySelector('iframe');
         if (iframe) {
             iframe.style.width = '100%';
-            iframe.style.minWidth = '300px';
+            iframe.style.maxWidth = '100%';
+            iframe.style.minWidth = minWidth;
             iframe.style.height = '50px';
         }
     }
