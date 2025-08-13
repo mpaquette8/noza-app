@@ -10,9 +10,9 @@ const GoogleAuth = (() => {
     };
 
     let state = STATES.LOADING;
-    let initialized = false;
+    let googleInitialized = false;
     let initPromise = null;
-    let buttonsRendered = false;
+    let googleButtonsRendered = false;
 
     function loadSdk() {
         return new Promise((resolve, reject) => {
@@ -41,7 +41,7 @@ const GoogleAuth = (() => {
     }
 
     function renderButtons() {
-        if (buttonsRendered) return;
+        if (googleButtonsRendered) return;
         const configs = [
             { id: 'googleSignInButton', text: 'signin_with' },
             { id: 'googleSignInButtonRegister', text: 'signup_with' }
@@ -66,7 +66,7 @@ const GoogleAuth = (() => {
                 console.error('GoogleAuth renderButton error:', err);
             }
         });
-        buttonsRendered = true;
+        googleButtonsRendered = true;
     }
 
     function enforceButtonDimensions(container) {
@@ -107,7 +107,7 @@ const GoogleAuth = (() => {
     }
 
     async function init(callback = () => {}, timeout = 5000) {
-        if (initialized) return;
+        if (googleInitialized) return;
         if (initPromise) return initPromise;
 
         initPromise = (async () => {
@@ -129,7 +129,7 @@ const GoogleAuth = (() => {
 
                 renderButtons();
                 observeButtons();
-                initialized = true;
+                googleInitialized = true;
                 state = STATES.READY;
             })();
 
@@ -169,10 +169,24 @@ const GoogleAuth = (() => {
         }
     }
 
+    function reset() {
+        googleInitialized = false;
+        googleButtonsRendered = false;
+        initPromise = null;
+        state = STATES.LOADING;
+        document.querySelectorAll('.google-auth-container').forEach(container => {
+            container.classList.remove('loading');
+            container.innerHTML = '';
+            container.style.display = '';
+        });
+        document.querySelectorAll('.google-auth-fallback').forEach(el => el.remove());
+    }
+
     return {
         init,
         promptLogin,
         disableAutoSelect,
+        reset,
         STATES,
         get state() {
             return state;
