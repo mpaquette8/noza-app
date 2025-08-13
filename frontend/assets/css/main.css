@@ -2083,11 +2083,11 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 18px;
-    border: 2px solid #dadce0;
-    border-radius: 12px;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
     background: white;
-    color: #3c4043;
+    color: #2d3748;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
@@ -2156,7 +2156,7 @@ body::before {
     }
     .google-auth-btn-fallback {
         font-size: 0.9rem;
-        padding: 12px 16px;
+        padding: 10px 14px;
     }
 
     .google-icon {
