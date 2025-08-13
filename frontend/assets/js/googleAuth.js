@@ -198,9 +198,27 @@ const GoogleAuth = (() => {
         state = STATES.LOADING;
         document.querySelectorAll('.google-auth-container').forEach(container => {
             container.classList.remove('loading');
-            container.innerHTML = '';
             container.style.display = '';
         });
+
+        ['googleSignInButton', 'googleSignInButtonRegister'].forEach(id => {
+            let buttonContainer = document.getElementById(id);
+            if (!buttonContainer) {
+                buttonContainer = document.createElement('div');
+                buttonContainer.id = id;
+                const parent = id === 'googleSignInButton'
+                    ? document.querySelector('#loginForm .google-auth-container')
+                    : document.querySelector('#registerForm .google-auth-container');
+                parent?.appendChild(buttonContainer);
+            } else {
+                buttonContainer.innerHTML = '';
+            }
+            buttonContainer?.parentElement?.classList.remove('loading');
+            if (buttonContainer?.parentElement) {
+                buttonContainer.parentElement.style.display = '';
+            }
+        });
+
         document.querySelectorAll('.google-auth-fallback').forEach(el => el.remove());
     }
 
