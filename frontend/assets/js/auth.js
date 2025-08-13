@@ -123,8 +123,8 @@ class AuthManager {
         localStorage.removeItem('user');
         
         // ⭐ NOUVEAU : Déconnexion Google aussi
-        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-            google.accounts.id.disableAutoSelect();
+        if (window.GoogleAuth) {
+            GoogleAuth.disableAutoSelect();
         }
         
         this.updateUI();
@@ -348,6 +348,9 @@ function showNotification(message, type = 'success') {
 // Initialiser les event listeners quand le DOM est chargé
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM chargé, configuration de l\'authentification...');
+    if (window.GoogleAuth) {
+        GoogleAuth.init((response) => authManager.handleGoogleLogin(response));
+    }
     setupAuthListeners();
 });
 
