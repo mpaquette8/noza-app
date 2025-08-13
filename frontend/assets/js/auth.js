@@ -348,8 +348,20 @@ function showNotification(message, type = 'success') {
 // Initialiser les event listeners quand le DOM est chargé
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM chargé, configuration de l\'authentification...');
+
+    const separators = document.querySelectorAll('.auth-separator');
+    separators.forEach(el => el.style.display = 'none');
+
     if (window.GoogleAuth) {
-        GoogleAuth.init((response) => authManager.handleGoogleLogin(response));
+        GoogleAuth.init((response) => authManager.handleGoogleLogin(response))
+            .then(() => {
+                if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+                    separators.forEach(el => el.style.display = 'block');
+                }
+            })
+            .catch(() => {
+                // L'initialisation a échoué, le fallback est géré par GoogleAuth
+            });
     }
     setupAuthListeners();
 });
