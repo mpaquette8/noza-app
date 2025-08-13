@@ -106,46 +106,45 @@ const GoogleAuth = (() => {
         });
     }
 
-    async function init(callback = () => {}, timeout = 5000) {
-        if (googleInitialized) return;
+    function init(callback = () => {}, timeout = 5000) {
+        if (googleInitialized) return Promise.resolve();
         if (initPromise) return initPromise;
 
-        initPromise = (async () => {
-            const initSequence = (async () => {
-                document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
-                await loadSdk();
+        initPromise = loadSdk()
+            .then(() => {
+                const initSequence = (async () => {
+                    document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
 
-                const res = await fetch('/api/config/google');
-                const data = await res.json();
+                    const res = await fetch('/api/config/google');
+                    const data = await res.json();
 
-                if (!data.client_id) {
-                    throw new Error('Missing Google client_id');
-                }
+                    if (!data.client_id) {
+                        throw new Error('Missing Google client_id');
+                    }
 
-                google.accounts.id.initialize({
-                    client_id: data.client_id,
-                    callback,
-                });
+                    google.accounts.id.initialize({
+                        client_id: data.client_id,
+                        callback,
+                    });
 
-                renderButtons();
-                observeButtons();
-                googleInitialized = true;
-                state = STATES.READY;
-            })();
+                    renderButtons();
+                    observeButtons();
+                    googleInitialized = true;
+                    state = STATES.READY;
+                })();
 
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('GoogleAuth init timeout')), timeout)
-            );
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('GoogleAuth init timeout')), timeout)
+                );
 
-            try {
-                await Promise.race([initSequence, timeoutPromise]);
-            } catch (err) {
+                return Promise.race([initSequence, timeoutPromise]);
+            })
+            .catch(err => {
                 console.error('GoogleAuth init error:', err);
                 state = STATES.FAILED;
                 showEmailFallback();
                 throw err;
-            }
-        })();
+            });
 
         return initPromise;
     }
