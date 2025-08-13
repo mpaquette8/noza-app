@@ -2048,7 +2048,8 @@ body::before {
     width: 100%;
     display: block;
     min-height: 50px; /* Réserver l'espace pour éviter les jumps */
-    min-width: 300px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 /* Conteneur pour le bouton Google officiel */
@@ -2056,22 +2057,24 @@ body::before {
 #googleSignInButtonRegister {
     width: 100%;
     display: block;
-    min-width: 300px;
+    min-width: 0;
+    max-width: 100%;
 }
 
 /* Styles pour les boutons Google officiels */
 #googleSignInButton > div,
 #googleSignInButtonRegister > div {
     width: 100% !important;
-    max-width: none !important;
-    min-width: 300px !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
 }
 
 #googleSignInButton iframe,
 #googleSignInButtonRegister iframe {
     width: 100% !important;
     height: 50px !important;
-    min-width: 300px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
 }
 
 /* Boutons de fallback (backup) */
@@ -2092,7 +2095,8 @@ body::before {
     font-weight: 500;
     font-family: inherit;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    min-width: 300px;
+    min-width: 0;
+    max-width: 100%;
     min-height: 50px;
 }
 
