@@ -2145,11 +2145,20 @@ body::before {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .google-auth-container,
+    #googleSignInButton,
+    #googleSignInButton *,
+    #googleSignInButtonRegister,
+    #googleSignInButtonRegister *,
+    .google-auth-btn-fallback {
+        min-width: 0;
+        width: 100%;
+    }
     .google-auth-btn-fallback {
         font-size: 0.9rem;
         padding: 12px 16px;
     }
-    
+
     .google-icon {
         width: 18px;
         height: 18px;
