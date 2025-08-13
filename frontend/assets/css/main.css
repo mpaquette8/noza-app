@@ -2077,46 +2077,6 @@ body::before {
     max-width: 100% !important;
 }
 
-/* Boutons de fallback (backup) */
-.google-auth-btn-fallback {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 14px;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    background: white;
-    color: #2d3748;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 500;
-    font-family: inherit;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    min-width: 0;
-    max-width: 100%;
-    min-height: 50px;
-}
-
-.google-auth-btn-fallback:hover {
-    border-color: #4285f4;
-    box-shadow: 0 2px 8px rgba(66, 133, 244, 0.15);
-    background: #f8f9ff;
-}
-
-.google-auth-btn-fallback:active {
-    transform: translateY(1px);
-}
-
-/* Icône Google dans les boutons fallback */
-.google-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
 /* Animation de chargement pour Google Auth */
 .google-loading {
     display: flex;
@@ -2149,24 +2109,14 @@ body::before {
     #googleSignInButton,
     #googleSignInButton *,
     #googleSignInButtonRegister,
-    #googleSignInButtonRegister *,
-    .google-auth-btn-fallback {
+    #googleSignInButtonRegister * {
         min-width: 0;
         width: 100%;
-    }
-    .google-auth-btn-fallback {
-        font-size: 0.9rem;
-        padding: 10px 14px;
-    }
-
-    .google-icon {
-        width: 18px;
-        height: 18px;
     }
 }
 
 /* Fix pour éviter les conflits avec les autres boutons */
-.google-auth-container button:not(.google-auth-btn-fallback) {
+.google-auth-container button {
     font-family: 'Roboto', sans-serif !important;
 }
 
@@ -2175,10 +2125,7 @@ body::before {
     width: 100%;
 }
 
-/* Masquer les boutons pendant le chargement */
-.google-auth-container.loading .google-auth-btn-fallback {
-    display: none;
-}
+/* Message pendant le chargement */
 
 .google-auth-container.loading::after {
     content: 'Chargement Google...';
