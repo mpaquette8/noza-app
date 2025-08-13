@@ -38,16 +38,22 @@ const utils = {
     return input.trim().substring(0, 10000);
   },
 
-  // Gestion des erreurs d'authentification
-  handleAuthError(error) {
-    if (error.message && error.message.includes('401')) {
-      this.showNotification('Session expirée, veuillez vous reconnecter', 'error');
-      if (window.authManager) {
-        window.authManager.logout();
+  // Gestion unifiée des erreurs d'authentification
+  handleAuthError(message, critical = false) {
+    console.error(message);
+    this.showNotification(message, 'error');
+
+    if (critical) {
+      try {
+        fetch(`${API_BASE_URL}/logs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ level: 'error', message })
+        }).catch(err => console.error('Erreur lors de l\'envoi du log serveur', err));
+      } catch (err) {
+        console.error('Erreur lors de la préparation du log serveur', err);
       }
-      return true;
     }
-    return false;
   }
 };
 
