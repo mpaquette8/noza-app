@@ -81,7 +81,20 @@ const limiter = rateLimit({
 
 // Exposer la config Google au front
 app.get('/api/config/google', (req, res) => {
-  res.json({ clientId: process.env.GOOGLE_CLIENT_ID || '' });
+  try {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      return res.status(500).json({
+        error: 'Google Client ID not configured'
+      });
+    }
+
+    res.json({ clientId });
+  } catch (err) {
+    logger.error('Erreur récupération config Google', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 
