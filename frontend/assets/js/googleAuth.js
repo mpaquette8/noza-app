@@ -122,6 +122,33 @@ const GoogleAuth = (() => {
         }).catch(err => console.error('GoogleAuth metrics error:', err));
     }
 
+    function setLoadingMessage(text) {
+        document.querySelectorAll('.google-auth-container').forEach(container => {
+            let msg = container.querySelector('.google-auth-message');
+            if (!msg) {
+                msg = document.createElement('span');
+                msg.className = 'google-auth-message';
+                container.appendChild(msg);
+            }
+            msg.innerText = text;
+        });
+    }
+
+    function fadeOutLoading(container) {
+        if (!container) return;
+        const message = container.querySelector('.google-auth-message');
+        const button = container.querySelector('div[id]');
+        const cleanup = () => {
+            container.classList.remove('loading');
+            if (message) message.remove();
+            if (button) button.style.display = '';
+            requestAnimationFrame(() => { container.style.opacity = '1'; });
+        };
+        container.addEventListener('transitionend', cleanup, { once: true });
+        setTimeout(cleanup, 400);
+        container.style.opacity = '0';
+    }
+
     function recordAttempt(success) {
         if (success) {
             metrics.success++;
@@ -171,12 +198,12 @@ const GoogleAuth = (() => {
 
             if (!container) {
                 console.warn(`GoogleAuth renderButtons: container #${id} not found`);
-                parent?.classList.remove('loading');
+                fadeOutLoading(parent);
                 return;
             }
 
             if (container.hasChildNodes()) {
-                parent?.classList.remove('loading');
+                fadeOutLoading(parent);
                 return;
             }
 
@@ -203,7 +230,7 @@ const GoogleAuth = (() => {
                         showEmailFallback();
                     }
                 } finally {
-                    parent?.classList.remove('loading');
+                    fadeOutLoading(parent);
                 }
             });
             googleButtonsRendered = true;
@@ -260,13 +287,21 @@ const GoogleAuth = (() => {
         if (googleInitialized) return Promise.resolve();
         if (initPromise) return initPromise;
 
-        document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
+        document.querySelectorAll('.google-auth-container').forEach(c => {
+            c.classList.add('loading');
+            c.style.opacity = '1';
+            const btn = c.querySelector('div[id]');
+            if (btn) btn.style.display = 'none';
+        });
 
-        const sdkPromise = loadSdk();
-        const clientIdPromise = getClientId();
+        setLoadingMessage('Connexion au service…');
 
-        const initSequence = Promise.all([sdkPromise, clientIdPromise])
-            .then(([, clientId]) => {
+        const initSequence = loadSdk()
+            .then(() => {
+                setLoadingMessage('Récupération de la configuration…');
+                return getClientId();
+            })
+            .then(clientId => {
                 if (!clientId) {
                     throw new Error('Missing Google client ID');
                 }
@@ -285,6 +320,7 @@ const GoogleAuth = (() => {
                     },
                 });
 
+                setLoadingMessage('Initialisation de l\'interface…');
                 renderButtons();
                 observeButtons();
                 googleInitialized = true;
@@ -360,6 +396,10 @@ const GoogleAuth = (() => {
         document.querySelectorAll('.google-auth-container').forEach(container => {
             container.classList.remove('loading');
             container.style.display = '';
+            container.style.opacity = '1';
+            container.querySelector('.google-auth-message')?.remove();
+            const btn = container.querySelector('div[id]');
+            if (btn) btn.style.display = '';
         });
 
         ['googleSignInButton', 'googleSignInButtonRegister'].forEach(id => {
