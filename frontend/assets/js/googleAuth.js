@@ -16,6 +16,23 @@ const GoogleAuth = (() => {
     let cachedClientId = null;
     const widthCache = new Map();
 
+    const METRICS_KEY = 'googleAuthMetrics';
+    const DISABLED_KEY = 'googleAuthDisabled';
+    const MAX_FAILURES = Number(localStorage.getItem('googleAuthMaxFailures')) || 3;
+
+    let metrics = { success: 0, failure: 0, consecutiveFailures: 0 };
+    try {
+        const stored = JSON.parse(localStorage.getItem(METRICS_KEY));
+        if (stored) {
+            metrics = { ...metrics, ...stored };
+        }
+    } catch (_) {}
+
+    let disabled = false;
+    try {
+        disabled = localStorage.getItem(DISABLED_KEY) === 'true';
+    } catch (_) {}
+
     function setState(newState) {
         if (state !== newState) {
             state = newState;
@@ -84,6 +101,44 @@ const GoogleAuth = (() => {
             message.className = 'google-auth-fallback';
             container.insertAdjacentElement('afterend', message);
         });
+    }
+
+    function saveMetrics() {
+        try {
+            localStorage.setItem(METRICS_KEY, JSON.stringify(metrics));
+        } catch (_) {}
+    }
+
+    function sendMetrics(success) {
+        fetch('/api/metrics/googleAuth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                success,
+                successCount: metrics.success,
+                failureCount: metrics.failure,
+                consecutiveFailures: metrics.consecutiveFailures
+            })
+        }).catch(err => console.error('GoogleAuth metrics error:', err));
+    }
+
+    function recordAttempt(success) {
+        if (success) {
+            metrics.success++;
+            metrics.consecutiveFailures = 0;
+        } else {
+            metrics.failure++;
+            metrics.consecutiveFailures++;
+        }
+        saveMetrics();
+        sendMetrics(success);
+
+        if (!disabled && metrics.consecutiveFailures >= MAX_FAILURES) {
+            disabled = true;
+            try { localStorage.setItem(DISABLED_KEY, 'true'); } catch (_) {}
+            showEmailFallback();
+            setState(STATES.FAILED);
+        }
     }
 
     function computeWidth(container) {
@@ -194,6 +249,14 @@ const GoogleAuth = (() => {
     }
 
     function init(callback = () => {}, timeout = 10000, skipRetry = false) {
+        if (disabled || metrics.consecutiveFailures >= MAX_FAILURES) {
+            disabled = true;
+            try { localStorage.setItem(DISABLED_KEY, 'true'); } catch (_) {}
+            showEmailFallback();
+            setState(STATES.FAILED);
+            return Promise.resolve();
+        }
+
         if (googleInitialized) return Promise.resolve();
         if (initPromise) return initPromise;
 
@@ -210,7 +273,16 @@ const GoogleAuth = (() => {
 
                 google.accounts.id.initialize({
                     client_id: clientId,
-                    callback,
+                    callback: async (response) => {
+                        let success = false;
+                        try {
+                            const result = await callback(response);
+                            success = result?.success !== false;
+                        } catch (_) {
+                            success = false;
+                        }
+                        recordAttempt(success);
+                    },
                 });
 
                 renderButtons();
@@ -232,6 +304,7 @@ const GoogleAuth = (() => {
                 setState(STATES.FAILED);
                 showEmailFallback();
             }
+            recordAttempt(false);
             throw err;
         });
 
@@ -276,6 +349,10 @@ const GoogleAuth = (() => {
     }
 
     function reset() {
+        if (disabled) {
+            showEmailFallback();
+            return;
+        }
         googleInitialized = false;
         googleButtonsRendered = false;
         initPromise = null;
@@ -315,14 +392,15 @@ const GoogleAuth = (() => {
         STATES,
         get state() {
             return state;
-        }
+        },
+        isDisabled: () => disabled
     };
 })();
 
 window.GoogleAuth = GoogleAuth;
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
+    if (GoogleAuth.isDisabled() || GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
         GoogleAuth.reset();
     }
 });
