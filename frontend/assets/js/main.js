@@ -59,7 +59,7 @@ async function handleGenerateCourse() {
     const isLegacyPayload = !currentConfig.style && !currentConfig.duration && !currentConfig.intent;
 
     if (!subject) {
-        utils.showNotification('Veuillez entrer un sujet pour le décryptage', 'error');
+        utils.handleAuthError('Veuillez entrer un sujet pour le décryptage');
         return;
     }
 
@@ -156,7 +156,7 @@ async function askQuestion() {
     const question = chatInput.value.trim();
 
     if (!question) {
-        utils.showNotification('Veuillez saisir une question', 'error');
+        utils.handleAuthError('Veuillez saisir une question');
         return;
     }
 
@@ -337,7 +337,7 @@ function switchTab(tabName) {
 // Générer et afficher un quiz
 async function handleGenerateQuiz() {
     if (!courseManager || !courseManager.currentCourse) {
-        utils.showNotification('Veuillez d\'abord générer un cours', 'error');
+        utils.handleAuthError("Veuillez d'abord générer un cours");
         return;
     }
 
@@ -366,9 +366,7 @@ async function handleGenerateQuiz() {
         }
     } catch (error) {
         console.error('Erreur génération quiz:', error);
-        if (!utils.handleAuthError(error)) {
-            utils.showNotification('Erreur lors de la génération du quiz: ' + error.message, 'error');
-        }
+        utils.handleAuthError('Erreur lors de la génération du quiz: ' + error.message, true);
     } finally {
         quizBtn.disabled = false;
         quizBtn.innerHTML = '<i data-lucide="help-circle"></i>Quiz';
@@ -507,7 +505,7 @@ async function generateRandomSubject() {
         }
     } catch (error) {
         console.error('Erreur:', error);
-        utils.showNotification('Erreur lors de la génération du sujet: ' + error.message, 'error');
+        utils.handleAuthError('Erreur lors de la génération du sujet: ' + error.message, true);
         
         // Réactiver le bouton en cas d'erreur
         randomBtn.disabled = false;

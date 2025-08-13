@@ -69,12 +69,7 @@ class CourseManager {
       }
     } catch (error) {
       console.error('Erreur:', error);
-      
-      if (utils.handleAuthError(error)) {
-        return null;
-      }
-      
-      utils.showNotification('Erreur lors de la génération du cours: ' + error.message, 'error');
+      utils.handleAuthError('Erreur lors de la génération du cours: ' + error.message, true);
       throw error;
     }
   }
@@ -202,7 +197,7 @@ class CourseManager {
       navigator.clipboard.writeText(textContent).then(() => {
         utils.showNotification('Contenu copié dans le presse-papiers !', 'success');
       }).catch(() => {
-        utils.showNotification('Erreur lors de la copie', 'error');
+        utils.handleAuthError('Erreur lors de la copie');
       });
     }
   }

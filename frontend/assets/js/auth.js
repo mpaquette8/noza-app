@@ -49,7 +49,7 @@ class AuthManager {
             }
         } catch (error) {
             console.error('Erreur connexion Google:', error);
-            showNotification('Erreur connexion Google: ' + error.message, 'error');
+                utils.handleAuthError('Erreur connexion Google: ' + error.message, true);
             return { success: false, error: error.message };
         }
     }
@@ -216,10 +216,8 @@ function setupAuthListeners() {
             
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
-            const errorDiv = document.getElementById('loginError');
-
             if (!email || !password) {
-                showAuthError(errorDiv, 'Veuillez remplir tous les champs');
+                utils.handleAuthError('Veuillez remplir tous les champs');
                 return;
             }
 
@@ -235,7 +233,7 @@ function setupAuthListeners() {
                     courseManager.loadUserCourses();
                 }
             } else {
-                showAuthError(errorDiv, result.error);
+                utils.handleAuthError(result.error);
             }
 
             this.disabled = false;
@@ -256,15 +254,13 @@ function setupAuthListeners() {
             const name = document.getElementById('registerName').value.trim();
             const email = document.getElementById('registerEmail').value.trim();
             const password = document.getElementById('registerPassword').value;
-            const errorDiv = document.getElementById('registerError');
-
             if (!name || !email || !password) {
-                showAuthError(errorDiv, 'Veuillez remplir tous les champs');
+                utils.handleAuthError('Veuillez remplir tous les champs');
                 return;
             }
 
             if (password.length < 6) {
-                showAuthError(errorDiv, 'Le mot de passe doit contenir au moins 6 caractères');
+                utils.handleAuthError('Le mot de passe doit contenir au moins 6 caractères');
                 return;
             }
 
@@ -277,7 +273,7 @@ function setupAuthListeners() {
                 showNotification('Compte créé avec succès !', 'success');
             } else {
                 const errorMessage = result.errors?.map(err => err.msg).join(', ') || 'Erreur lors de l\'inscription';
-                showAuthError(errorDiv, errorMessage);
+                utils.handleAuthError(errorMessage);
             }
 
             this.disabled = false;
@@ -324,16 +320,6 @@ function setupAuthListeners() {
             });
         }
     });
-}
-
-function showAuthError(errorDiv, message) {
-    if (errorDiv) {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-        setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 5000);
-    }
 }
 
 function showNotification(message, type = 'success') {
