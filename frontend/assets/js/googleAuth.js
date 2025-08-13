@@ -34,7 +34,7 @@ const GoogleAuth = (() => {
         document.querySelectorAll('.google-auth-container').forEach(container => {
             container.style.display = 'none';
             const message = document.createElement('div');
-            message.textContent = 'Connexion par e-mail disponible';
+            message.textContent = 'Connexion Google indisponible. Connexion par e-mail disponible';
             message.className = 'google-auth-fallback';
             container.insertAdjacentElement('afterend', message);
         });
@@ -115,15 +115,32 @@ const GoogleAuth = (() => {
                 const initSequence = (async () => {
                     document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
 
-                    const res = await fetch('/api/config/google');
-                    const data = await res.json();
+                    let clientId;
+                    try {
+                        const res = await fetch('/api/config/google');
+                        if (!res.ok) {
+                            throw new Error(`HTTP ${res.status}`);
+                        }
+                        const data = await res.json();
+                        clientId = data.clientId;
+                    } catch (err) {
+                        console.error('GoogleAuth fetch config error:', err);
+                        const fallback = typeof process !== 'undefined' && process.env?.GOOGLE_CLIENT_ID;
+                        if (fallback) {
+                            clientId = fallback;
+                        } else {
+                            state = STATES.FAILED;
+                            showEmailFallback();
+                            throw err;
+                        }
+                    }
 
-                    if (!data.client_id) {
-                        throw new Error('Missing Google client_id');
+                    if (!clientId) {
+                        throw new Error('Missing Google client ID');
                     }
 
                     google.accounts.id.initialize({
-                        client_id: data.client_id,
+                        client_id: clientId,
                         callback,
                     });
 
@@ -141,8 +158,10 @@ const GoogleAuth = (() => {
             })
             .catch(err => {
                 console.error('GoogleAuth init error:', err);
-                state = STATES.FAILED;
-                showEmailFallback();
+                if (state !== STATES.FAILED) {
+                    state = STATES.FAILED;
+                    showEmailFallback();
+                }
                 throw err;
             });
 
