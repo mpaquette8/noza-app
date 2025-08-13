@@ -2050,6 +2050,8 @@ body::before {
     min-height: 50px; /* Réserver l'espace pour éviter les jumps */
     min-width: 0;
     max-width: 100%;
+    transition: opacity 0.3s ease;
+    opacity: 1;
 }
 
 /* Conteneur pour le bouton Google officiel */
@@ -2132,6 +2134,8 @@ body::before {
     align-items: center;
     justify-content: center;
     padding: 15px;
+    color: #666;
+    font-style: italic;
 }
 
 .google-auth-container.loading::before {
@@ -2145,8 +2149,3 @@ body::before {
     margin-right: 10px;
 }
 
-.google-auth-container.loading::after {
-    content: 'Chargement Google...';
-    color: #666;
-    font-style: italic;
-}
