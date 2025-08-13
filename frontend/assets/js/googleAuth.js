@@ -13,6 +13,7 @@ const GoogleAuth = (() => {
     let googleInitialized = false;
     let initPromise = null;
     let googleButtonsRendered = false;
+    let cachedClientId = null;
 
     function loadSdk() {
         return new Promise((resolve, reject) => {
@@ -28,6 +29,46 @@ const GoogleAuth = (() => {
             script.onerror = () => reject(new Error('Google SDK failed to load'));
             document.head.appendChild(script);
         });
+    }
+
+    function getClientId() {
+        if (cachedClientId) {
+            return Promise.resolve(cachedClientId);
+        }
+
+        try {
+            const storedId = localStorage.getItem('googleClientId');
+            if (storedId) {
+                cachedClientId = storedId;
+                return Promise.resolve(cachedClientId);
+            }
+        } catch (_) {}
+
+        return fetch('/api/config/google')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                cachedClientId = data.clientId;
+                try {
+                    localStorage.setItem('googleClientId', cachedClientId);
+                } catch (_) {}
+                return cachedClientId;
+            })
+            .catch(err => {
+                console.error('GoogleAuth fetch config error:', err);
+                const fallback = typeof process !== 'undefined' && process.env?.GOOGLE_CLIENT_ID;
+                if (fallback) {
+                    cachedClientId = fallback;
+                    return cachedClientId;
+                }
+                state = STATES.FAILED;
+                showEmailFallback();
+                throw err;
+            });
     }
 
     function showEmailFallback() {
@@ -130,60 +171,40 @@ const GoogleAuth = (() => {
         if (googleInitialized) return Promise.resolve();
         if (initPromise) return initPromise;
 
-        initPromise = loadSdk()
-            .then(() => {
-                const initSequence = (async () => {
-                    document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
+        document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
 
-                    let clientId;
-                    try {
-                        const res = await fetch('/api/config/google');
-                        if (!res.ok) {
-                            throw new Error(`HTTP ${res.status}`);
-                        }
-                        const data = await res.json();
-                        clientId = data.clientId;
-                    } catch (err) {
-                        console.error('GoogleAuth fetch config error:', err);
-                        const fallback = typeof process !== 'undefined' && process.env?.GOOGLE_CLIENT_ID;
-                        if (fallback) {
-                            clientId = fallback;
-                        } else {
-                            state = STATES.FAILED;
-                            showEmailFallback();
-                            throw err;
-                        }
-                    }
+        const sdkPromise = loadSdk();
+        const clientIdPromise = getClientId();
 
-                    if (!clientId) {
-                        throw new Error('Missing Google client ID');
-                    }
-
-                    google.accounts.id.initialize({
-                        client_id: clientId,
-                        callback,
-                    });
-
-                    renderButtons();
-                    observeButtons();
-                    googleInitialized = true;
-                    state = STATES.READY;
-                })();
-
-                const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('GoogleAuth init timeout')), timeout)
-                );
-
-                return Promise.race([initSequence, timeoutPromise]);
-            })
-            .catch(err => {
-                console.error('GoogleAuth init error:', err);
-                if (state !== STATES.FAILED) {
-                    state = STATES.FAILED;
-                    showEmailFallback();
+        const initSequence = Promise.all([sdkPromise, clientIdPromise])
+            .then(([, clientId]) => {
+                if (!clientId) {
+                    throw new Error('Missing Google client ID');
                 }
-                throw err;
+
+                google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback,
+                });
+
+                renderButtons();
+                observeButtons();
+                googleInitialized = true;
+                state = STATES.READY;
             });
+
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('GoogleAuth init timeout')), timeout)
+        );
+
+        initPromise = Promise.race([initSequence, timeoutPromise]).catch(err => {
+            console.error('GoogleAuth init error:', err);
+            if (state !== STATES.FAILED) {
+                state = STATES.FAILED;
+                showEmailFallback();
+            }
+            throw err;
+        });
 
         return initPromise;
     }
