@@ -210,13 +210,15 @@ function setupAuthListeners() {
             // Réinitialiser et recharger GoogleAuth lors du changement de vue
             if (window.GoogleAuth) {
                 GoogleAuth.reset();
-                GoogleAuth.init(response => authManager.handleGoogleLogin(response))
-                    .then(() => {
-                        if (GoogleAuth.state === GoogleAuth.STATES.READY) {
-                            GoogleAuth.promptLogin();
-                        }
-                    })
-                    .catch(() => {});
+                if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
+                    GoogleAuth.init(response => authManager.handleGoogleLogin(response))
+                        .then(() => {
+                            if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+                                GoogleAuth.promptLogin();
+                            }
+                        })
+                        .catch(() => {});
+                }
             }
         });
     });
@@ -353,16 +355,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (window.GoogleAuth) {
         GoogleAuth.reset();
-        GoogleAuth.init(response => authManager.handleGoogleLogin(response))
-            .then(() => {
-                if (GoogleAuth.state === GoogleAuth.STATES.READY) {
-                    separators.forEach(el => el.style.display = 'block');
-                    GoogleAuth.promptLogin();
-                }
-            })
-            .catch(() => {
-                // L'initialisation a échoué, le fallback est géré par GoogleAuth
-            });
+        if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
+            GoogleAuth.init(response => authManager.handleGoogleLogin(response))
+                .then(() => {
+                    if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+                        separators.forEach(el => el.style.display = 'block');
+                        GoogleAuth.promptLogin();
+                    }
+                })
+                .catch(() => {
+                    // L'initialisation a échoué, le fallback est géré par GoogleAuth
+                });
+        }
     }
     setupAuthListeners();
 });

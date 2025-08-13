@@ -214,3 +214,7 @@ const GoogleAuth = (() => {
 
 window.GoogleAuth = GoogleAuth;
 
+document.addEventListener('DOMContentLoaded', () => {
+    GoogleAuth.reset();
+});
+
