@@ -121,12 +121,13 @@ class AuthManager {
         this.user = null;
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        
-        // ⭐ NOUVEAU : Déconnexion Google aussi
+
+        // ⭐ Déconnexion Google et nettoyage des boutons
         if (window.GoogleAuth) {
+            GoogleAuth.reset();
             GoogleAuth.disableAutoSelect();
         }
-        
+
         this.updateUI();
         window.location.reload();
     }
@@ -199,12 +200,24 @@ function setupAuthListeners() {
         tab.addEventListener('click', function() {
             const tabName = this.dataset.tab;
             console.log('Changement d\'onglet:', tabName);
-            
+
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
+
             document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
             document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
+
+            // Réinitialiser et recharger GoogleAuth lors du changement de vue
+            if (window.GoogleAuth) {
+                GoogleAuth.reset();
+                GoogleAuth.init(response => authManager.handleGoogleLogin(response))
+                    .then(() => {
+                        if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+                            GoogleAuth.promptLogin();
+                        }
+                    })
+                    .catch(() => {});
+            }
         });
     });
 
@@ -339,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     separators.forEach(el => el.style.display = 'none');
 
     if (window.GoogleAuth) {
+        GoogleAuth.reset();
         GoogleAuth.init(response => authManager.handleGoogleLogin(response))
             .then(() => {
                 if (GoogleAuth.state === GoogleAuth.STATES.READY) {
