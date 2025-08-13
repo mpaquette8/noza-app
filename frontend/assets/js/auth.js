@@ -208,20 +208,6 @@ function setupAuthListeners() {
         });
     });
 
-    // ⭐ NOUVEAU : Bouton Google pour inscription
-    const googleRegisterBtn = document.getElementById('googleRegisterBtn');
-    if (googleRegisterBtn) {
-        googleRegisterBtn.addEventListener('click', function() {
-            console.log('Déclenchement connexion Google manuelle...');
-            
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                google.accounts.id.prompt();
-            } else {
-                showNotification('Service Google non disponible', 'error');
-            }
-        });
-    }
-
     // Connexion email (existant)
     const loginBtn = document.getElementById('loginBtn');
     if (loginBtn) {
