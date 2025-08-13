@@ -339,10 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
     separators.forEach(el => el.style.display = 'none');
 
     if (window.GoogleAuth) {
-        GoogleAuth.init((response) => authManager.handleGoogleLogin(response))
+        GoogleAuth.init(response => authManager.handleGoogleLogin(response))
             .then(() => {
                 if (GoogleAuth.state === GoogleAuth.STATES.READY) {
                     separators.forEach(el => el.style.display = 'block');
+                    GoogleAuth.promptLogin();
                 }
             })
             .catch(() => {
@@ -357,3 +358,4 @@ window.authManager = authManager;
 window.setupAuthListeners = setupAuthListeners;
 
 console.log('Script auth.js chargé');
+

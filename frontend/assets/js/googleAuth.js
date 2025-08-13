@@ -12,6 +12,7 @@ const GoogleAuth = (() => {
     let state = STATES.LOADING;
     let initialized = false;
     let initPromise = null;
+    let buttonsRendered = false;
 
     function loadSdk() {
         return new Promise((resolve, reject) => {
@@ -39,12 +40,79 @@ const GoogleAuth = (() => {
         });
     }
 
+    function renderButtons() {
+        if (buttonsRendered) return;
+        const configs = [
+            { id: 'googleSignInButton', text: 'signin_with' },
+            { id: 'googleSignInButtonRegister', text: 'signup_with' }
+        ];
+
+        configs.forEach(({ id, text }) => {
+            const container = document.getElementById(id);
+            if (!container || container.hasChildNodes()) return;
+            const width = Math.min(container.offsetWidth || window.innerWidth - 40, 300);
+            try {
+                google.accounts.id.renderButton(container, {
+                    theme: 'outline',
+                    size: 'large',
+                    type: 'standard',
+                    shape: 'rectangular',
+                    text,
+                    logo_alignment: 'left',
+                    width
+                });
+                container.parentElement?.classList.remove('loading');
+            } catch (err) {
+                console.error('GoogleAuth renderButton error:', err);
+            }
+        });
+        buttonsRendered = true;
+    }
+
+    function enforceButtonDimensions(container) {
+        const width = Math.min(
+            container.offsetWidth ||
+            container.parentElement?.offsetWidth ||
+            window.innerWidth - 40,
+            300
+        ) + 'px';
+        container.style.width = '100%';
+        container.style.maxWidth = '100%';
+        container.style.minWidth = width;
+        container.style.minHeight = '50px';
+        const inner = container.querySelector('div');
+        if (inner) {
+            inner.style.width = '100%';
+            inner.style.maxWidth = '100%';
+            inner.style.minWidth = width;
+        }
+        const iframe = container.querySelector('iframe');
+        if (iframe) {
+            iframe.style.width = '100%';
+            iframe.style.maxWidth = '100%';
+            iframe.style.minWidth = width;
+            iframe.style.height = '50px';
+        }
+    }
+
+    function observeButtons() {
+        ['googleSignInButton', 'googleSignInButtonRegister'].forEach(id => {
+            const container = document.getElementById(id);
+            if (!container) return;
+            const apply = () => enforceButtonDimensions(container);
+            apply();
+            new ResizeObserver(apply).observe(container);
+            new MutationObserver(apply).observe(container, { childList: true, subtree: true });
+        });
+    }
+
     async function init(callback = () => {}, timeout = 5000) {
         if (initialized) return;
         if (initPromise) return initPromise;
 
         initPromise = (async () => {
             const initSequence = (async () => {
+                document.querySelectorAll('.google-auth-container').forEach(c => c.classList.add('loading'));
                 await loadSdk();
 
                 const res = await fetch('/api/config/google');
@@ -59,6 +127,8 @@ const GoogleAuth = (() => {
                     callback,
                 });
 
+                renderButtons();
+                observeButtons();
                 initialized = true;
                 state = STATES.READY;
             })();
@@ -111,3 +181,4 @@ const GoogleAuth = (() => {
 })();
 
 window.GoogleAuth = GoogleAuth;
+
