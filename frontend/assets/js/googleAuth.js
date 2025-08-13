@@ -49,7 +49,23 @@ const GoogleAuth = (() => {
 
         configs.forEach(({ id, text }) => {
             const container = document.getElementById(id);
-            if (!container || container.hasChildNodes()) return;
+            const parent = container?.parentElement || (
+                id === 'googleSignInButton'
+                    ? document.querySelector('#loginForm .google-auth-container')
+                    : document.querySelector('#registerForm .google-auth-container')
+            );
+
+            if (!container) {
+                console.warn(`GoogleAuth renderButtons: container #${id} not found`);
+                parent?.classList.remove('loading');
+                return;
+            }
+
+            if (container.hasChildNodes()) {
+                parent?.classList.remove('loading');
+                return;
+            }
+
             const width = Math.min(container.offsetWidth || window.innerWidth - 40, 300);
             try {
                 google.accounts.id.renderButton(container, {
@@ -67,7 +83,7 @@ const GoogleAuth = (() => {
                     showEmailFallback();
                 }
             } finally {
-                container.parentElement?.classList.remove('loading');
+                parent?.classList.remove('loading');
             }
         });
         googleButtonsRendered = true;
