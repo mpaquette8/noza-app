@@ -71,8 +71,6 @@ const GoogleAuth = (() => {
                     cachedClientId = fallback;
                     return cachedClientId;
                 }
-                setState(STATES.FAILED);
-                showEmailFallback();
                 throw err;
             });
     }
@@ -173,7 +171,7 @@ const GoogleAuth = (() => {
         });
     }
 
-    function init(callback = () => {}, timeout = 5000) {
+    function init(callback = () => {}, timeout = 10000, skipRetry = false) {
         if (googleInitialized) return Promise.resolve();
         if (initPromise) return initPromise;
 
@@ -205,7 +203,10 @@ const GoogleAuth = (() => {
 
         initPromise = Promise.race([initSequence, timeoutPromise]).catch(err => {
             console.error('GoogleAuth init error:', err);
-            if (state !== STATES.FAILED) {
+            if (!skipRetry && err instanceof TypeError) {
+                return retryInit(3, callback, timeout);
+            }
+            if (!skipRetry && state !== STATES.FAILED) {
                 setState(STATES.FAILED);
                 showEmailFallback();
             }
@@ -213,6 +214,24 @@ const GoogleAuth = (() => {
         });
 
         return initPromise;
+    }
+
+    function retryInit(maxAttempts = 3, callback = () => {}, timeout = 10000) {
+        let attempt = 0;
+        const attemptInit = () =>
+            init(callback, timeout, true).catch(err => {
+                if (err instanceof TypeError && attempt < maxAttempts) {
+                    const delay = 2 ** attempt * 1000;
+                    attempt++;
+                    return new Promise(res => setTimeout(res, delay)).then(attemptInit);
+                }
+                if (state !== STATES.FAILED) {
+                    setState(STATES.FAILED);
+                    showEmailFallback();
+                }
+                throw err;
+            });
+        return attemptInit();
     }
 
     function promptLogin(notificationCallback) {
@@ -267,6 +286,7 @@ const GoogleAuth = (() => {
 
     return {
         init,
+        retryInit,
         promptLogin,
         disableAutoSelect,
         reset,
