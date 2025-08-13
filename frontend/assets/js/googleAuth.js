@@ -14,6 +14,7 @@ const GoogleAuth = (() => {
     let initPromise = null;
     let googleButtonsRendered = false;
     let cachedClientId = null;
+    const widthCache = new Map();
 
     function setState(newState) {
         if (state !== newState) {
@@ -85,12 +86,25 @@ const GoogleAuth = (() => {
         });
     }
 
+    function computeWidth(container) {
+        const rect = container.getBoundingClientRect();
+        const parentRect = container.parentElement?.getBoundingClientRect();
+        const width = Math.min(
+            rect.width || parentRect?.width || window.innerWidth - 40,
+            300
+        );
+        widthCache.set(container, width);
+        return width;
+    }
+
     function renderButtons() {
         if (googleButtonsRendered) return;
         const configs = [
             { id: 'googleSignInButton', text: 'signin_with' },
             { id: 'googleSignInButtonRegister', text: 'signup_with' }
         ];
+
+        const tasks = [];
 
         configs.forEach(({ id, text }) => {
             const container = document.getElementById(id);
@@ -111,51 +125,56 @@ const GoogleAuth = (() => {
                 return;
             }
 
-            const width = Math.min(container.offsetWidth || window.innerWidth - 40, 300);
-            try {
-                google.accounts.id.renderButton(container, {
-                    theme: 'outline',
-                    size: 'large',
-                    type: 'standard',
-                    shape: 'rectangular',
-                    text,
-                    logo_alignment: 'left',
-                    width
-                });
-            } catch (err) {
-                console.error('GoogleAuth renderButton error:', err);
-                if (!document.querySelector('.google-auth-fallback')) {
-                    showEmailFallback();
-                }
-            } finally {
-                parent?.classList.remove('loading');
-            }
+            const width = computeWidth(container);
+            tasks.push({ container, parent, width, text });
         });
-        googleButtonsRendered = true;
+
+        requestAnimationFrame(() => {
+            tasks.forEach(({ container, parent, width, text }) => {
+                try {
+                    google.accounts.id.renderButton(container, {
+                        theme: 'outline',
+                        size: 'large',
+                        type: 'standard',
+                        shape: 'rectangular',
+                        text,
+                        logo_alignment: 'left',
+                        width
+                    });
+                    enforceButtonDimensions(container, width);
+                } catch (err) {
+                    console.error('GoogleAuth renderButton error:', err);
+                    if (!document.querySelector('.google-auth-fallback')) {
+                        showEmailFallback();
+                    }
+                } finally {
+                    parent?.classList.remove('loading');
+                }
+            });
+            googleButtonsRendered = true;
+        });
     }
 
-    function enforceButtonDimensions(container) {
-        const width = Math.min(
-            container.offsetWidth ||
-            container.parentElement?.offsetWidth ||
-            window.innerWidth - 40,
-            300
-        ) + 'px';
+    function enforceButtonDimensions(container, width = widthCache.get(container)) {
+        if (typeof width !== 'number') {
+            width = computeWidth(container);
+        }
+        const widthPx = width + 'px';
         container.style.width = '100%';
         container.style.maxWidth = '100%';
-        container.style.minWidth = width;
+        container.style.minWidth = widthPx;
         container.style.minHeight = '50px';
         const inner = container.querySelector('div');
         if (inner) {
             inner.style.width = '100%';
             inner.style.maxWidth = '100%';
-            inner.style.minWidth = width;
+            inner.style.minWidth = widthPx;
         }
         const iframe = container.querySelector('iframe');
         if (iframe) {
             iframe.style.width = '100%';
             iframe.style.maxWidth = '100%';
-            iframe.style.minWidth = width;
+            iframe.style.minWidth = widthPx;
             iframe.style.height = '50px';
         }
     }
@@ -164,10 +183,13 @@ const GoogleAuth = (() => {
         ['googleSignInButton', 'googleSignInButtonRegister'].forEach(id => {
             const container = document.getElementById(id);
             if (!container) return;
-            const apply = () => enforceButtonDimensions(container);
-            apply();
-            new ResizeObserver(apply).observe(container);
-            new MutationObserver(apply).observe(container, { childList: true, subtree: true });
+            const schedule = () => {
+                const width = computeWidth(container);
+                requestAnimationFrame(() => enforceButtonDimensions(container, width));
+            };
+            schedule();
+            new ResizeObserver(schedule).observe(container);
+            new MutationObserver(schedule).observe(container, { childList: true, subtree: true });
         });
     }
 
