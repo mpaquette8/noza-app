@@ -29,12 +29,22 @@ const GoogleAuth = (() => {
         });
     }
 
-    async function init(callback = () => {}) {
+    function showEmailFallback() {
+        document.querySelectorAll('.google-auth-container').forEach(container => {
+            container.style.display = 'none';
+            const message = document.createElement('div');
+            message.textContent = 'Connexion par e-mail disponible';
+            message.className = 'google-auth-fallback';
+            container.insertAdjacentElement('afterend', message);
+        });
+    }
+
+    async function init(callback = () => {}, timeout = 5000) {
         if (initialized) return;
         if (initPromise) return initPromise;
 
         initPromise = (async () => {
-            try {
+            const initSequence = (async () => {
                 await loadSdk();
 
                 const res = await fetch('/api/config/google');
@@ -51,9 +61,18 @@ const GoogleAuth = (() => {
 
                 initialized = true;
                 state = STATES.READY;
+            })();
+
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('GoogleAuth init timeout')), timeout)
+            );
+
+            try {
+                await Promise.race([initSequence, timeoutPromise]);
             } catch (err) {
                 console.error('GoogleAuth init error:', err);
                 state = STATES.FAILED;
+                showEmailFallback();
                 throw err;
             }
         })();
