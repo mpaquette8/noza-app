@@ -2127,12 +2127,26 @@ body::before {
 
 /* Message pendant le chargement */
 
-.google-auth-container.loading::after {
-    content: 'Chargement Google...';
+.google-auth-container.loading {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 15px;
+}
+
+.google-auth-container.loading::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4285f4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+.google-auth-container.loading::after {
+    content: 'Chargement Google...';
     color: #666;
     font-style: italic;
 }

@@ -235,6 +235,8 @@
 
     async function startGoogleAuth() {
         console.log('🚀 Démarrage Google Auth...');
+        document.querySelectorAll('.google-auth-container')
+            .forEach(c => c.classList.add('loading'));
 
         // 1) Récupérer le client_id depuis le back
         let cfg;
@@ -245,6 +247,7 @@
             window.GOOGLE_CLIENT_ID = cfg.clientId;
         } catch (e) {
             console.error('❌ Impossible de charger le client_id Google depuis /api/config/google', e);
+            showGoogleAuthError();
             return; // on ne peut pas initialiser sans client_id
         }
 
@@ -254,7 +257,7 @@
         // Stratégies de retry (tu les avais déjà)
         setTimeout(() => { if (!googleReady && !googleInitialized) initGoogleAuth(); }, 2000);
         setTimeout(() => { if (!googleReady && !googleInitialized) initGoogleAuth(); }, 5000);
-        setTimeout(() => { if (!googleReady && !googleButtonsRendered) createFallbackButtons();  }, 8000);
+        setTimeout(() => { if (!googleReady && !googleButtonsRendered) showGoogleAuthError();  }, 8000);
     }
 
     // Callback Google simplifié - DOIT être global
@@ -323,7 +326,7 @@
             
         } catch (error) {
             console.error('❌ Erreur init Google:', error);
-            createFallbackButtons();
+            showGoogleAuthError();
         }
     }
 
@@ -345,8 +348,8 @@
                 300
             );
 
-            if (loginContainer && !loginContainer.hasChildNodes()) {
-                google.accounts.id.renderButton(loginContainer, {
+        if (loginContainer && !loginContainer.hasChildNodes()) {
+            google.accounts.id.renderButton(loginContainer, {
                 theme: 'outline',
                 size: 'large',
                 type: 'standard',
@@ -354,10 +357,11 @@
                 text: 'signin_with',
                 logo_alignment: 'left',
                 width: buttonWidth
-                });
-            }
-            if (registerContainer && !registerContainer.hasChildNodes()) {
-                google.accounts.id.renderButton(registerContainer, {
+            });
+            loginContainer.parentElement.classList.remove('loading');
+        }
+        if (registerContainer && !registerContainer.hasChildNodes()) {
+            google.accounts.id.renderButton(registerContainer, {
                 theme: 'outline',
                 size: 'large',
                 type: 'standard',
@@ -365,14 +369,15 @@
                 text: 'signup_with',
                 logo_alignment: 'left',
                 width: buttonWidth
-                });
-            }
-            googleButtonsRendered = true;
-            console.log('✅ Boutons Google créés (une seule fois)');
-        } catch (error) {
-            console.error('❌ Erreur création boutons:', error);
-            createFallbackButtons();
+            });
+            registerContainer.parentElement.classList.remove('loading');
         }
+        googleButtonsRendered = true;
+        console.log('✅ Boutons Google créés (une seule fois)');
+    } catch (error) {
+        console.error('❌ Erreur création boutons:', error);
+        showGoogleAuthError();
+    }
     }
 
     // Forcer la dimension et observer les changements sur les boutons Google
@@ -416,45 +421,12 @@
         });
     }
 
-    // Créer des boutons de fallback qui utilisent prompt()
-    function createFallbackButtons() {
-        console.log('🔄 Création boutons fallback...');
-        
-        const loginFallback = document.getElementById('googleLoginBtn');
-        const registerFallback = document.getElementById('googleRegisterBtn');
-        
-        if (loginFallback) {
-            loginFallback.style.display = 'flex';
-            loginFallback.onclick = triggerGooglePrompt;
-        }
-        
-        if (registerFallback) {
-            registerFallback.style.display = 'flex';
-            registerFallback.onclick = triggerGooglePrompt;
-        }
-    }
-
-    // Déclencher la popup Google manuellement
-    function triggerGooglePrompt() {
-        console.log('🔄 Déclenchement popup Google...');
-        
-        if (!googleReady || !google || !google.accounts || !google.accounts.id) {
-            alert('Service Google non disponible. Utilisez la connexion par email.');
-            return;
-        }
-        
-        try {
-            // Utiliser prompt() qui est plus fiable que renderButton
-            google.accounts.id.prompt((notification) => {
-                console.log('Google prompt notification:', notification);
-                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                    console.log('Popup Google fermée ou ignorée');
-                }
-            });
-        } catch (error) {
-            console.error('❌ Erreur prompt Google:', error);
-            alert('Erreur lors de l\'ouverture de Google. Essayez la connexion par email.');
-        }
+    // Afficher un message d'erreur si Google est indisponible
+    function showGoogleAuthError() {
+        document.querySelectorAll('.google-auth-container').forEach(container => {
+            container.classList.remove('loading');
+            container.textContent = 'Connexion Google indisponible';
+        });
     }
 
     // Fonction de debug
@@ -477,7 +449,6 @@
     // Exposer les fonctions globalement
     window.handleCredentialResponse = handleCredentialResponse;
     window.debugGoogle = debugGoogle;
-    window.triggerGooglePrompt = triggerGooglePrompt;
 
     console.log('📝 Script Google Auth chargé');
     </script>
