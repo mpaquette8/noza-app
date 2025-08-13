@@ -192,8 +192,13 @@ class AuthController {
       logger.error('Erreur authentification Google', error);
       
       // Gestion des erreurs spécifiques
-      if (error.message.includes('Token Google invalide')) {
-        const { response, statusCode } = createResponse(false, null, 'Token Google invalide', HTTP_STATUS.UNAUTHORIZED);
+      if (error.code === 'INVALID') {
+        const { response, statusCode } = createResponse(false, null, 'Token expiré', HTTP_STATUS.UNAUTHORIZED);
+        return res.status(statusCode).json(response);
+      }
+
+      if (error.code === 'TIMEOUT' || error.code === 'NETWORK') {
+        const { response, statusCode } = createResponse(false, null, 'Google indisponible', 503);
         return res.status(statusCode).json(response);
       }
 

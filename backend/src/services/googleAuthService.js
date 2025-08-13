@@ -17,18 +17,34 @@ class GoogleAuthService {
    * @returns {Object} Informations utilisateur vérifiées
    */
   async verifyGoogleToken(token) {
+    const TIMEOUT_MS = 5000;
+    let timeoutId;
+
     try {
       logger.info('Vérification token Google...');
-      
-      const ticket = await this.client.verifyIdToken({
+
+      const verifyPromise = this.client.verifyIdToken({
         idToken: token,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
 
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          const err = new Error('Timeout vérification token Google');
+          err.code = 'TIMEOUT';
+          reject(err);
+        }, TIMEOUT_MS);
+      });
+
+      const ticket = await Promise.race([verifyPromise, timeoutPromise]);
+      clearTimeout(timeoutId);
+
       const payload = ticket.getPayload();
-      
+
       if (!payload) {
-        throw new Error('Token Google invalide');
+        const invalidError = new Error('Token Google invalide ou expiré');
+        invalidError.code = 'INVALID';
+        throw invalidError;
       }
 
       // Extraire les informations utilisateur
@@ -40,15 +56,31 @@ class GoogleAuthService {
         emailVerified: payload.email_verified
       };
 
-      logger.success('Token Google vérifié', { 
-        email: userInfo.email, 
-        googleId: userInfo.googleId 
+      logger.success('Token Google vérifié', {
+        email: userInfo.email,
+        googleId: userInfo.googleId
       });
 
       return userInfo;
     } catch (error) {
-      logger.error('Erreur vérification token Google', error);
-      throw new Error('Token Google invalide ou expiré');
+      clearTimeout(timeoutId);
+
+      if (error.code === 'TIMEOUT') {
+        logger.error('Timeout vérification token Google', error);
+        throw error;
+      }
+
+      if (['ENOTFOUND', 'ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'EAI_AGAIN'].includes(error.code)) {
+        logger.error('Erreur réseau lors de la vérification du token Google', error);
+        const networkError = new Error('Erreur réseau vérification token Google');
+        networkError.code = 'NETWORK';
+        throw networkError;
+      }
+
+      logger.warn('Token Google invalide ou expiré', error);
+      const invalidError = new Error('Token Google invalide ou expiré');
+      invalidError.code = 'INVALID';
+      throw invalidError;
     }
   }
 
