@@ -15,6 +15,12 @@ const GoogleAuth = (() => {
     let googleButtonsRendered = false;
     let cachedClientId = null;
 
+    function setState(newState) {
+        if (state !== newState) {
+            state = newState;
+        }
+    }
+
     function loadSdk() {
         return new Promise((resolve, reject) => {
             if (typeof google !== 'undefined') {
@@ -65,7 +71,7 @@ const GoogleAuth = (() => {
                     cachedClientId = fallback;
                     return cachedClientId;
                 }
-                state = STATES.FAILED;
+                setState(STATES.FAILED);
                 showEmailFallback();
                 throw err;
             });
@@ -190,7 +196,7 @@ const GoogleAuth = (() => {
                 renderButtons();
                 observeButtons();
                 googleInitialized = true;
-                state = STATES.READY;
+                setState(STATES.READY);
             });
 
         const timeoutPromise = new Promise((_, reject) =>
@@ -200,7 +206,7 @@ const GoogleAuth = (() => {
         initPromise = Promise.race([initSequence, timeoutPromise]).catch(err => {
             console.error('GoogleAuth init error:', err);
             if (state !== STATES.FAILED) {
-                state = STATES.FAILED;
+                setState(STATES.FAILED);
                 showEmailFallback();
             }
             throw err;
@@ -232,7 +238,7 @@ const GoogleAuth = (() => {
         googleInitialized = false;
         googleButtonsRendered = false;
         initPromise = null;
-        state = STATES.LOADING;
+        setState(STATES.LOADING);
         document.querySelectorAll('.google-auth-container').forEach(container => {
             container.classList.remove('loading');
             container.style.display = '';
@@ -274,6 +280,8 @@ const GoogleAuth = (() => {
 window.GoogleAuth = GoogleAuth;
 
 document.addEventListener('DOMContentLoaded', () => {
-    GoogleAuth.reset();
+    if (GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
+        GoogleAuth.reset();
+    }
 });
 
