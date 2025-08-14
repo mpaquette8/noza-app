@@ -13,6 +13,7 @@ const HTTP_PORT = process.env.PORT || 3000;
 const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 let server;
 let httpRedirectServer;
+const allowHttp = process.env.ALLOW_HTTP === 'true';
 
 // Gestion propre de l'arrêt
 const gracefulShutdown = async (signal) => {
@@ -52,7 +53,7 @@ const startServer = async () => {
     // Initialiser l'application (DB, etc.)
     await initializeApp();
 
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && !allowHttp) {
       const certPath = process.env.TLS_CERT_PATH;
       const keyPath = process.env.TLS_KEY_PATH;
 
@@ -74,6 +75,9 @@ const startServer = async () => {
           logger.info(`Redirection HTTP active sur le port ${HTTP_PORT}`);
         });
     } else {
+      if (process.env.NODE_ENV === 'production' && allowHttp) {
+        logger.warn('ALLOW_HTTP activé: serveur démarré en HTTP sans TLS.');
+      }
       server = app.listen(HTTP_PORT, '0.0.0.0', () => {
         logger.success(`🚀 Serveur démarré sur 0.0.0.0:${HTTP_PORT}`);
       });

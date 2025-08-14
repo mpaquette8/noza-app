@@ -36,8 +36,11 @@ function checkEnv() {
   }
 
   const required = ['DATABASE_URL', 'JWT_SECRET'];
-  if (process.env.NODE_ENV === 'production') {
+  const allowHttp = process.env.ALLOW_HTTP === 'true';
+  if (process.env.NODE_ENV === 'production' && !allowHttp) {
     required.push('TLS_CERT_PATH', 'TLS_KEY_PATH');
+  } else if (process.env.NODE_ENV === 'production' && allowHttp) {
+    logger.warn('ALLOW_HTTP activé: démarrage sans TLS.');
   }
 
   const missing = required.filter((v) => !process.env[v]);
