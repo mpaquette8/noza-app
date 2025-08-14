@@ -1,7 +1,7 @@
 // backend/src/controllers/courseController.js
 const { prisma } = require('../config/database');
 const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, LIMITS } = require('../utils/constants');
+const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
 
 class CourseController {
@@ -128,8 +128,17 @@ class CourseController {
 
       res.status(statusCode).json(response);
     } catch (error) {
-      logger.error('Erreur génération cours', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
+      logger.error('Erreur génération cours', { error, code: error.code });
+      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let status = HTTP_STATUS.SERVER_ERROR;
+      if (error.code === ERROR_CODES.IA_TIMEOUT) {
+        message = 'Temps dépassé lors de la génération du cours';
+        status = HTTP_STATUS.SERVICE_UNAVAILABLE;
+      } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
+        message = 'Quota IA dépassé, réessayez plus tard';
+        status = HTTP_STATUS.RATE_LIMIT;
+      }
+      const { response, statusCode } = createResponse(false, null, message, status, error.code);
       res.status(statusCode).json(response);
     }
   }

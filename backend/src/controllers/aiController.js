@@ -1,6 +1,6 @@
 // backend/src/controllers/aiController.js
 const { createResponse, sanitizeInput, logger } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
+const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
 
 class AiController {
@@ -38,8 +38,17 @@ class AiController {
 
       res.json(response);
     } catch (error) {
-      logger.error('Erreur réponse question', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
+      logger.error('Erreur réponse question', { error, code: error.code });
+      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let status = HTTP_STATUS.SERVER_ERROR;
+      if (error.code === ERROR_CODES.IA_TIMEOUT) {
+        message = 'Temps dépassé lors de la réponse de l\'IA';
+        status = HTTP_STATUS.SERVICE_UNAVAILABLE;
+      } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
+        message = 'Quota IA dépassé, réessayez plus tard';
+        status = HTTP_STATUS.RATE_LIMIT;
+      }
+      const { response, statusCode } = createResponse(false, null, message, status, error.code);
       res.status(statusCode).json(response);
     }
   }
@@ -65,8 +74,17 @@ class AiController {
       const { response } = createResponse(true, { quiz });
       res.json(response);
     } catch (error) {
-      logger.error('Erreur génération quiz', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
+      logger.error('Erreur génération quiz', { error, code: error.code });
+      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let status = HTTP_STATUS.SERVER_ERROR;
+      if (error.code === ERROR_CODES.IA_TIMEOUT) {
+        message = 'Temps dépassé lors de la génération du quiz';
+        status = HTTP_STATUS.SERVICE_UNAVAILABLE;
+      } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
+        message = 'Quota IA dépassé, réessayez plus tard';
+        status = HTTP_STATUS.RATE_LIMIT;
+      }
+      const { response, statusCode } = createResponse(false, null, message, status, error.code);
       res.status(statusCode).json(response);
     }
   }
@@ -92,8 +110,17 @@ class AiController {
       const { response } = createResponse(true, { suggestions });
       res.json(response);
     } catch (error) {
-      logger.error('Erreur suggestions questions', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
+      logger.error('Erreur suggestions questions', { error, code: error.code });
+      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let status = HTTP_STATUS.SERVER_ERROR;
+      if (error.code === ERROR_CODES.IA_TIMEOUT) {
+        message = 'Temps dépassé lors de la génération des suggestions';
+        status = HTTP_STATUS.SERVICE_UNAVAILABLE;
+      } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
+        message = 'Quota IA dépassé, réessayez plus tard';
+        status = HTTP_STATUS.RATE_LIMIT;
+      }
+      const { response, statusCode } = createResponse(false, null, message, status, error.code);
       res.status(statusCode).json(response);
     }
   }

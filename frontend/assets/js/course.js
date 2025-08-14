@@ -26,6 +26,28 @@ class CourseManager {
     this.history = JSON.parse(localStorage.getItem('noza-history') || '[]');
   }
 
+  // Afficher un message d'erreur avec action
+  showAction(message, actionLabel, actionCallback) {
+    const notification = document.createElement('div');
+    notification.className = 'notification error';
+    const text = document.createElement('span');
+    text.textContent = message;
+    const btn = document.createElement('button');
+    btn.textContent = actionLabel;
+    btn.onclick = () => {
+      notification.remove();
+      actionCallback();
+    };
+    notification.appendChild(text);
+    notification.appendChild(btn);
+    document.body.appendChild(notification);
+  }
+
+  savePendingRequest(payload) {
+    localStorage.setItem('noza-pending', JSON.stringify(payload));
+    utils.showNotification('Requête sauvegardée pour plus tard', 'success');
+  }
+
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
     try {
@@ -64,6 +86,10 @@ class CourseManager {
         this.addToHistory(this.currentCourse);
         utils.showNotification('Cours généré avec succès !', 'success');
         return this.currentCourse;
+      } else if (data.code === 'IA_TIMEOUT') {
+        this.showAction(data.error || 'Le service IA a expiré', 'Réessayer', () => this.generateCourse(subject, style, duration, intent));
+      } else if (data.code === 'QUOTA_EXCEEDED') {
+        this.showAction(data.error || 'Quota IA dépassé', 'Sauvegarder', () => this.savePendingRequest(payload));
       } else {
         throw new Error(data.error || 'Erreur lors de la génération');
       }
