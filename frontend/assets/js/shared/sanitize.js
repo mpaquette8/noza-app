@@ -1,5 +1,5 @@
 /**
- * Sanitize user-provided input while preserving accented and other Unicode letters.
+ * Sanitize user-provided input while preserving Unicode letters and punctuation.
  * This logic is mirrored in backend/src/utils/helpers.js; update both places when
  * changing the allowed character set or behavior.
  *
@@ -9,9 +9,11 @@
  */
 export function sanitizeInput(input, maxLength = 10000) {
   if (typeof input !== 'string') return input;
+
   return input
+    .replace(/<[^>]*>/g, '')
     .trim()
-    .replace(/[^\p{L}0-9 _\n\r.,!?;:'"()\[\]{}-]/gu, '')
+    .replace(/[^\p{L}\p{N}\p{P}\p{Zs}\n\r]/gu, '')
     .substring(0, maxLength);
 }
 

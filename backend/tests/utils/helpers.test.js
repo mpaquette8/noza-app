@@ -8,7 +8,19 @@ test('sanitizeInput preserves accented letters', () => {
   assert.strictEqual(result, input);
 });
 
-test('sanitizeInput removes disallowed characters', () => {
+test('sanitizeInput preserves multilingual scripts and punctuation', () => {
+  const input = '你好，世界! — Привет! Café';
+  const result = sanitizeInput(input);
+  assert.strictEqual(result, input);
+});
+
+test('sanitizeInput strips HTML tags', () => {
+  const input = '<strong>Bold</strong> text';
+  const result = sanitizeInput(input);
+  assert.strictEqual(result, 'Bold text');
+});
+
+test('sanitizeInput removes emoji characters', () => {
   const input = 'Bonjour! 😊';
   const result = sanitizeInput(input);
   assert.strictEqual(result, 'Bonjour! ');
