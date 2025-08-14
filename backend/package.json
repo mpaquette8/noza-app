@@ -4,7 +4,7 @@
   "description": "Backend pour l'application Noza",
   "main": "server.js",
   "scripts": {
-    "start": "node scripts/check-env.js && node server.js",
+    "start": "NODE_ENV=${NODE_ENV:-development} node scripts/check-env.js && node server.js",
     "dev": "node scripts/check-env.js && nodemon server.js",
     "postinstall": "prisma generate",
     "migrate": "node scripts/check-migrations.js",
