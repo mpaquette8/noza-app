@@ -61,6 +61,13 @@ const ERROR_CODES = {
   IA_ERROR: 'IA_ERROR'
 };
 
+// Libellés conviviaux pour les erreurs IA
+const AI_ERROR_MESSAGES = {
+  [ERROR_CODES.IA_TIMEOUT]: "Temps de réponse de l'IA dépassé",
+  [ERROR_CODES.QUOTA_EXCEEDED]: 'Quota IA dépassé, réessayez plus tard',
+  [ERROR_CODES.IA_ERROR]: 'Erreur du service IA, réessayez plus tard'
+};
+
 // Quotas de rate limiting par type de route
 const RATE_LIMITS = {
   AI: {
@@ -110,6 +117,7 @@ module.exports = {
   ERROR_MESSAGES,
   HTTP_STATUS,
   ERROR_CODES,
+  AI_ERROR_MESSAGES,
   STYLES,
   DURATIONS,
   INTENTS
