@@ -64,15 +64,14 @@ const mapLegacyParams = ({ detailLevel, vulgarizationLevel, style, duration, int
   };
 };
 
-// Sanitisation des entrées
-const sanitizeInput = (input) => {
+// Sanitisation des entrées avec whitelist
+const sanitizeInput = (input, maxLength = 10000) => {
   if (typeof input !== 'string') return input;
-  
+
   return input
     .trim()
-    .replace(/<script[^>]*>.*?<\/script>/gi, '') // Supprimer les scripts
-    .replace(/<[^>]*>/g, '') // Supprimer les balises HTML
-    .substring(0, 10000); // Limiter la taille
+    .replace(/[^a-zA-Z0-9 _\n\r.,!?;:'"()\[\]{}-]/g, '')
+    .substring(0, maxLength);
 };
 
 // Gestion des erreurs async

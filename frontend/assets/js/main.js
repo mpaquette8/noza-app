@@ -153,7 +153,7 @@ function addChatMessage(text, type) {
 
 async function askQuestion() {
     const chatInput = document.getElementById('chatInput');
-    const question = chatInput.value.trim();
+    const question = utils.sanitizeInput(chatInput.value, 2000);
 
     if (!question) {
         utils.handleAuthError('Veuillez saisir une question');

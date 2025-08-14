@@ -86,7 +86,7 @@ class CourseController {
       }
 
       // Sanitisation
-      const sanitizedSubject = sanitizeInput(subject);
+      const sanitizedSubject = sanitizeInput(subject, 500);
 
       // Génération du cours
       const courseContent = await anthropicService.generateCourse(

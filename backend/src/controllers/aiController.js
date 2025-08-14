@@ -15,7 +15,7 @@ class AiController {
       }
 
       // Sanitisation
-      const sanitizedQuestion = sanitizeInput(question);
+      const sanitizedQuestion = sanitizeInput(question, 2000);
 
       // Générer la réponse
       const result = await anthropicService.answerQuestion(

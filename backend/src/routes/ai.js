@@ -3,6 +3,7 @@ const express = require('express');
 const aiController = require('../controllers/aiController');
 const { authenticate } = require('../middleware/auth');
 const { asyncHandler } = require('../utils/helpers');
+const { questionValidation } = require('../middleware/validation');
 const rateLimit = require('express-rate-limit');
 const { RATE_LIMITS, ERROR_MESSAGES } = require('../utils/constants');
 const { checkBlacklist } = require('../middleware/blacklist');
@@ -31,7 +32,7 @@ router.use(authenticate);
 router.use(checkBlacklist);
 
 // Routes IA
-router.post('/ask-question', askQuestionLimiter, asyncHandler(aiController.askQuestion));
+router.post('/ask-question', askQuestionLimiter, questionValidation, asyncHandler(aiController.askQuestion));
 router.post('/generate-quiz', generateQuizLimiter, asyncHandler(aiController.generateQuiz));
 router.post('/suggest-questions', suggestQuestionsLimiter, asyncHandler(aiController.suggestQuestions));
 router.get('/random-subject', randomSubjectLimiter, asyncHandler(aiController.getRandomSubject));

@@ -30,7 +30,7 @@ class CourseManager {
   async generateCourse(subject, style, duration, intent) {
     try {
       const payload = {
-        subject: utils.sanitizeInput(subject)
+        subject: utils.sanitizeInput(subject, 500)
       };
       if (style && STYLE_LABELS[style]) {
         payload.style = utils.sanitizeInput(style);
@@ -78,7 +78,10 @@ class CourseManager {
   displayCourse(course) {
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('courseContent').style.display = 'block';
-    document.getElementById('generatedCourse').innerHTML = course.content;
+    const sanitizedContent = typeof DOMPurify !== 'undefined'
+      ? DOMPurify.sanitize(course.content)
+      : course.content;
+    document.getElementById('generatedCourse').innerHTML = sanitizedContent;
     
     // Réinitialiser le chat
     const chatMessages = document.getElementById('chatMessages');
