@@ -46,8 +46,8 @@ const loginValidation = [
 const courseValidation = [
   body('subject')
     .trim()
-    .isLength({ min: 1 })
-    .withMessage('Le sujet est requis'),
+    .isLength({ min: 1, max: 500 })
+    .withMessage('Le sujet doit faire entre 1 et 500 caractères'),
   body('style')
     .optional()
     .isIn(Object.values(STYLES))
@@ -71,9 +71,19 @@ const courseValidation = [
   handleValidationErrors
 ];
 
+// Règles de validation pour les questions
+const questionValidation = [
+  body('question')
+    .trim()
+    .isLength({ min: 1, max: 2000 })
+    .withMessage('La question doit faire entre 1 et 2000 caractères'),
+  handleValidationErrors
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
   courseValidation,
+  questionValidation,
   handleValidationErrors
 };

@@ -32,10 +32,13 @@ const utils = {
     }, 4000);
   },
 
-  // Sanitisation simple
-  sanitizeInput(input) {
+  // Sanitisation avec whitelist
+  sanitizeInput(input, maxLength = 10000) {
     if (typeof input !== 'string') return input;
-    return input.trim().substring(0, 10000);
+    return input
+      .trim()
+      .replace(/[^a-zA-Z0-9 _\n\r.,!?;:'"()\[\]{}-]/g, '')
+      .substring(0, maxLength);
   },
 
   // Gestion unifiée des erreurs d'authentification
