@@ -63,10 +63,6 @@ async function handleGenerateCourse() {
         return;
     }
 
-    const generateBtn = document.getElementById('generateBtn');
-    generateBtn.disabled = true;
-    generateBtn.innerHTML = '<div class="loading-spinner"></div>Génération en cours...';
-
     try {
         if (courseManager) {
             const course = await courseManager.generateCourse(
@@ -94,8 +90,6 @@ async function handleGenerateCourse() {
             }
         }
     } finally {
-        generateBtn.disabled = false;
-        generateBtn.innerHTML = '<i data-lucide="sparkles"></i>Décrypter le sujet';
         utils.initializeLucide();
     }
 }
@@ -341,35 +335,13 @@ async function handleGenerateQuiz() {
         return;
     }
 
-    const quizBtn = document.getElementById('generateQuiz');
-    quizBtn.disabled = true;
-    quizBtn.innerHTML = '<div class="loading-spinner"></div>Génération du quiz...';
-
     try {
-        const response = await fetch(`${API_BASE_URL}/ai/generate-quiz`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...authManager.getAuthHeaders()
-            },
-            body: JSON.stringify({ courseContent: courseManager.currentCourse.content })
-        });
-
-        const data = await response.json();
-
-        if (data.success && data.quiz) {
-            currentQuiz = data.quiz;
-            displayQuiz(data.quiz);
-            utils.showNotification('Quiz généré avec succès !', 'success');
-        } else {
-            throw new Error(data.error || 'Erreur lors de la génération du quiz');
+        const quiz = await courseManager.generateQuiz();
+        if (quiz) {
+            currentQuiz = quiz;
+            displayQuiz(quiz);
         }
-    } catch (error) {
-        console.error('Erreur génération quiz:', error);
-        utils.handleAuthError('Erreur lors de la génération du quiz: ' + error.message, true);
     } finally {
-        quizBtn.disabled = false;
-        quizBtn.innerHTML = '<i data-lucide="help-circle"></i>Quiz';
         utils.initializeLucide();
     }
 }
