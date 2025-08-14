@@ -54,6 +54,21 @@ const LIMITS = {
   MAX_HISTORY_ITEMS: 50
 };
 
+// Quotas de rate limiting par type de route
+const RATE_LIMITS = {
+  AI: {
+    ASK_QUESTION: { WINDOW_MS: 60 * 60 * 1000, MAX: 5 }, // 5 requêtes/heure
+    GENERATE_QUIZ: { WINDOW_MS: 60 * 60 * 1000, MAX: 5 },
+    SUGGEST_QUESTIONS: { WINDOW_MS: 60 * 60 * 1000, MAX: 5 },
+    RANDOM_SUBJECT: { WINDOW_MS: 60 * 60 * 1000, MAX: 5 },
+    SUBJECT_CATEGORIES: { WINDOW_MS: 60 * 60 * 1000, MAX: 5 }
+  },
+  AUTH: {
+    LOGIN: { WINDOW_MS: 60 * 60 * 1000, MAX: 15 },
+    GOOGLE: { WINDOW_MS: 60 * 60 * 1000, MAX: 5 }
+  }
+};
+
 // Messages d'erreur standardisés
 const ERROR_MESSAGES = {
   UNAUTHORIZED: 'Non autorisé',
@@ -83,6 +98,7 @@ module.exports = {
   VULGARIZATION_LEVELS,
   QUESTION_TYPES,
   LIMITS,
+  RATE_LIMITS,
   ERROR_MESSAGES,
   HTTP_STATUS,
   STYLES,
