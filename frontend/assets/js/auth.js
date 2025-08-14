@@ -163,11 +163,8 @@ class AuthManager {
         localStorage.removeItem('user');
 
         // ⭐ Déconnexion Google et nettoyage des boutons
-        if (window.GoogleAuth) {
-            if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
-                GoogleAuth.reset();
-            }
-            GoogleAuth.disableAutoSelect();
+        if (window.google?.accounts?.id) {
+            google.accounts.id.disableAutoSelect?.();
         }
 
         this.updateUI();
