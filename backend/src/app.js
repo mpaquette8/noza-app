@@ -13,6 +13,17 @@ const apiRoutes = require('./routes');
 
 const app = express();
 
+// Permet de faire confiance aux en-têtes du proxy (utile pour HTTPS derrière un proxy)
+app.enable('trust proxy');
+
+// Redirection HTTP -> HTTPS en production
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production' && !req.secure) {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
 // ⭐ MODIFIÉ : Configuration Helmet avec CSP personnalisé
 app.use(
   helmet({
