@@ -42,12 +42,15 @@ function setupEventListeners() {
     const generateQuiz = document.getElementById('generateQuiz');
     const copyContent = document.getElementById('copyContent');
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
-    
+    const menuToggle = document.getElementById('menuToggle');
+    const configPanel = document.querySelector('.configuration-panel');
+
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
-    
+    if (menuToggle && configPanel) menuToggle.addEventListener('click', () => configPanel.classList.toggle('open'));
+
     // Chat
     setupChatEventListeners();
 }
