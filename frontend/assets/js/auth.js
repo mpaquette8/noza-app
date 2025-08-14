@@ -105,12 +105,12 @@ class AuthManager {
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.login(email, password));
-                return { success: false, error: data.error };
+                return { success: false, error: data.error, code: data.code };
             } else if (data.code === 'QUOTA_EXCEEDED') {
                 this.showAction(data.error || 'Quota dépassé', 'Sauvegarder', () => this.savePendingAuth({ email, password }));
-                return { success: false, error: data.error };
+                return { success: false, error: data.error, code: data.code };
             } else {
-                return { success: false, error: data.error };
+                return { success: false, error: data.error, code: data.code };
             }
         } catch (error) {
             console.error('Erreur login:', error);
@@ -141,12 +141,12 @@ class AuthManager {
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.register(name, email, password));
-                return { success: false, errors: [{ msg: data.error }] };
+                return { success: false, errors: [{ msg: data.error }], code: data.code };
             } else if (data.code === 'QUOTA_EXCEEDED') {
                 this.showAction(data.error || 'Quota dépassé', 'Sauvegarder', () => this.savePendingAuth({ name, email, password }));
-                return { success: false, errors: [{ msg: data.error }] };
+                return { success: false, errors: [{ msg: data.error }], code: data.code };
             } else {
-                return { success: false, errors: data.errors || [{ msg: data.error }] };
+                return { success: false, errors: data.errors || [{ msg: data.error }], code: data.code };
             }
         } catch (error) {
             console.error('Erreur register:', error);
@@ -283,7 +283,7 @@ function setupAuthListeners() {
                     courseManager.loadUserCourses();
                 }
             } else {
-                utils.handleAuthError(result.error);
+                utils.handleAuthError(result);
             }
 
             this.disabled = false;
@@ -323,7 +323,7 @@ function setupAuthListeners() {
                 showNotification('Compte créé avec succès !', 'success');
             } else {
                 const errorMessage = result.errors?.map(err => err.msg).join(', ') || 'Erreur lors de l\'inscription';
-                utils.handleAuthError(errorMessage);
+                utils.handleAuthError({ code: result.code, message: errorMessage });
             }
 
             this.disabled = false;

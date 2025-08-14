@@ -5,6 +5,13 @@ import { sanitizeInput, sanitizeHTML } from './shared/sanitize.js'; // Shared sa
 // Configuration API
 const API_BASE_URL = window.location.origin + '/api';
 
+// Libellés conviviaux pour les codes d'erreur
+const ERROR_LABELS = {
+  IA_TIMEOUT: 'Service IA indisponible, réessayez plus tard',
+  QUOTA_EXCEEDED: 'Quota IA dépassé, réessayez plus tard',
+  IA_ERROR: 'Erreur du service IA, réessayez plus tard'
+};
+
 // Fonctions utilitaires globales
 const utils = {
   // Initialiser Lucide
@@ -60,8 +67,21 @@ const utils = {
   },
 
   // Gestion unifiée des erreurs d'authentification
-  handleAuthError(message, critical = false) {
-    console.error(message);
+  handleAuthError(error, critical = false) {
+    let message = 'Une erreur est survenue';
+    if (typeof error === 'string') {
+      message = error;
+    } else if (error && typeof error === 'object') {
+      if (error.code && ERROR_LABELS[error.code]) {
+        message = ERROR_LABELS[error.code];
+      } else if (error.message) {
+        message = error.message;
+      } else if (error.error) {
+        message = error.error;
+      }
+    }
+
+    console.error(error);
     this.showNotification(message, 'error');
 
     if (critical) {

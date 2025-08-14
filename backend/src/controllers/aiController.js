@@ -1,6 +1,6 @@
 // backend/src/controllers/aiController.js
 const { createResponse, sanitizeInput, logger } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES } = require('../utils/constants');
+const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES, AI_ERROR_MESSAGES } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
 
 class AiController {
@@ -47,13 +47,11 @@ class AiController {
         const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
         return res.status(statusCode).json(response);
       }
-      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let message = AI_ERROR_MESSAGES[error.code] || ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
-        message = 'Temps de réponse de l\'IA dépassé';
         status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
-        message = 'Quota IA dépassé, réessayez plus tard';
         status = HTTP_STATUS.RATE_LIMIT;
       }
       const { response, statusCode } = createResponse(false, null, message, status, error.code);
@@ -91,13 +89,11 @@ class AiController {
         const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
         return res.status(statusCode).json(response);
       }
-      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let message = AI_ERROR_MESSAGES[error.code] || ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
-        message = 'Temps de réponse de l\'IA dépassé';
         status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
-        message = 'Quota IA dépassé, réessayez plus tard';
         status = HTTP_STATUS.RATE_LIMIT;
       }
       const { response, statusCode } = createResponse(false, null, message, status, error.code);
@@ -135,13 +131,11 @@ class AiController {
         const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
         return res.status(statusCode).json(response);
       }
-      let message = ERROR_MESSAGES.SERVER_ERROR;
+      let message = AI_ERROR_MESSAGES[error.code] || ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
-        message = 'Temps de réponse de l\'IA dépassé';
         status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
-        message = 'Quota IA dépassé, réessayez plus tard';
         status = HTTP_STATUS.RATE_LIMIT;
       }
       const { response, statusCode } = createResponse(false, null, message, status, error.code);
