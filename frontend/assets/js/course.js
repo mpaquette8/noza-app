@@ -40,13 +40,20 @@ class CourseManager {
   constructor() {
     this.currentCourse = null;
     this.history = JSON.parse(localStorage.getItem('noza-history') || '[]');
+    this.page = 1;
+    this.limit = 10;
+    this.hasMore = true;
   }
 
   invalidateCache(courseId) {
     if (courseId) {
       localStorage.removeItem(`noza-course-${courseId}`);
     }
-    localStorage.removeItem('noza-course-list');
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('noza-course-list')) {
+        localStorage.removeItem(key);
+      }
+    });
   }
 
   // Afficher un message d'erreur avec action
@@ -184,37 +191,49 @@ class CourseManager {
   }
 
   // Charger l'historique utilisateur
-  async loadUserCourses() {
+  async loadUserCourses(page = 1) {
     if (!authManager.isAuthenticated()) return;
-    const cached = getCache('noza-course-list');
+    const cacheKey = `noza-course-list-${page}`;
+    const cached = getCache(cacheKey);
+    let courses;
     if (cached) {
-      this.history = cached;
-      this.updateHistoryDisplay();
-      return;
-    }
+      ({ courses, hasMore: this.hasMore } = cached);
+    } else {
+      try {
+        const response = await fetch(`${API_BASE_URL}/courses?page=${page}&limit=${this.limit}`, {
+          headers: authManager.getAuthHeaders()
+        });
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/courses`, {
-        headers: authManager.getAuthHeaders()
-      });
+        const data = await response.json();
 
-      const data = await response.json();
-
-      if (data.success) {
-        this.history = data.courses.map(course => ({
-          id: course.id,
-          subject: course.subject,
-          style: course.style,
-          duration: course.duration,
-          intent: course.intent,
-          createdAt: course.createdAt
-        }));
-        setCache('noza-course-list', this.history);
-        this.updateHistoryDisplay();
+        if (data.success) {
+          courses = data.courses.map(course => ({
+            id: course.id,
+            subject: course.subject,
+            style: course.style,
+            duration: course.duration,
+            intent: course.intent,
+            createdAt: course.createdAt
+          }));
+          this.hasMore = data.pagination.page * data.pagination.limit < data.pagination.total;
+          setCache(cacheKey, { courses, hasMore: this.hasMore });
+        } else {
+          courses = [];
+          this.hasMore = false;
+        }
+      } catch (error) {
+        console.error('Erreur chargement historique:', error);
+        return;
       }
-    } catch (error) {
-      console.error('Erreur chargement historique:', error);
     }
+
+    if (page === 1) {
+      this.history = courses;
+    } else {
+      this.history = [...this.history, ...courses];
+    }
+    this.page = page;
+    this.updateHistoryDisplay();
   }
 
   // Ajouter à l'historique
@@ -250,12 +269,13 @@ class CourseManager {
         </div>
       `;
     } else {
-      historyTab.innerHTML = this.history.map(course => {
-        const styleLabel = STYLE_LABELS[course.style] || course.style;
-        const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-        const intentLabel = INTENT_LABELS[course.intent] || course.intent;
+      historyTab.innerHTML = this.history
+        .map(course => {
+          const styleLabel = STYLE_LABELS[course.style] || course.style;
+          const durationLabel = DURATION_LABELS[course.duration] || course.duration;
+          const intentLabel = INTENT_LABELS[course.intent] || course.intent;
 
-        return `
+          return `
         <div class="history-item" onclick="courseManager.loadCourseFromHistory('${course.id}')">
           <h4>${course.subject}</h4>
           <p>
@@ -266,7 +286,19 @@ class CourseManager {
           <small>${new Date(course.createdAt).toLocaleDateString()}</small>
         </div>
         `;
-      }).join('');
+        })
+        .join('');
+
+      if (this.hasMore) {
+        historyTab.innerHTML += `
+          <div class="load-more-container">
+            <button id="loadMoreCourses">Charger plus</button>
+          </div>
+        `;
+        document
+          .getElementById('loadMoreCourses')
+          .addEventListener('click', () => this.loadUserCourses(this.page + 1));
+      }
     }
 
     utils.initializeLucide();

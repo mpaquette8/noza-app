@@ -41,8 +41,9 @@ model Course {
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   chatHistories      ChatHistory[]
-  
+
   @@map("courses")
+  @@index([userId, createdAt])
 }
 
 model ChatHistory {
