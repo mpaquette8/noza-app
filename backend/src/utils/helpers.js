@@ -75,7 +75,7 @@ const sanitizeInput = (input, maxLength = 10000) => {
 
   return input
     .trim()
-    .replace(/[^a-zA-Z0-9 _\n\r.,!?;:'"()\[\]{}-]/g, '')
+    .replace(/[^\p{L}0-9 _\n\r.,!?;:'"()\[\]{}-]/gu, '')
     .substring(0, maxLength);
 };
 

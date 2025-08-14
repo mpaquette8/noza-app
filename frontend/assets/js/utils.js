@@ -37,7 +37,7 @@ const utils = {
     if (typeof input !== 'string') return input;
     return input
       .trim()
-      .replace(/[^a-zA-Z0-9 _\n\r.,!?;:'"()\[\]{}-]/g, '')
+      .replace(/[^\p{L}0-9 _\n\r.,!?;:'"()\[\]{}-]/gu, '')
       .substring(0, maxLength);
   },
 
