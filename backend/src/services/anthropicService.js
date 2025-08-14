@@ -4,6 +4,7 @@ const { logger } = require('../utils/helpers');
 const { LIMITS, STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../utils/constants');
 
 const OFFLINE_MESSAGE = 'Service IA indisponible';
+const REQUEST_TIMEOUT = 30 * 1000; // 30s timeout for IA requests
 
 // Mapping duration presets to approximate word counts
 const DURATION_TO_WORDS = {
@@ -51,6 +52,20 @@ class AnthropicService {
 
   getOfflineMessage() {
     return OFFLINE_MESSAGE;
+  }
+
+  // Wrapper around Anthropic API with timeout support
+  async sendWithTimeout(options, timeoutMs = REQUEST_TIMEOUT) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      return await this.client.messages.create({
+        ...options,
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
 
@@ -235,7 +250,7 @@ RENDU ATTENDU :
 
       logger.info('Génération cours', { subject, style, duration, intent });
 
-      const response = await this.client.messages.create({
+      const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',
         max_tokens: LIMITS.MAX_COURSE_LENGTH,
         temperature: 0.2,
@@ -320,7 +335,7 @@ Instructions :
 Réponse :`;
       }
 
-      const response = await this.client.messages.create({
+      const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',
         max_tokens: 180,
         temperature: 0.7,
@@ -439,7 +454,7 @@ Format JSON requis :
 
 Assure-toi que les questions couvrent les points clés du cours et que les réponses incorrectes sont plausibles.`;
 
-      const response = await this.client.messages.create({
+      const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',
         max_tokens: 2000,
         temperature: 0.2,
@@ -496,7 +511,7 @@ Format JSON :
   ]
 }`;
 
-      const response = await this.client.messages.create({
+      const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',
         max_tokens: 500,
         temperature: 0.8,
@@ -630,7 +645,7 @@ Format JSON :
       return ERROR_CODES.QUOTA_EXCEEDED;
     }
     const message = error?.message?.toLowerCase() || '';
-    if (error?.code === 'ETIMEDOUT' || message.includes('timeout')) {
+    if (error?.name === 'AbortError' || error?.code === 'ETIMEDOUT' || message.includes('timeout')) {
       return ERROR_CODES.IA_TIMEOUT;
     }
     return ERROR_CODES.IA_ERROR;

@@ -84,6 +84,10 @@ class CourseManager {
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
     utils.showLoading(['generateBtn', 'generateQuiz', 'copyContent', 'exportPdf', 'exportDocx']);
+    const controller = new AbortController();
+    const slowRequest = setTimeout(() => {
+      this.showAction('La génération est plus longue que prévu', 'Annuler', () => controller.abort());
+    }, 25000);
     try {
       const payload = {
         subject: utils.sanitizeInput(subject, 500)
@@ -104,7 +108,8 @@ class CourseManager {
           'Content-Type': 'application/json',
           ...authManager.getAuthHeaders()
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
       if (response.status === 503) {
         this.showAction('Service IA indisponible, réessayez plus tard', 'OK', () => {});
@@ -134,10 +139,15 @@ class CourseManager {
         throw new Error(data.error || 'Erreur lors de la génération');
       }
     } catch (error) {
+      if (error.name === 'AbortError') {
+        utils.showNotification('Génération annulée', 'error');
+        return null;
+      }
       console.error('Erreur:', error);
       utils.handleAuthError('Erreur lors de la génération du cours: ' + error.message, true);
       throw error;
     } finally {
+      clearTimeout(slowRequest);
       utils.hideLoading(['generateBtn', 'generateQuiz', 'copyContent', 'exportPdf', 'exportDocx']);
     }
   }

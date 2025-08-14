@@ -50,7 +50,7 @@ class AiController {
       let message = ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
-        message = 'Temps dépassé lors de la réponse de l\'IA';
+        message = 'Temps de réponse de l\'IA dépassé';
         status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
         message = 'Quota IA dépassé, réessayez plus tard';
@@ -94,7 +94,7 @@ class AiController {
       let message = ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
-        message = 'Temps dépassé lors de la génération du quiz';
+        message = 'Temps de réponse de l\'IA dépassé';
         status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
         message = 'Quota IA dépassé, réessayez plus tard';
@@ -138,7 +138,7 @@ class AiController {
       let message = ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
-        message = 'Temps dépassé lors de la génération des suggestions';
+        message = 'Temps de réponse de l\'IA dépassé';
         status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
         message = 'Quota IA dépassé, réessayez plus tard';
