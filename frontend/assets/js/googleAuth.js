@@ -1,43 +1,12 @@
 /**
- * Gestionnaire du SDK Google Identity pour l'application.
- * Garantit une initialisation unique et expose des méthodes utilitaires.
+ * Gestion simplifiée du SDK Google Identity pour l'application.
+ * Initialise le SDK et affiche un fallback e-mail en cas d'erreur.
  */
 const GoogleAuth = (() => {
-    const STATES = {
-        LOADING: 'LOADING',
-        READY: 'READY',
-        FAILED: 'FAILED'
-    };
-
-    let state = STATES.LOADING;
-    let googleInitialized = false;
+    let isReady = false;
     let initPromise = null;
-    let googleButtonsRendered = false;
     let cachedClientId = null;
     const widthCache = new Map();
-
-    const METRICS_KEY = 'googleAuthMetrics';
-    const DISABLED_KEY = 'googleAuthDisabled';
-    const MAX_FAILURES = Number(localStorage.getItem('googleAuthMaxFailures')) || 3;
-
-    let metrics = { success: 0, failure: 0, consecutiveFailures: 0 };
-    try {
-        const stored = JSON.parse(localStorage.getItem(METRICS_KEY));
-        if (stored) {
-            metrics = { ...metrics, ...stored };
-        }
-    } catch (_) {}
-
-    let disabled = false;
-    try {
-        disabled = localStorage.getItem(DISABLED_KEY) === 'true';
-    } catch (_) {}
-
-    function setState(newState) {
-        if (state !== newState) {
-            state = newState;
-        }
-    }
 
     function loadSdk() {
         return new Promise((resolve, reject) => {
@@ -103,25 +72,6 @@ const GoogleAuth = (() => {
         });
     }
 
-    function saveMetrics() {
-        try {
-            localStorage.setItem(METRICS_KEY, JSON.stringify(metrics));
-        } catch (_) {}
-    }
-
-    function sendMetrics(success) {
-        fetch('/api/metrics/googleAuth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                success,
-                successCount: metrics.success,
-                failureCount: metrics.failure,
-                consecutiveFailures: metrics.consecutiveFailures
-            })
-        }).catch(err => console.error('GoogleAuth metrics error:', err));
-    }
-
     function setLoadingMessage(text) {
         document.querySelectorAll('.google-auth-container').forEach(container => {
             let msg = container.querySelector('.google-auth-message');
@@ -149,25 +99,6 @@ const GoogleAuth = (() => {
         container.style.opacity = '0';
     }
 
-    function recordAttempt(success) {
-        if (success) {
-            metrics.success++;
-            metrics.consecutiveFailures = 0;
-        } else {
-            metrics.failure++;
-            metrics.consecutiveFailures++;
-        }
-        saveMetrics();
-        sendMetrics(success);
-
-        if (!disabled && metrics.consecutiveFailures >= MAX_FAILURES) {
-            disabled = true;
-            try { localStorage.setItem(DISABLED_KEY, 'true'); } catch (_) {}
-            showEmailFallback();
-            setState(STATES.FAILED);
-        }
-    }
-
     function computeWidth(container) {
         const rect = container.getBoundingClientRect();
         const parentRect = container.parentElement?.getBoundingClientRect();
@@ -180,7 +111,6 @@ const GoogleAuth = (() => {
     }
 
     function renderButtons() {
-        if (googleButtonsRendered) return;
         const configs = [
             { id: 'googleSignInButton', text: 'signin_with' },
             { id: 'googleSignInButtonRegister', text: 'signup_with' }
@@ -199,6 +129,7 @@ const GoogleAuth = (() => {
             if (!container) {
                 console.warn(`GoogleAuth renderButtons: container #${id} not found`);
                 fadeOutLoading(parent);
+                showEmailFallback();
                 return;
             }
 
@@ -226,14 +157,11 @@ const GoogleAuth = (() => {
                     enforceButtonDimensions(container, width);
                 } catch (err) {
                     console.error('GoogleAuth renderButton error:', err);
-                    if (!document.querySelector('.google-auth-fallback')) {
-                        showEmailFallback();
-                    }
+                    showEmailFallback();
                 } finally {
                     fadeOutLoading(parent);
                 }
             });
-            googleButtonsRendered = true;
         });
     }
 
@@ -275,16 +203,8 @@ const GoogleAuth = (() => {
         });
     }
 
-    function init(callback = () => {}, timeout = 10000, skipRetry = false) {
-        if (disabled || metrics.consecutiveFailures >= MAX_FAILURES) {
-            disabled = true;
-            try { localStorage.setItem(DISABLED_KEY, 'true'); } catch (_) {}
-            showEmailFallback();
-            setState(STATES.FAILED);
-            return Promise.resolve();
-        }
-
-        if (googleInitialized) return Promise.resolve();
+    function init(callback = () => {}, timeout = 10000) {
+        if (isReady) return Promise.resolve();
         if (initPromise) return initPromise;
 
         document.querySelectorAll('.google-auth-container').forEach(c => {
@@ -308,23 +228,13 @@ const GoogleAuth = (() => {
 
                 google.accounts.id.initialize({
                     client_id: clientId,
-                    callback: async (response) => {
-                        let success = false;
-                        try {
-                            const result = await callback(response);
-                            success = result?.success !== false;
-                        } catch (_) {
-                            success = false;
-                        }
-                        recordAttempt(success);
-                    },
+                    callback
                 });
 
                 setLoadingMessage('Initialisation de l\'interface…');
                 renderButtons();
                 observeButtons();
-                googleInitialized = true;
-                setState(STATES.READY);
+                isReady = true;
             });
 
         const timeoutPromise = new Promise((_, reject) =>
@@ -333,115 +243,18 @@ const GoogleAuth = (() => {
 
         initPromise = Promise.race([initSequence, timeoutPromise]).catch(err => {
             console.error('GoogleAuth init error:', err);
-            if (!skipRetry && err instanceof TypeError) {
-                return retryInit(3, callback, timeout);
-            }
-            if (!skipRetry && state !== STATES.FAILED) {
-                setState(STATES.FAILED);
-                showEmailFallback();
-            }
-            recordAttempt(false);
+            showEmailFallback();
             throw err;
         });
 
         return initPromise;
     }
 
-    function retryInit(maxAttempts = 3, callback = () => {}, timeout = 10000) {
-        let attempt = 0;
-        const attemptInit = () =>
-            init(callback, timeout, true).catch(err => {
-                if (err instanceof TypeError && attempt < maxAttempts) {
-                    const delay = 2 ** attempt * 1000;
-                    attempt++;
-                    return new Promise(res => setTimeout(res, delay)).then(attemptInit);
-                }
-                if (state !== STATES.FAILED) {
-                    setState(STATES.FAILED);
-                    showEmailFallback();
-                }
-                throw err;
-            });
-        return attemptInit();
-    }
-
-    function promptLogin(notificationCallback) {
-        if (state !== STATES.READY) return;
-        try {
-            google.accounts.id.prompt(notificationCallback);
-        } catch (err) {
-            console.error('GoogleAuth prompt error:', err);
-        }
-    }
-
-    function disableAutoSelect() {
-        if (google?.accounts?.id) {
-            try {
-                google.accounts.id.disableAutoSelect();
-            } catch (err) {
-                console.error('GoogleAuth disableAutoSelect error:', err);
-            }
-        }
-    }
-
-    function reset() {
-        if (disabled) {
-            showEmailFallback();
-            return;
-        }
-        googleInitialized = false;
-        googleButtonsRendered = false;
-        initPromise = null;
-        setState(STATES.LOADING);
-        document.querySelectorAll('.google-auth-container').forEach(container => {
-            container.classList.remove('loading');
-            container.style.display = '';
-            container.style.opacity = '1';
-            container.querySelector('.google-auth-message')?.remove();
-            const btn = container.querySelector('div[id]');
-            if (btn) btn.style.display = '';
-        });
-
-        ['googleSignInButton', 'googleSignInButtonRegister'].forEach(id => {
-            let buttonContainer = document.getElementById(id);
-            if (!buttonContainer) {
-                buttonContainer = document.createElement('div');
-                buttonContainer.id = id;
-                const parent = id === 'googleSignInButton'
-                    ? document.querySelector('#loginForm .google-auth-container')
-                    : document.querySelector('#registerForm .google-auth-container');
-                parent?.appendChild(buttonContainer);
-            } else {
-                buttonContainer.innerHTML = '';
-            }
-            buttonContainer?.parentElement?.classList.remove('loading');
-            if (buttonContainer?.parentElement) {
-                buttonContainer.parentElement.style.display = '';
-            }
-        });
-
-        document.querySelectorAll('.google-auth-fallback').forEach(el => el.remove());
-    }
-
     return {
         init,
-        retryInit,
-        promptLogin,
-        disableAutoSelect,
-        reset,
-        STATES,
-        get state() {
-            return state;
-        },
-        isDisabled: () => disabled
+        showEmailFallback
     };
 })();
 
 window.GoogleAuth = GoogleAuth;
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (GoogleAuth.isDisabled() || GoogleAuth.state !== GoogleAuth.STATES.LOADING) {
-        GoogleAuth.reset();
-    }
-});
 
