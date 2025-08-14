@@ -1,5 +1,7 @@
 // frontend/assets/js/utils.js
 
+import { sanitizeInput } from './shared/sanitize.js'; // Shared sanitization logic
+
 // Configuration API
 const API_BASE_URL = window.location.origin + '/api';
 
@@ -33,13 +35,7 @@ const utils = {
   },
 
   // Sanitisation avec whitelist
-  sanitizeInput(input, maxLength = 10000) {
-    if (typeof input !== 'string') return input;
-    return input
-      .trim()
-      .replace(/[^\p{L}0-9 _\n\r.,!?;:'"()\[\]{}-]/gu, '')
-      .substring(0, maxLength);
-  },
+  sanitizeInput,
 
   // Gestion du chargement global et des boutons
   showLoading(buttonIds = []) {

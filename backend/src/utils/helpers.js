@@ -69,7 +69,10 @@ const mapLegacyParams = ({ detailLevel, vulgarizationLevel, style, duration, int
   };
 };
 
-// Sanitisation des entrées avec whitelist
+// Sanitisation des entrées avec whitelist.
+// This logic mirrors frontend/assets/js/shared/sanitize.js to ensure
+// consistent behavior between client and server. Update both places
+// if the allowed characters or processing steps change.
 const sanitizeInput = (input, maxLength = 10000) => {
   if (typeof input !== 'string') return input;
 
