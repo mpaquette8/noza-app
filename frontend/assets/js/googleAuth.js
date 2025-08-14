@@ -21,6 +21,10 @@ const GoogleAuth = (() => {
             script.onload = resolve;
             script.onerror = () => reject(new Error('Google SDK failed to load'));
             document.head.appendChild(script);
+        }).catch(err => {
+            console.error('GoogleAuth loadSdk error:', err);
+            showEmailFallback();
+            throw err;
         });
     }
 
@@ -53,11 +57,7 @@ const GoogleAuth = (() => {
             })
             .catch(err => {
                 console.error('GoogleAuth fetch config error:', err);
-                const fallback = typeof process !== 'undefined' && process.env?.GOOGLE_CLIENT_ID;
-                if (fallback) {
-                    cachedClientId = fallback;
-                    return cachedClientId;
-                }
+                showEmailFallback();
                 throw err;
             });
     }
@@ -226,15 +226,21 @@ const GoogleAuth = (() => {
                     throw new Error('Missing Google client ID');
                 }
 
-                google.accounts.id.initialize({
-                    client_id: clientId,
-                    callback
-                });
+                try {
+                    google.accounts.id.initialize({
+                        client_id: clientId,
+                        callback
+                    });
 
-                setLoadingMessage('Initialisation de l\'interface…');
-                renderButtons();
-                observeButtons();
-                isReady = true;
+                    setLoadingMessage('Initialisation de l\'interface…');
+                    renderButtons();
+                    observeButtons();
+                    isReady = true;
+                } catch (err) {
+                    console.error('GoogleAuth initialize error:', err);
+                    showEmailFallback();
+                    throw err;
+                }
             });
 
         const timeoutPromise = new Promise((_, reject) =>
