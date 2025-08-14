@@ -36,8 +36,7 @@ app.use(
           "'unsafe-inline'", // Pour les scripts inline (temporaire)
           "https://unpkg.com", // Pour Lucide icons
           "https://accounts.google.com", // Pour Google Auth
-          "https://apis.google.com", // Pour Google APIs
-          "https://cdn.jsdelivr.net" // Pour DOMPurify
+          "https://apis.google.com" // Pour Google APIs
         ],
         styleSrc: [
           "'self'",

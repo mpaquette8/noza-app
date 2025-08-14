@@ -176,8 +176,8 @@ class CourseManager {
   displayCourse(course) {
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('courseContent').style.display = 'block';
-    const sanitizedContent = typeof DOMPurify !== 'undefined'
-      ? DOMPurify.sanitize(course.content)
+    const sanitizedContent = typeof utils.sanitizeHTML === 'function'
+      ? utils.sanitizeHTML(course.content)
       : course.content;
     document.getElementById('generatedCourse').innerHTML = sanitizedContent;
     

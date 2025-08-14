@@ -1,6 +1,6 @@
 // frontend/assets/js/utils.js
 
-import { sanitizeInput } from './shared/sanitize.js'; // Shared sanitization logic
+import { sanitizeInput, sanitizeHTML } from './shared/sanitize.js'; // Shared sanitization logic
 
 // Configuration API
 const API_BASE_URL = window.location.origin + '/api';
@@ -36,6 +36,7 @@ const utils = {
 
   // Sanitisation avec whitelist
   sanitizeInput,
+  sanitizeHTML,
 
   // Gestion du chargement global et des boutons
   showLoading(buttonIds = []) {
