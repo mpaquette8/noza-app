@@ -8,6 +8,28 @@ class AuthManager {
         this.updateUI();
     }
 
+    // Afficher un message d'action
+    showAction(message, actionLabel, actionCallback) {
+        const notification = document.createElement('div');
+        notification.className = 'notification error';
+        const text = document.createElement('span');
+        text.textContent = message;
+        const btn = document.createElement('button');
+        btn.textContent = actionLabel;
+        btn.onclick = () => {
+            notification.remove();
+            actionCallback();
+        };
+        notification.appendChild(text);
+        notification.appendChild(btn);
+        document.body.appendChild(notification);
+    }
+
+    savePendingAuth(payload) {
+        localStorage.setItem('pending-auth', JSON.stringify(payload));
+        utils.showNotification('Données sauvegardées pour réessai ultérieur', 'success');
+    }
+
     // ⭐ NOUVELLE MÉTHODE : Authentification Google
     async handleGoogleLogin(googleResponse) {
         try {
@@ -44,6 +66,10 @@ class AuthManager {
                 }
                 
                 return { success: true };
+            } else if (data.code === 'IA_TIMEOUT') {
+                this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.handleGoogleLogin(googleResponse));
+            } else if (data.code === 'QUOTA_EXCEEDED') {
+                this.showAction(data.error || 'Quota dépassé', 'Sauvegarder', () => this.savePendingAuth({ credential: googleResponse.credential }));
             } else {
                 throw new Error(data.error || 'Erreur connexion Google');
             }
@@ -75,6 +101,12 @@ class AuthManager {
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
                 return { success: true };
+            } else if (data.code === 'IA_TIMEOUT') {
+                this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.login(email, password));
+                return { success: false, error: data.error };
+            } else if (data.code === 'QUOTA_EXCEEDED') {
+                this.showAction(data.error || 'Quota dépassé', 'Sauvegarder', () => this.savePendingAuth({ email, password }));
+                return { success: false, error: data.error };
             } else {
                 return { success: false, error: data.error };
             }
@@ -105,6 +137,12 @@ class AuthManager {
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
                 return { success: true };
+            } else if (data.code === 'IA_TIMEOUT') {
+                this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.register(name, email, password));
+                return { success: false, errors: [{ msg: data.error }] };
+            } else if (data.code === 'QUOTA_EXCEEDED') {
+                this.showAction(data.error || 'Quota dépassé', 'Sauvegarder', () => this.savePendingAuth({ name, email, password }));
+                return { success: false, errors: [{ msg: data.error }] };
             } else {
                 return { success: false, errors: data.errors || [{ msg: data.error }] };
             }

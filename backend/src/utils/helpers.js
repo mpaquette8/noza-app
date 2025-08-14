@@ -2,7 +2,7 @@
 const { ERROR_MESSAGES, HTTP_STATUS, STYLES, DURATIONS, INTENTS } = require('./constants');
 
 // Formatage de réponse standardisé
-const createResponse = (success, data = null, error = null, statusCode = HTTP_STATUS.OK) => {
+const createResponse = (success, data = null, error = null, statusCode = HTTP_STATUS.OK, code = null) => {
   const response = { success };
   
   if (success && data) {
@@ -13,10 +13,15 @@ const createResponse = (success, data = null, error = null, statusCode = HTTP_ST
     }
   }
   
-  if (!success && error) {
-    response.error = error;
+  if (!success) {
+    if (error) {
+      response.error = error;
+    }
+    if (code) {
+      response.code = code;
+    }
   }
-  
+
   return { response, statusCode };
 };
 

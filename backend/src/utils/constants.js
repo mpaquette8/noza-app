@@ -54,6 +54,13 @@ const LIMITS = {
   MAX_HISTORY_ITEMS: 50
 };
 
+// Codes d'erreur spécifiques à l'IA
+const ERROR_CODES = {
+  IA_TIMEOUT: 'IA_TIMEOUT',
+  QUOTA_EXCEEDED: 'QUOTA_EXCEEDED',
+  IA_ERROR: 'IA_ERROR'
+};
+
 // Quotas de rate limiting par type de route
 const RATE_LIMITS = {
   AI: {
@@ -90,7 +97,8 @@ const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   RATE_LIMIT: 429,
-  SERVER_ERROR: 500
+  SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503
 };
 
 module.exports = {
@@ -101,6 +109,7 @@ module.exports = {
   RATE_LIMITS,
   ERROR_MESSAGES,
   HTTP_STATUS,
+  ERROR_CODES,
   STYLES,
   DURATIONS,
   INTENTS

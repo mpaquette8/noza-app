@@ -1,7 +1,7 @@
 // backend/src/services/anthropicService.js
 const Anthropic = require('@anthropic-ai/sdk');
 const { logger } = require('../utils/helpers');
-const { LIMITS, STYLES, DURATIONS, INTENTS } = require('../utils/constants');
+const { LIMITS, STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../utils/constants');
 
 // Mapping duration presets to approximate word counts
 const DURATION_TO_WORDS = {
@@ -36,7 +36,7 @@ class AnthropicService {
     });
   }
 
-  
+
   // Obtenir la contrainte de longueur selon la durée souhaitée
   getDurationConstraint(duration) {
     const words = DURATION_TO_WORDS[duration];
@@ -206,7 +206,7 @@ CONTRAINTES DE STYLE & TON :
 
 RENDU ATTENDU :
 - Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).`;
-}
+  }
 
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
@@ -230,8 +230,11 @@ RENDU ATTENDU :
 
       return courseContent;
     } catch (error) {
-      logger.error('Erreur génération cours', error);
-      throw new Error('Erreur lors de la génération du cours');
+      const code = this.categorizeError(error);
+      logger.error('Erreur génération cours', { code, error });
+      const err = new Error('Erreur lors de la génération du cours');
+      err.code = code;
+      throw err;
     }
   }
 
@@ -303,8 +306,11 @@ Réponse :`;
         level
       };
     } catch (error) {
-      logger.error('Erreur réponse question', error);
-      throw new Error('Erreur lors de la génération de la réponse');
+      const code = this.categorizeError(error);
+      logger.error('Erreur réponse question', { code, error });
+      const err = new Error('Erreur lors de la génération de la réponse');
+      err.code = code;
+      throw err;
     }
   }
 
@@ -414,8 +420,11 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
         throw new Error('Format de réponse invalide');
       }
     } catch (error) {
-      logger.error('Erreur génération quiz', error);
-      throw new Error('Erreur lors de la génération du quiz');
+      const code = this.categorizeError(error);
+      logger.error('Erreur génération quiz', { code, error });
+      const err = new Error('Erreur lors de la génération du quiz');
+      err.code = code;
+      throw err;
     }
   }
 
@@ -459,8 +468,11 @@ Format JSON :
       }
 
     } catch (error) {
-      logger.error('Erreur suggestions questions', error);
-      throw new Error('Erreur lors de la génération des suggestions');
+      const code = this.categorizeError(error);
+      logger.error('Erreur suggestions questions', { code, error });
+      const err = new Error('Erreur lors de la génération des suggestions');
+      err.code = code;
+      throw err;
     }
   }
 
@@ -553,6 +565,18 @@ Format JSON :
       logger.error('Erreur récupération catégories', error);
       throw new Error('Erreur lors de la récupération des catégories');
     }
+  }
+
+  // Déterminer le code d'erreur selon la réponse de l'API Anthropic
+  categorizeError(error) {
+    if (error?.response?.status === 429) {
+      return ERROR_CODES.QUOTA_EXCEEDED;
+    }
+    const message = error?.message?.toLowerCase() || '';
+    if (error?.code === 'ETIMEDOUT' || message.includes('timeout')) {
+      return ERROR_CODES.IA_TIMEOUT;
+    }
+    return ERROR_CODES.IA_ERROR;
   }
 }
 
