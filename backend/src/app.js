@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const { connectDatabase } = require('./config/database');
 const { logger } = require('./utils/helpers');
 const { LIMITS } = require('./utils/constants');
@@ -114,6 +115,7 @@ app.use('/api/', limiter);
 // Middleware pour parser JSON
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Servir les fichiers statiques du frontend
 app.use(express.static(path.join(__dirname, '../../frontend')));

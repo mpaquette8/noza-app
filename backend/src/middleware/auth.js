@@ -7,9 +7,12 @@ const { ERROR_MESSAGES, HTTP_STATUS } = require('../utils/constants');
 // Middleware pour vérifier si l'utilisateur est connecté
 const authenticate = async (req, res, next) => {
   try {
-    // Récupérer le token depuis l'en-tête Authorization
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+    // Récupérer le token depuis l'en-tête Authorization ou les cookies
+    let token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      token = req.cookies?.token;
+    }
+
     if (!token) {
       const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED);
       return res.status(statusCode).json(response);
