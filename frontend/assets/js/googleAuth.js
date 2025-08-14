@@ -53,11 +53,7 @@ const GoogleAuth = (() => {
             })
             .catch(err => {
                 console.error('GoogleAuth fetch config error:', err);
-                const fallback = typeof process !== 'undefined' && process.env?.GOOGLE_CLIENT_ID;
-                if (fallback) {
-                    cachedClientId = fallback;
-                    return cachedClientId;
-                }
+                showEmailFallback();
                 throw err;
             });
     }
@@ -217,6 +213,11 @@ const GoogleAuth = (() => {
         setLoadingMessage('Connexion au service…');
 
         const initSequence = loadSdk()
+            .catch(err => {
+                console.error('GoogleAuth SDK load error:', err);
+                showEmailFallback();
+                throw err;
+            })
             .then(() => {
                 setLoadingMessage('Récupération de la configuration…');
                 return getClientId();
@@ -226,10 +227,16 @@ const GoogleAuth = (() => {
                     throw new Error('Missing Google client ID');
                 }
 
-                google.accounts.id.initialize({
-                    client_id: clientId,
-                    callback
-                });
+                try {
+                    google.accounts.id.initialize({
+                        client_id: clientId,
+                        callback
+                    });
+                } catch (err) {
+                    console.error('GoogleAuth initialization error:', err);
+                    showEmailFallback();
+                    throw err;
+                }
 
                 setLoadingMessage('Initialisation de l\'interface…');
                 renderButtons();
