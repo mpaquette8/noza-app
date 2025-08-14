@@ -9,24 +9,44 @@ class CourseController {
   // Récupérer tous les cours de l'utilisateur
   async getAllCourses(req, res) {
     try {
-      const courses = await prisma.course.findMany({
-        where: { userId: req.user.id },
-        orderBy: { createdAt: 'desc' },
-        take: LIMITS.MAX_HISTORY_ITEMS,
-        select: {
-          id: true,
-          subject: true,
-          detailLevel: true,
-          vulgarizationLevel: true,
-          style: true,
-          duration: true,
-          intent: true,
-          createdAt: true
-        }
-      });
+      const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+      const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), LIMITS.MAX_HISTORY_ITEMS);
+      const skip = (page - 1) * limit;
 
-      const { response } = createResponse(true, { courses });
-      const etag = '"' + crypto.createHash('md5').update(JSON.stringify(courses)).digest('hex') + '"';
+      const [courses, total] = await prisma.$transaction([
+        prisma.course.findMany({
+          where: { userId: req.user.id },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+          select: {
+            id: true,
+            subject: true,
+            detailLevel: true,
+            vulgarizationLevel: true,
+            style: true,
+            duration: true,
+            intent: true,
+            createdAt: true
+          }
+        }),
+        prisma.course.count({ where: { userId: req.user.id } })
+      ]);
+
+      const pagination = {
+        page,
+        limit,
+        total
+      };
+
+      const { response } = createResponse(true, { courses, pagination });
+      const etag =
+        '"' +
+        crypto
+          .createHash('md5')
+          .update(JSON.stringify({ courses, page, limit }))
+          .digest('hex') +
+        '"';
       if (req.headers['if-none-match'] === etag) {
         return res.status(304).end();
       }

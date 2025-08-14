@@ -1,5 +1,19 @@
 # Course API
 
+## GET /api/courses
+
+Returns the authenticated user's courses ordered from newest to oldest.
+
+### Query parameters
+- `page` (integer, optional): page number, default `1`.
+- `limit` (integer, optional): number of courses per page, default `10`, max `50`.
+
+### Example
+```
+GET /api/courses?page=2&limit=10
+Authorization: Bearer <token>
+```
+
 ## POST /api/courses
 
 Creates a new course for the authenticated user.
