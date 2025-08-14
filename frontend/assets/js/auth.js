@@ -1,5 +1,7 @@
 // frontend/assets/js/auth.js
 
+import { utils, API_BASE_URL } from './utils.js';
+
 class AuthManager {
     constructor() {
         this.token = localStorage.getItem('authToken');
@@ -229,7 +231,7 @@ class AuthManager {
 }
 
 // Instance globale
-const authManager = new AuthManager();
+export const authManager = new AuthManager();
 
 // Fonctions pour gérer les événements d'authentification
 function setupAuthListeners() {

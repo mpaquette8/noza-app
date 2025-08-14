@@ -1,5 +1,8 @@
 // frontend/assets/js/course.js
 
+import { utils, API_BASE_URL } from './utils.js';
+import { authManager } from './auth.js';
+
 // Mapping for human-readable labels and icons
 const STYLE_LABELS = {
   neutral: 'Neutre',
@@ -382,5 +385,6 @@ class CourseManager {
 }
 
 // Instance globale
-window.courseManager = new CourseManager();
+export const courseManager = new CourseManager();
+window.courseManager = courseManager;
 
