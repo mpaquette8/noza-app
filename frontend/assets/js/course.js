@@ -23,6 +23,10 @@ const INTENT_LABELS = {
   expert: 'Expert'
 };
 
+// Rate limit between costly actions
+const REQUEST_COOLDOWN = 5000; // 5 seconds
+const LAST_REQUEST_KEY = 'noza-last-request';
+
 // Simple localStorage cache with TTL (5 minutes)
 const CACHE_TTL = 1000 * 60 * 5;
 function setCache(key, data) {
@@ -46,6 +50,21 @@ class CourseManager {
     this.page = 1;
     this.limit = 10;
     this.hasMore = true;
+  }
+
+  checkRateLimit() {
+    const last = parseInt(localStorage.getItem(LAST_REQUEST_KEY) || '0', 10);
+    const now = Date.now();
+    if (now - last < REQUEST_COOLDOWN) {
+      utils.showNotification('Veuillez patienter quelques secondes avant une nouvelle requête', 'error');
+      return false;
+    }
+    localStorage.setItem(LAST_REQUEST_KEY, String(now));
+    return true;
+  }
+
+  resetRateLimit() {
+    localStorage.removeItem(LAST_REQUEST_KEY);
   }
 
   invalidateCache(courseId) {
@@ -83,6 +102,9 @@ class CourseManager {
 
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
+    if (!this.checkRateLimit()) {
+      return null;
+    }
     utils.showLoading(['generateBtn', 'generateQuiz', 'copyContent', 'exportPdf', 'exportDocx']);
     const controller = new AbortController();
     const slowRequest = setTimeout(() => {
@@ -115,8 +137,16 @@ class CourseManager {
         this.showAction('Service IA indisponible, réessayez plus tard', 'OK', () => {});
         return null;
       }
-
       const data = await response.json();
+      if (response.status === 429) {
+        let wait = parseInt(response.headers.get('Retry-After'), 10);
+        if (isNaN(wait)) {
+          wait = data.retryAfter || data.retry_after || data.wait || data.delay || 5;
+        }
+        utils.showNotification(`Veuillez patienter ${wait} secondes avant une nouvelle requête`, 'error');
+        this.resetRateLimit();
+        return null;
+      }
 
       if (data.success) {
         this.currentCourse = {
@@ -157,6 +187,9 @@ class CourseManager {
       utils.handleAuthError("Veuillez d'abord générer un cours");
       return null;
     }
+    if (!this.checkRateLimit()) {
+      return null;
+    }
 
     utils.showLoading(['generateQuiz']);
     try {
@@ -174,6 +207,15 @@ class CourseManager {
       }
 
       const data = await response.json();
+      if (response.status === 429) {
+        let wait = parseInt(response.headers.get('Retry-After'), 10);
+        if (isNaN(wait)) {
+          wait = data.retryAfter || data.retry_after || data.wait || data.delay || 5;
+        }
+        utils.showNotification(`Veuillez patienter ${wait} secondes avant une nouvelle requête`, 'error');
+        this.resetRateLimit();
+        return null;
+      }
 
       if (data.success && data.quiz) {
         utils.showNotification('Quiz généré avec succès !', 'success');
