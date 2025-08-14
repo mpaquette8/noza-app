@@ -1,5 +1,6 @@
 // backend/src/utils/helpers.js
 const { ERROR_MESSAGES, HTTP_STATUS, STYLES, DURATIONS, INTENTS } = require('./constants');
+const sanitizeHtml = require('sanitize-html');
 
 // Formatage de réponse standardisé
 const createResponse = (success, data = null, error = null, statusCode = HTTP_STATUS.OK, code = null) => {
@@ -69,16 +70,21 @@ const mapLegacyParams = ({ detailLevel, vulgarizationLevel, style, duration, int
   };
 };
 
-// Sanitisation des entrées avec whitelist.
-// This logic mirrors frontend/assets/js/shared/sanitize.js to ensure
-// consistent behavior between client and server. Update both places
-// if the allowed characters or processing steps change.
+// Sanitisation des entrées avec une bibliothèque dédiée.
+// This mirrors frontend/assets/js/shared/sanitize.js to maintain
+// consistent behavior across client and server. Update both places
+// if the allowed character set or processing steps change.
 const sanitizeInput = (input, maxLength = 10000) => {
   if (typeof input !== 'string') return input;
 
-  return input
+  const clean = sanitizeHtml(input, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+
+  return clean
     .trim()
-    .replace(/[^\p{L}0-9 _\n\r.,!?;:'"()\[\]{}-]/gu, '')
+    .replace(/[^\p{L}\p{N}\p{P}\p{Zs}\n\r]/gu, '')
     .substring(0, maxLength);
 };
 
