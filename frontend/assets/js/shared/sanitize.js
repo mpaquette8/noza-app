@@ -17,4 +17,27 @@ export function sanitizeInput(input, maxLength = 10000) {
     .substring(0, maxLength);
 }
 
+/**
+ * Basic HTML sanitizer that strips out potentially dangerous tags and
+ * attributes. This is a lightweight alternative to DOMPurify and should be
+ * complemented by server-side sanitization.
+ *
+ * @param {string} html - Raw HTML string to clean.
+ * @param {number} [maxLength=100000] - Maximum length of returned HTML.
+ * @returns {string} Sanitized HTML string.
+ */
+export function sanitizeHTML(html, maxLength = 100000) {
+  if (typeof html !== 'string') return html;
+
+  return html
+    // Remove script-like elements entirely
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
+    .replace(/<object[^>]*>[\s\S]*?<\/object>/gi, '')
+    .replace(/<embed[^>]*>[\s\S]*?<\/embed>/gi, '')
+    // Strip event handler attributes (onclick, onload, ...)
+    .replace(/ on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    .substring(0, maxLength);
+}
+
 export default sanitizeInput;

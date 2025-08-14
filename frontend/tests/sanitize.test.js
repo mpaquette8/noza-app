@@ -30,3 +30,10 @@ test('sanitizeInput respects maxLength with unicode', async () => {
   const result = sanitizeInput(input, 5);
   assert.strictEqual(result, 'É'.repeat(5));
 });
+
+test('sanitizeHTML removes script tags but keeps markup', async () => {
+  const { sanitizeHTML } = await load();
+  const input = '<p>Hello</p><script>alert(1)</script>';
+  const result = sanitizeHTML(input);
+  assert.strictEqual(result, '<p>Hello</p>');
+});
