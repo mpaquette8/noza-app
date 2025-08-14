@@ -247,21 +247,13 @@ function setupAuthListeners() {
             document.getElementById('loginForm').style.display = tabName === 'login' ? 'block' : 'none';
             document.getElementById('registerForm').style.display = tabName === 'register' ? 'block' : 'none';
 
-            // Réinitialiser et recharger GoogleAuth lors du changement de vue
+            // Relancer GoogleAuth lors du changement de vue si déjà prêt
             if (window.GoogleAuth) {
                 if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
                     GoogleAuth.reset();
                 }
                 if (GoogleAuth.state === GoogleAuth.STATES.READY) {
                     GoogleAuth.promptLogin();
-                } else if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
-                    GoogleAuth.init(response => authManager.handleGoogleLogin(response))
-                        .then(() => {
-                            if (GoogleAuth.state === GoogleAuth.STATES.READY) {
-                                GoogleAuth.promptLogin();
-                            }
-                        })
-                        .catch(() => {});
                 }
             }
         });
@@ -390,6 +382,27 @@ function showNotification(message, type = 'success') {
     }
 }
 
+// Initialiser GoogleAuth une seule fois
+let googleAuthInitialized = false;
+async function initializeGoogleAuth() {
+    if (!window.GoogleAuth) return;
+    if (googleAuthInitialized) {
+        GoogleAuth.promptLogin();
+        return;
+    }
+    try {
+        if (GoogleAuth.state === GoogleAuth.STATES.FAILED && typeof GoogleAuth.reset === 'function') {
+            GoogleAuth.reset();
+        }
+        await GoogleAuth.init(response => authManager.handleGoogleLogin(response));
+        document.querySelectorAll('.auth-separator').forEach(el => el.style.display = 'block');
+        GoogleAuth.promptLogin();
+        googleAuthInitialized = true;
+    } catch (err) {
+        console.error('Erreur initialisation GoogleAuth:', err);
+    }
+}
+
 // Initialiser les event listeners quand le DOM est chargé
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM chargé, configuration de l\'authentification...');
@@ -397,27 +410,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const separators = document.querySelectorAll('.auth-separator');
     separators.forEach(el => el.style.display = 'none');
 
-    if (window.GoogleAuth) {
-        if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
-            GoogleAuth.reset();
-        }
-        if (GoogleAuth.state === GoogleAuth.STATES.READY) {
-            separators.forEach(el => el.style.display = 'block');
-            GoogleAuth.promptLogin();
-        } else if (GoogleAuth.state === GoogleAuth.STATES.LOADING) {
-            GoogleAuth.init(response => authManager.handleGoogleLogin(response))
-                .then(() => {
-                    if (GoogleAuth.state === GoogleAuth.STATES.READY) {
-                        separators.forEach(el => el.style.display = 'block');
-                        GoogleAuth.promptLogin();
-                    }
-                })
-                .catch(() => {
-                    // L'initialisation a échoué, le fallback est géré par GoogleAuth
-                });
-        }
-    }
     setupAuthListeners();
+    initializeGoogleAuth();
 });
 
 // Export global
