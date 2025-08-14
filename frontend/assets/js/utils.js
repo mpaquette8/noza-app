@@ -41,6 +41,27 @@ const utils = {
       .substring(0, maxLength);
   },
 
+  // Gestion du chargement global et des boutons
+  showLoading(buttonIds = []) {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) loader.style.display = 'flex';
+
+    buttonIds.forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.disabled = true;
+    });
+  },
+
+  hideLoading(buttonIds = []) {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) loader.style.display = 'none';
+
+    buttonIds.forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.disabled = false;
+    });
+  },
+
   // Gestion unifiée des erreurs d'authentification
   handleAuthError(message, critical = false) {
     console.error(message);

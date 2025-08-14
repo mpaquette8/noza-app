@@ -50,6 +50,7 @@ class CourseManager {
 
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
+    utils.showLoading(['generateBtn', 'generateQuiz', 'copyContent', 'exportPdf', 'exportDocx']);
     try {
       const payload = {
         subject: utils.sanitizeInput(subject, 500)
@@ -97,6 +98,42 @@ class CourseManager {
       console.error('Erreur:', error);
       utils.handleAuthError('Erreur lors de la génération du cours: ' + error.message, true);
       throw error;
+    } finally {
+      utils.hideLoading(['generateBtn', 'generateQuiz', 'copyContent', 'exportPdf', 'exportDocx']);
+    }
+  }
+
+  async generateQuiz() {
+    if (!this.currentCourse) {
+      utils.handleAuthError("Veuillez d'abord générer un cours");
+      return null;
+    }
+
+    utils.showLoading(['generateQuiz']);
+    try {
+      const response = await fetch(`${API_BASE_URL}/ai/generate-quiz`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authManager.getAuthHeaders()
+        },
+        body: JSON.stringify({ courseContent: this.currentCourse.content })
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.quiz) {
+        utils.showNotification('Quiz généré avec succès !', 'success');
+        return data.quiz;
+      } else {
+        throw new Error(data.error || 'Erreur lors de la génération du quiz');
+      }
+    } catch (error) {
+      console.error('Erreur génération quiz:', error);
+      utils.handleAuthError('Erreur lors de la génération du quiz: ' + error.message, true);
+      throw error;
+    } finally {
+      utils.hideLoading(['generateQuiz']);
     }
   }
 
@@ -234,3 +271,4 @@ class CourseManager {
 
 // Instance globale
 window.courseManager = new CourseManager();
+
