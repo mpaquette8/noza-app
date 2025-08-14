@@ -106,6 +106,10 @@ class CourseManager {
         },
         body: JSON.stringify(payload)
       });
+      if (response.status === 503) {
+        this.showAction('Service IA indisponible, réessayez plus tard', 'OK', () => {});
+        return null;
+      }
 
       const data = await response.json();
 
@@ -154,6 +158,10 @@ class CourseManager {
         },
         body: JSON.stringify({ courseContent: this.currentCourse.content })
       });
+      if (response.status === 503) {
+        this.showAction('Service IA indisponible, réessayez plus tard', 'OK', () => {});
+        return null;
+      }
 
       const data = await response.json();
 
