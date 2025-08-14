@@ -3,6 +3,8 @@ const Anthropic = require('@anthropic-ai/sdk');
 const { logger } = require('../utils/helpers');
 const { LIMITS, STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../utils/constants');
 
+const OFFLINE_MESSAGE = 'Service IA indisponible';
+
 // Mapping duration presets to approximate word counts
 const DURATION_TO_WORDS = {
   [DURATIONS.SHORT]: 750,
@@ -27,13 +29,28 @@ const INTENT_ENHANCEMENTS = {
 
 class AnthropicService {
   constructor() {
+    this.offline = false;
     if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY manquante');
+      logger.warn('ANTHROPIC_API_KEY manquante, mode offline activé');
+      this.offline = true;
+      return;
     }
-    
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    try {
+      this.client = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+    } catch (error) {
+      logger.error('Échec de connexion au service Anthropic', error);
+      this.offline = true;
+    }
+  }
+
+  isOffline() {
+    return this.offline;
+  }
+
+  getOfflineMessage() {
+    return OFFLINE_MESSAGE;
   }
 
 
@@ -210,6 +227,9 @@ RENDU ATTENDU :
 
   // Générer un cours
   async generateCourse(subject, style, duration, intent) {
+    if (this.offline) {
+      return this.getOfflineMessage();
+    }
     try {
       const prompt = this.createPrompt(subject, style, duration, intent);
 
@@ -232,6 +252,13 @@ RENDU ATTENDU :
     } catch (error) {
       const code = this.categorizeError(error);
       logger.error('Erreur génération cours', { code, error });
+      if (code === ERROR_CODES.IA_ERROR) {
+        this.offline = true;
+        const err = new Error(this.getOfflineMessage());
+        err.code = code;
+        err.offline = true;
+        throw err;
+      }
       const err = new Error('Erreur lors de la génération du cours');
       err.code = code;
       throw err;
@@ -240,6 +267,9 @@ RENDU ATTENDU :
 
   // Répondre à une question
   async answerQuestion(question, courseContent = null, level = 'intermediate') {
+    if (this.offline) {
+      return { answer: this.getOfflineMessage(), questionType: 'general', level };
+    }
     try {
       const levelInstructions = {
         beginner: "Réponds de manière très simple, sans jargon technique, comme si tu t'adressais à un débutant complet. Utilise des analogies simples et du vocabulaire accessible.",
@@ -308,6 +338,13 @@ Réponse :`;
     } catch (error) {
       const code = this.categorizeError(error);
       logger.error('Erreur réponse question', { code, error });
+      if (code === ERROR_CODES.IA_ERROR) {
+        this.offline = true;
+        const err = new Error(this.getOfflineMessage());
+        err.code = code;
+        err.offline = true;
+        throw err;
+      }
       const err = new Error('Erreur lors de la génération de la réponse');
       err.code = code;
       throw err;
@@ -379,6 +416,9 @@ Réponse :`;
 
   // Générer un quiz
   async generateQuiz(courseContent) {
+    if (this.offline) {
+      return { questions: [] };
+    }
     try {
       const prompt = `Basé sur ce cours :
 ${courseContent}
@@ -422,6 +462,13 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
     } catch (error) {
       const code = this.categorizeError(error);
       logger.error('Erreur génération quiz', { code, error });
+      if (code === ERROR_CODES.IA_ERROR) {
+        this.offline = true;
+        const err = new Error(this.getOfflineMessage());
+        err.code = code;
+        err.offline = true;
+        throw err;
+      }
       const err = new Error('Erreur lors de la génération du quiz');
       err.code = code;
       throw err;
@@ -430,6 +477,9 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
 
   // Suggérer des questions
   async suggestQuestions(courseContent, level = 'intermediate') {
+    if (this.offline) {
+      return [];
+    }
     try {
       const prompt = `Basé sur ce cours :
 ${courseContent}
@@ -470,6 +520,13 @@ Format JSON :
     } catch (error) {
       const code = this.categorizeError(error);
       logger.error('Erreur suggestions questions', { code, error });
+      if (code === ERROR_CODES.IA_ERROR) {
+        this.offline = true;
+        const err = new Error(this.getOfflineMessage());
+        err.code = code;
+        err.offline = true;
+        throw err;
+      }
       const err = new Error('Erreur lors de la génération des suggestions');
       err.code = code;
       throw err;

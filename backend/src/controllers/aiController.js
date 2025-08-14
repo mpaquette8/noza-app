@@ -6,6 +6,10 @@ const anthropicService = require('../services/anthropicService');
 class AiController {
   // Répondre à une question
   async askQuestion(req, res) {
+    if (anthropicService.isOffline()) {
+      const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+      return res.status(statusCode).json(response);
+    }
     try {
       const { question, courseContent, level = 'intermediate', questionType = 'auto' } = req.body;
 
@@ -39,6 +43,10 @@ class AiController {
       res.json(response);
     } catch (error) {
       logger.error('Erreur réponse question', { error, code: error.code });
+      if (error.offline) {
+        const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+        return res.status(statusCode).json(response);
+      }
       let message = ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
@@ -55,6 +63,10 @@ class AiController {
 
   // Générer un quiz
   async generateQuiz(req, res) {
+    if (anthropicService.isOffline()) {
+      const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+      return res.status(statusCode).json(response);
+    }
     try {
       const { courseContent } = req.body;
 
@@ -75,6 +87,10 @@ class AiController {
       res.json(response);
     } catch (error) {
       logger.error('Erreur génération quiz', { error, code: error.code });
+      if (error.offline) {
+        const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+        return res.status(statusCode).json(response);
+      }
       let message = ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
@@ -91,6 +107,10 @@ class AiController {
 
   // Suggérer des questions
   async suggestQuestions(req, res) {
+    if (anthropicService.isOffline()) {
+      const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+      return res.status(statusCode).json(response);
+    }
     try {
       const { courseContent, level = 'intermediate' } = req.body;
 
@@ -111,6 +131,10 @@ class AiController {
       res.json(response);
     } catch (error) {
       logger.error('Erreur suggestions questions', { error, code: error.code });
+      if (error.offline) {
+        const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+        return res.status(statusCode).json(response);
+      }
       let message = ERROR_MESSAGES.SERVER_ERROR;
       let status = HTTP_STATUS.SERVER_ERROR;
       if (error.code === ERROR_CODES.IA_TIMEOUT) {
