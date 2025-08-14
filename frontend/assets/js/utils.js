@@ -80,3 +80,4 @@ const utils = {
 // Exporter pour utilisation globale
 window.utils = utils;
 window.API_BASE_URL = API_BASE_URL;
+export { utils, API_BASE_URL };

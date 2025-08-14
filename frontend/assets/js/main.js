@@ -1,5 +1,9 @@
 // frontend/assets/js/main.js - Point d'entrée principal
 
+import { utils, API_BASE_URL } from './utils.js';
+import { authManager } from './auth.js';
+import { courseManager } from './course.js';
+
 // État global de l'application
 let currentCourse = null;
 let currentQuiz = null;
