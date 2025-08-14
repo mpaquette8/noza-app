@@ -4,8 +4,8 @@
   "description": "Backend pour l'application Noza",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node scripts/check-env.js && node server.js",
+    "dev": "node scripts/check-env.js && nodemon server.js",
     "postinstall": "prisma generate",
     "migrate": "node scripts/check-migrations.js",
     "db:reset": "npx prisma migrate reset --force",

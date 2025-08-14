@@ -43,12 +43,19 @@ class AuthController {
 
       const token = generateToken(user.id);
 
+      // Définir le cookie d'authentification avec les attributs sécurisés
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+      });
+
       logger.success('Nouvel utilisateur créé', { userId: user.id, email: user.email });
 
       const { response, statusCode } = createResponse(true, {
         message: 'Compte créé avec succès',
         user,
-        token
+        token,
       }, null, HTTP_STATUS.CREATED);
 
       res.status(statusCode).json(response);
@@ -76,6 +83,13 @@ class AuthController {
       }
 
       const token = generateToken(user.id);
+
+      // Définir le cookie d'authentification avec les attributs sécurisés
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+      });
 
       logger.info('Connexion utilisateur', { userId: user.id, email: user.email });
 
@@ -180,6 +194,13 @@ class AuthController {
 
       // Générer notre JWT
       const token = generateToken(user.id);
+
+      // Définir le cookie d'authentification avec les attributs sécurisés
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+      });
 
       const { response } = createResponse(true, {
         message: 'Connexion Google réussie',
