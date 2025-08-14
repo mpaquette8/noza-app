@@ -20,10 +20,33 @@ const INTENT_LABELS = {
   expert: 'Expert'
 };
 
+// Simple localStorage cache with TTL (5 minutes)
+const CACHE_TTL = 1000 * 60 * 5;
+function setCache(key, data) {
+  const record = { data, expiry: Date.now() + CACHE_TTL };
+  localStorage.setItem(key, JSON.stringify(record));
+}
+
+function getCache(key) {
+  const record = JSON.parse(localStorage.getItem(key) || 'null');
+  if (record && record.expiry > Date.now()) {
+    return record.data;
+  }
+  localStorage.removeItem(key);
+  return null;
+}
+
 class CourseManager {
   constructor() {
     this.currentCourse = null;
     this.history = JSON.parse(localStorage.getItem('noza-history') || '[]');
+  }
+
+  invalidateCache(courseId) {
+    if (courseId) {
+      localStorage.removeItem(`noza-course-${courseId}`);
+    }
+    localStorage.removeItem('noza-course-list');
   }
 
   // Afficher un message d'erreur avec action
@@ -83,6 +106,8 @@ class CourseManager {
           duration: data.course?.duration || duration,
           intent: data.course?.intent || intent
         };
+        this.invalidateCache();
+        setCache(`noza-course-${this.currentCourse.id}`, this.currentCourse);
         this.displayCourse(this.currentCourse);
         this.addToHistory(this.currentCourse);
         utils.showNotification('Cours généré avec succès !', 'success');
@@ -161,6 +186,12 @@ class CourseManager {
   // Charger l'historique utilisateur
   async loadUserCourses() {
     if (!authManager.isAuthenticated()) return;
+    const cached = getCache('noza-course-list');
+    if (cached) {
+      this.history = cached;
+      this.updateHistoryDisplay();
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/courses`, {
@@ -178,6 +209,7 @@ class CourseManager {
           intent: course.intent,
           createdAt: course.createdAt
         }));
+        setCache('noza-course-list', this.history);
         this.updateHistoryDisplay();
       }
     } catch (error) {
@@ -240,10 +272,36 @@ class CourseManager {
     utils.initializeLucide();
   }
 
+  async fetchCourse(courseId) {
+    const cacheKey = `noza-course-${courseId}`;
+    const cached = getCache(cacheKey);
+    if (cached) return cached;
+    const response = await fetch(`${API_BASE_URL}/courses/${courseId}`, {
+      headers: authManager.getAuthHeaders()
+    });
+    const data = await response.json();
+    if (data.success) {
+      setCache(cacheKey, data.course);
+      return data.course;
+    }
+    throw new Error(data.error || 'Erreur lors du chargement du cours');
+  }
+
   // Charger un cours depuis l'historique
-  loadCourseFromHistory(courseId) {
-    const course = this.history.find(c => c.id === courseId);
+  async loadCourseFromHistory(courseId) {
+    let course = this.history.find(c => c.id === courseId);
     if (course) {
+      if (!course.content) {
+        try {
+          const fullCourse = await this.fetchCourse(courseId);
+          course = { ...course, ...fullCourse };
+          const index = this.history.findIndex(c => c.id === courseId);
+          this.history[index] = course;
+        } catch (error) {
+          utils.handleAuthError('Erreur lors du chargement du cours: ' + error.message, true);
+          return;
+        }
+      }
       this.currentCourse = course;
       this.displayCourse(course);
       if (typeof displayCourseMetadata === 'function') {
@@ -253,6 +311,28 @@ class CourseManager {
         displayCourseMetadata(styleLabel, durationLabel, intentLabel);
       }
       utils.showNotification('Cours chargé depuis l\'historique', 'success');
+    }
+  }
+
+  async deleteCourse(courseId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/courses/${courseId}`, {
+        method: 'DELETE',
+        headers: authManager.getAuthHeaders()
+      });
+      const data = await response.json();
+      if (data.success) {
+        this.history = this.history.filter(c => c.id !== courseId);
+        localStorage.setItem('noza-history', JSON.stringify(this.history));
+        this.invalidateCache(courseId);
+        this.updateHistoryDisplay();
+        utils.showNotification('Cours supprimé', 'success');
+      } else {
+        throw new Error(data.error || 'Erreur lors de la suppression');
+      }
+    } catch (error) {
+      console.error('Erreur suppression cours:', error);
+      utils.handleAuthError('Erreur lors de la suppression: ' + error.message, true);
     }
   }
 

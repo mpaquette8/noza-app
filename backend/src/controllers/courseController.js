@@ -3,6 +3,7 @@ const { prisma } = require('../config/database');
 const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../utils/helpers');
 const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
+const crypto = require('crypto');
 
 class CourseController {
   // Récupérer tous les cours de l'utilisateur
@@ -25,6 +26,12 @@ class CourseController {
       });
 
       const { response } = createResponse(true, { courses });
+      const etag = '"' + crypto.createHash('md5').update(JSON.stringify(courses)).digest('hex') + '"';
+      if (req.headers['if-none-match'] === etag) {
+        return res.status(304).end();
+      }
+      res.set('ETag', etag);
+      res.set('Cache-Control', 'private, max-age=60');
       res.json(response);
     } catch (error) {
       logger.error('Erreur récupération cours', error);
@@ -51,6 +58,12 @@ class CourseController {
       }
 
       const { response } = createResponse(true, { course });
+      const etag = '"' + crypto.createHash('md5').update(JSON.stringify(course)).digest('hex') + '"';
+      if (req.headers['if-none-match'] === etag) {
+        return res.status(304).end();
+      }
+      res.set('ETag', etag);
+      res.set('Cache-Control', 'private, max-age=60');
       res.json(response);
     } catch (error) {
       logger.error('Erreur récupération cours', error);
