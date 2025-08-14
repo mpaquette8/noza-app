@@ -384,18 +384,10 @@ function showNotification(message, type = 'success') {
 // Initialiser GoogleAuth une seule fois
 let googleAuthInitialized = false;
 async function initializeGoogleAuth() {
-    if (!window.GoogleAuth) return;
-    if (googleAuthInitialized) {
-        GoogleAuth.promptLogin();
-        return;
-    }
+    if (!window.GoogleAuth || googleAuthInitialized) return;
     try {
-        if (GoogleAuth.state === GoogleAuth.STATES.FAILED && typeof GoogleAuth.reset === 'function') {
-            GoogleAuth.reset();
-        }
         await GoogleAuth.init(response => authManager.handleGoogleLogin(response));
         document.querySelectorAll('.auth-separator').forEach(el => el.style.display = 'block');
-        GoogleAuth.promptLogin();
         googleAuthInitialized = true;
     } catch (err) {
         console.error('Erreur initialisation GoogleAuth:', err);
