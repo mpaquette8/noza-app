@@ -54,10 +54,24 @@ function setupEventListeners() {
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
-    if (menuToggle) menuToggle.addEventListener('click', () => {
-        if (configPanel) configPanel.classList.toggle('open');
-        if (headerNav) headerNav.classList.toggle('open');
-    });
+
+    if (menuToggle) {
+        menuToggle.setAttribute('aria-expanded', 'false');
+        const toggleNavigation = () => {
+            const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', String(!expanded));
+            if (headerNav) headerNav.classList.toggle('open');
+            if (configPanel) configPanel.classList.toggle('open');
+        };
+
+        menuToggle.addEventListener('click', toggleNavigation);
+        menuToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleNavigation();
+            }
+        });
+    }
 
     // Chat
     setupChatEventListeners();
