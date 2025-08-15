@@ -3,8 +3,8 @@ function isLoggedIn() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (isLoggedIn()) {
-        window.location.href = 'app.html';
+    if (isLoggedIn() && window.location.pathname !== '/app.html') {
+        window.location.href = '/app.html';
     }
 });
 
