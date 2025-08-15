@@ -116,16 +116,16 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Route pour la page d'accueil
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/home.html'));
+});
+
 // Servir les fichiers statiques du frontend
 app.use(express.static(path.join(__dirname, '../../frontend')));
 
 // Routes API
 app.use('/api', apiRoutes);
-
-// Route pour la page d'accueil
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/home.html'));
-});
 
 // Middleware de gestion des erreurs globales
 app.use((err, req, res, next) => {
