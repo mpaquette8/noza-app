@@ -59,10 +59,10 @@ class AnthropicService {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      return await this.client.messages.create({
-        ...options,
-        signal: controller.signal
-      });
+      return await this.client.messages.create(
+        options,
+        { signal: controller.signal }
+      );
     } finally {
       clearTimeout(timer);
     }
