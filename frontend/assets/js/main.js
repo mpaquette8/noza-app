@@ -49,6 +49,7 @@ function setupEventListeners() {
     const menuToggle = document.getElementById('menuToggle');
     const configPanel = document.querySelector('.configuration-panel');
     const headerNav = document.querySelector('.header-nav');
+    const closeConfigBtn = document.getElementById('closeConfigBtn');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
@@ -71,6 +72,8 @@ function setupEventListeners() {
                 toggleNavigation();
             }
         });
+
+        if (closeConfigBtn) closeConfigBtn.addEventListener('click', toggleNavigation);
     }
 
     // Chat
