@@ -171,7 +171,7 @@ class AuthManager {
         }
 
         this.updateUI();
-        window.location.href = 'index.html';
+        window.location.href = 'home.html';
     }
 
     // VÉRIFIER SI CONNECTÉ
