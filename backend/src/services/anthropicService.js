@@ -659,7 +659,13 @@ Format JSON :
       return ERROR_CODES.QUOTA_EXCEEDED;
     }
     const message = error?.message?.toLowerCase() || '';
-    if (error?.name === 'AbortError' || error?.code === 'ETIMEDOUT' || message.includes('timeout')) {
+    if (
+      error?.name === 'AbortError' ||
+      error?.name === 'APIUserAbortError' ||
+      error?.code === 'ETIMEDOUT' ||
+      message.includes('timeout') ||
+      message.includes('abort')
+    ) {
       return ERROR_CODES.IA_TIMEOUT;
     }
     return ERROR_CODES.IA_ERROR;
