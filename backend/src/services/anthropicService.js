@@ -54,6 +54,26 @@ class AnthropicService {
     return OFFLINE_MESSAGE;
   }
 
+  // Attempt a lightweight request to see if the service is reachable again
+  async recoverIfOffline() {
+    if (!this.offline || !this.client) {
+      return false;
+    }
+    try {
+      await this.sendWithTimeout({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 1,
+        messages: [{ role: 'user', content: 'ping' }]
+      }, 5000);
+      this.offline = false;
+      logger.success('Service Anthropic rétabli');
+      return true;
+    } catch (error) {
+      logger.warn('Tentative de reconnexion Anthropic échouée');
+      return false;
+    }
+  }
+
   // Wrapper around Anthropic API with timeout support and retry on overload
   async sendWithTimeout(options, timeoutMs = REQUEST_TIMEOUT, retryDelays = [1000, 2000, 4000]) {
     for (let attempt = 0; ; attempt++) {

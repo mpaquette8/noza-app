@@ -187,5 +187,14 @@ class AiController {
     }
   }
 }
+const aiController = new AiController();
 
-module.exports = new AiController();
+// Vérifie périodiquement si le service Anthropic est de nouveau disponible
+const RECOVERY_INTERVAL = 60 * 1000; // 1 minute
+setInterval(() => {
+  if (anthropicService.isOffline()) {
+    anthropicService.recoverIfOffline();
+  }
+}, RECOVERY_INTERVAL);
+
+module.exports = aiController;
