@@ -186,6 +186,7 @@ class AuthManager {
         const authSection = document.getElementById('authSection');
         const userSection = document.getElementById('userSection');
         const mainContent = document.querySelector('.main-content');
+        const authNavLink = document.getElementById('authNavLink');
 
         console.log('Mise à jour UI, authentifié:', this.isAuthenticated());
 
@@ -218,11 +219,19 @@ class AuthManager {
                 }
             }
             if (mainContent) mainContent.style.display = 'grid';
+            if (authNavLink) {
+                authNavLink.href = 'app.html';
+                authNavLink.textContent = "Accéder à l'app";
+            }
         } else {
             // Utilisateur non connecté
             if (authSection) authSection.style.display = 'block';
             if (userSection) userSection.style.display = 'none';
             if (mainContent) mainContent.style.display = 'none';
+            if (authNavLink) {
+                authNavLink.href = '#authSection';
+                authNavLink.textContent = 'Login/Signup';
+            }
         }
     }
 }
