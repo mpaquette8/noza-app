@@ -2,7 +2,22 @@ process.env.ANTHROPIC_API_KEY = 'test-key';
 
 const test = require('node:test');
 const assert = require('node:assert');
+const Module = require('module');
+
+// Mock external dependencies so tests can run without installing packages
+const originalLoad = Module._load;
+Module._load = (request, parent, isMain) => {
+  if (request === '@anthropic-ai/sdk') {
+    return function Anthropic() { return {}; };
+  }
+  if (request === 'sanitize-html') {
+    return input => input;
+  }
+  return originalLoad(request, parent, isMain);
+};
+
 const anthropicService = require('../../src/services/anthropicService');
+Module._load = originalLoad;
 const { STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../../src/utils/constants');
 
 test('createPrompt includes duration word counts', () => {
@@ -54,4 +69,31 @@ test('categorizeError returns IA_OVERLOADED for 529', () => {
   const error = { response: { status: 529 } };
   const code = anthropicService.categorizeError(error);
   assert.strictEqual(code, ERROR_CODES.IA_OVERLOADED);
+});
+
+test('categorizeError detects APIUserAbortError as IA_TIMEOUT', () => {
+  const err = new Error('APIUserAbortError: aborted by user');
+  err.name = 'APIUserAbortError';
+  const code = anthropicService.categorizeError(err);
+  assert.strictEqual(code, ERROR_CODES.IA_TIMEOUT);
+});
+
+test('APIUserAbortError does not trigger offline mode', async () => {
+  const originalSend = anthropicService.sendWithTimeout;
+  anthropicService.offline = false;
+  anthropicService.sendWithTimeout = async () => {
+    const err = new Error('Request aborted by the user');
+    err.name = 'APIUserAbortError';
+    throw err;
+  };
+
+  try {
+    await anthropicService.generateCourse('Sujet', STYLES.NEUTRAL, DURATIONS.SHORT, INTENTS.LEARN);
+    assert.fail('generateCourse should throw');
+  } catch (err) {
+    assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);
+    assert.strictEqual(anthropicService.isOffline(), false);
+  } finally {
+    anthropicService.sendWithTimeout = originalSend;
+  }
 });
