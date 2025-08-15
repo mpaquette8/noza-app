@@ -228,7 +228,6 @@ class AuthManager {
             }
         } else {
             // Utilisateur non connecté
-            if (authSection) authSection.style.display = 'block';
             if (userSection) userSection.style.display = 'none';
             if (mainContent) mainContent.style.display = 'none';
             if (authNavLink) {
@@ -412,6 +411,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const separators = document.querySelectorAll('.auth-separator');
     separators.forEach(el => el.style.display = 'none');
+
+    const authNavLink = document.getElementById('authNavLink');
+    const authSection = document.getElementById('authSection');
+    if (authNavLink && authSection) {
+        authNavLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            authSection.style.display = 'block';
+            authSection.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
 
     setupAuthListeners();
     initializeGoogleAuth();
