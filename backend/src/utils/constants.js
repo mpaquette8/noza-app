@@ -58,14 +58,16 @@ const LIMITS = {
 const ERROR_CODES = {
   IA_TIMEOUT: 'IA_TIMEOUT',
   QUOTA_EXCEEDED: 'QUOTA_EXCEEDED',
-  IA_ERROR: 'IA_ERROR'
+  IA_ERROR: 'IA_ERROR',
+  IA_OVERLOADED: 'IA_OVERLOADED'
 };
 
 // Libellés conviviaux pour les erreurs IA
 const AI_ERROR_MESSAGES = {
   [ERROR_CODES.IA_TIMEOUT]: "Temps de réponse de l'IA dépassé",
   [ERROR_CODES.QUOTA_EXCEEDED]: 'Quota IA dépassé, réessayez plus tard',
-  [ERROR_CODES.IA_ERROR]: 'Erreur du service IA, réessayez plus tard'
+  [ERROR_CODES.IA_ERROR]: 'Erreur du service IA, réessayez plus tard',
+  [ERROR_CODES.IA_OVERLOADED]: 'Service IA surchargé, réessayez plus tard'
 };
 
 // Quotas de rate limiting par type de route

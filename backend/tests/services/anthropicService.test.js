@@ -3,7 +3,7 @@ process.env.ANTHROPIC_API_KEY = 'test-key';
 const test = require('node:test');
 const assert = require('node:assert');
 const anthropicService = require('../../src/services/anthropicService');
-const { STYLES, DURATIONS, INTENTS } = require('../../src/utils/constants');
+const { STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../../src/utils/constants');
 
 test('createPrompt includes duration word counts', () => {
   const mapping = {
@@ -24,4 +24,34 @@ test('createPrompt includes distinct style instructions', () => {
   assert.match(promptPedago, /ton pédagogique, clair et structuré/);
   assert.match(promptStory, /récit engageant/);
   assert.notStrictEqual(promptPedago, promptStory);
+});
+
+test('sendWithTimeout retries on overload errors', async () => {
+  const originalClient = anthropicService.client;
+  let callCount = 0;
+  anthropicService.client = {
+    messages: {
+      create: async () => {
+        callCount++;
+        if (callCount < 3) {
+          const err = new Error('overloaded');
+          err.response = { status: 529, data: { type: 'overloaded_error' } };
+          throw err;
+        }
+        return { content: [{ text: 'ok' }] };
+      }
+    }
+  };
+
+  const result = await anthropicService.sendWithTimeout({}, 100, [1, 2]);
+  assert.strictEqual(callCount, 3);
+  assert.deepStrictEqual(result, { content: [{ text: 'ok' }] });
+
+  anthropicService.client = originalClient;
+});
+
+test('categorizeError returns IA_OVERLOADED for 529', () => {
+  const error = { response: { status: 529 } };
+  const code = anthropicService.categorizeError(error);
+  assert.strictEqual(code, ERROR_CODES.IA_OVERLOADED);
 });

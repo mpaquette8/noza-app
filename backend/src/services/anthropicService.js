@@ -54,17 +54,28 @@ class AnthropicService {
     return OFFLINE_MESSAGE;
   }
 
-  // Wrapper around Anthropic API with timeout support
-  async sendWithTimeout(options, timeoutMs = REQUEST_TIMEOUT) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      return await this.client.messages.create(
-        options,
-        { signal: controller.signal }
-      );
-    } finally {
-      clearTimeout(timer);
+  // Wrapper around Anthropic API with timeout support and retry on overload
+  async sendWithTimeout(options, timeoutMs = REQUEST_TIMEOUT, retryDelays = [1000, 2000, 4000]) {
+    for (let attempt = 0; ; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await this.client.messages.create(
+          options,
+          { signal: controller.signal }
+        );
+      } catch (error) {
+        const isOverloaded =
+          error?.response?.status === 529 ||
+          error?.response?.data?.type === 'overloaded_error';
+        if (attempt < retryDelays.length && isOverloaded) {
+          await new Promise(res => setTimeout(res, retryDelays[attempt]));
+          continue;
+        }
+        throw error;
+      } finally {
+        clearTimeout(timer);
+      }
     }
   }
 
@@ -641,6 +652,9 @@ Format JSON :
 
   // Déterminer le code d'erreur selon la réponse de l'API Anthropic
   categorizeError(error) {
+    if (error?.response?.status === 529 || error?.response?.data?.type === 'overloaded_error') {
+      return ERROR_CODES.IA_OVERLOADED;
+    }
     if (error?.response?.status === 429) {
       return ERROR_CODES.QUOTA_EXCEEDED;
     }
