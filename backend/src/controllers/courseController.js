@@ -170,6 +170,9 @@ class CourseController {
       } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
         message = 'Quota IA dépassé, réessayez plus tard';
         status = HTTP_STATUS.RATE_LIMIT;
+      } else if (error.code === ERROR_CODES.IA_OVERLOADED) {
+        message = 'Service IA surchargé, réessayez plus tard';
+        status = HTTP_STATUS.SERVICE_UNAVAILABLE;
       }
       const { response, statusCode } = createResponse(false, null, message, status, error.code);
       res.status(statusCode).json(response);
