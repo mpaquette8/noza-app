@@ -122,9 +122,9 @@ app.use(express.static(path.join(__dirname, '../../frontend')));
 // Routes API
 app.use('/api', apiRoutes);
 
-// Route pour servir le frontend
+// Route pour la page d'accueil
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../../frontend/home.html'));
 });
 
 // Middleware de gestion des erreurs globales
