@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (authSection) authSection.style.display = 'none';
         } else {
             authLink.textContent = 'Login/Signup';
-            authLink.href = '#authSection';
+            authLink.href = authSection ? '#authSection' : 'index.html#authSection';
         }
     }
 });
