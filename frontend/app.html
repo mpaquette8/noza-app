@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skillence AI - Application</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <div id="appRoot" style="display: none;">
+        <!-- Contenu de l'application -->
+        <h1>Bienvenue dans l'application</h1>
+    </div>
+
+    <script>
+    function isLoggedIn() {
+        return !!localStorage.getItem('authToken');
+    }
+
+    // Expose for other scripts if needed
+    window.isLoggedIn = isLoggedIn;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!isLoggedIn()) {
+            window.location.href = 'index.html';
+            return;
+        }
+        document.getElementById('appRoot').style.display = 'block';
+    });
+    </script>
+</body>
+</html>
