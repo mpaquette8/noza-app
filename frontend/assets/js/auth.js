@@ -59,14 +59,15 @@ class AuthManager {
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
-                
+
                 showNotification('Connexion Google réussie !', 'success');
                 
                 // Charger les cours de l'utilisateur
                 if (typeof courseManager !== 'undefined' && courseManager.loadUserCourses) {
                     courseManager.loadUserCourses();
                 }
-                
+
+                window.location.href = 'app.html';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.handleGoogleLogin(googleResponse));
@@ -102,6 +103,7 @@ class AuthManager {
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
+                window.location.href = 'app.html';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.login(email, password));
@@ -138,6 +140,7 @@ class AuthManager {
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
+                window.location.href = 'app.html';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.register(name, email, password));
@@ -168,7 +171,7 @@ class AuthManager {
         }
 
         this.updateUI();
-        window.location.reload();
+        window.location.href = 'index.html';
     }
 
     // VÉRIFIER SI CONNECTÉ
