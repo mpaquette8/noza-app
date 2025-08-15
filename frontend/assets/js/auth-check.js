@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             authLink.textContent = 'Login/Signup';
             authLink.href = '#authSection';
-            if (authSection) authSection.style.display = '';
         }
     }
 });
