@@ -2,7 +2,7 @@
 
 import { utils, API_BASE_URL } from './utils.js';
 import { authManager } from './auth.js';
-import { courseManager } from './course.js';
+import { courseManager, STYLE_LABELS, DURATION_LABELS, INTENT_LABELS } from './course.js';
 
 // État global de l'application
 let currentCourse = null;

@@ -4,19 +4,19 @@ import { utils, API_BASE_URL } from './utils.js';
 import { authManager } from './auth.js';
 
 // Mapping for human-readable labels and icons
-const STYLE_LABELS = {
+export const STYLE_LABELS = {
   neutral: 'Neutre',
   pedagogical: 'Pédagogique',
   storytelling: 'Narratif'
 };
 
-const DURATION_LABELS = {
+export const DURATION_LABELS = {
   short: 'Courte',
   medium: 'Moyenne',
   long: 'Longue'
 };
 
-const INTENT_LABELS = {
+export const INTENT_LABELS = {
   discover: 'Découvrir',
   learn: 'Apprendre',
   master: 'Maîtriser',
