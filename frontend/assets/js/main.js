@@ -48,12 +48,16 @@ function setupEventListeners() {
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
     const menuToggle = document.getElementById('menuToggle');
     const configPanel = document.querySelector('.configuration-panel');
+    const headerNav = document.querySelector('.header-nav');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
-    if (menuToggle && configPanel) menuToggle.addEventListener('click', () => configPanel.classList.toggle('open'));
+    if (menuToggle) menuToggle.addEventListener('click', () => {
+        if (configPanel) configPanel.classList.toggle('open');
+        if (headerNav) headerNav.classList.toggle('open');
+    });
 
     // Chat
     setupChatEventListeners();
