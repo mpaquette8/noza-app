@@ -3,6 +3,13 @@
  * Initialise le SDK et affiche un fallback e-mail en cas d'erreur.
  */
 const GoogleAuth = (() => {
+    const STATES = {
+        INIT: 'INIT',
+        READY: 'READY',
+        FAILED: 'FAILED'
+    };
+
+    let state = STATES.INIT;
     let isReady = false;
     let initPromise = null;
     let cachedClientId = null;
@@ -203,6 +210,8 @@ const GoogleAuth = (() => {
         if (isReady) return Promise.resolve();
         if (initPromise) return initPromise;
 
+        state = STATES.INIT;
+
         document.querySelectorAll('.google-auth-container').forEach(c => {
             c.classList.add('loading');
             c.style.opacity = '1';
@@ -216,6 +225,7 @@ const GoogleAuth = (() => {
             .catch(err => {
                 console.error('GoogleAuth SDK load error:', err);
                 showEmailFallback();
+                state = STATES.FAILED;
                 throw err;
             })
             .then(() => {
@@ -242,6 +252,7 @@ const GoogleAuth = (() => {
                 renderButtons();
                 observeButtons();
                 isReady = true;
+                state = STATES.READY;
             });
 
         const timeoutPromise = new Promise((_, reject) =>
@@ -251,6 +262,7 @@ const GoogleAuth = (() => {
         initPromise = Promise.race([initSequence, timeoutPromise]).catch(err => {
             console.error('GoogleAuth init error:', err);
             showEmailFallback();
+            state = STATES.FAILED;
             throw err;
         });
 
@@ -259,7 +271,9 @@ const GoogleAuth = (() => {
 
     return {
         init,
-        showEmailFallback
+        showEmailFallback,
+        get state() { return state; },
+        STATES
     };
 })();
 
