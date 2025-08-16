@@ -34,3 +34,15 @@ For production deployments you must:
 - provide paths to your TLS files via `TLS_CERT_PATH` and `TLS_KEY_PATH`
 
 With these variables defined the server starts in HTTPS mode. Without them the start script keeps the server in HTTP mode, suitable for local development or environments without TLS.
+
+## Analytics Events
+
+The frontend onboarding sequence sends Google Analytics events to track user progress:
+
+- `onboarding_step_enter`
+  - `step` (number): 1-based step index when a step is displayed.
+- `onboarding_step_exit`
+  - `step` (number): step index that was exited.
+  - `action` (string): reason for leaving the step. Values include `next`, `prev`, `skip`, `complete`, and `abandon`.
+- `onboarding_tutorial_skip`
+  - `step` (number): step where the user abandoned the entire tutorial.
