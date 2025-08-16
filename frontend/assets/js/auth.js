@@ -231,7 +231,7 @@ class AuthManager {
             if (userSection) userSection.style.display = 'none';
             if (mainContent) mainContent.style.display = 'none';
             if (authNavLink) {
-                authNavLink.href = '#authSection';
+                authNavLink.href = 'auth.html';
                 authNavLink.textContent = 'Login/Signup';
             }
         }
@@ -409,21 +409,14 @@ async function initializeGoogleAuth() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM chargé, configuration de l\'authentification...');
 
-    const separators = document.querySelectorAll('.auth-separator');
-    separators.forEach(el => el.style.display = 'none');
-
-    const authNavLink = document.getElementById('authNavLink');
     const authSection = document.getElementById('authSection');
-    if (authNavLink && authSection) {
-        authNavLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            authSection.style.display = 'block';
-            authSection.scrollIntoView({ behavior: 'smooth' });
-        });
-    }
+    if (authSection) {
+        const separators = document.querySelectorAll('.auth-separator');
+        separators.forEach(el => el.style.display = 'none');
 
-    setupAuthListeners();
-    initializeGoogleAuth();
+        setupAuthListeners();
+        initializeGoogleAuth();
+    }
 });
 
 // Export global

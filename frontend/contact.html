@@ -26,82 +26,10 @@
                     <li><a href="solutions.html">Solutions</a></li>
                     <li><a href="tarifs.html">Tarifs</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                    <li><a id="authNavLink" href="#authSection">Login/Signup</a></li>
+                    <li><a id="authNavLink" href="auth.html">Login/Signup</a></li>
                 </ul>
             </nav>
         </header>
-        
-        <!-- Section d'authentification -->
-        <div id="authSection" class="auth-section">
-            <div class="auth-container">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" data-tab="login">Connexion</button>
-                    <button class="auth-tab" data-tab="register">Inscription</button>
-                </div>
-
-                <!-- Formulaire de connexion -->
-                <div id="loginForm" class="auth-form">
-                    <h3>Se connecter</h3>
-
-                    <!-- Bouton Google officiel -->
-                    <div class="google-auth-container">
-                        <div id="googleSignInButton"></div>
-                    </div>
-
-                    <div class="auth-separator">
-                        <span>ou</span>
-                    </div>
-
-                    <!-- Formulaire email existant -->
-                    <div class="form-group">
-                        <label for="loginEmail">Email</label>
-                        <input type="email" id="loginEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Mot de passe</label>
-                        <input type="password" id="loginPassword" required>
-                    </div>
-                    <button type="button" class="auth-btn" id="loginBtn">
-                        <i data-lucide="log-in"></i>
-                        Se connecter
-                    </button>
-                    <div class="auth-error" id="loginError"></div>
-                </div>
-
-                <!-- Formulaire d'inscription -->
-                <div id="registerForm" class="auth-form" style="display: none;">
-                    <h3>Créer un compte</h3>
-
-                    <!-- Bouton Google pour inscription -->
-                    <div class="google-auth-container">
-                        <div id="googleSignInButtonRegister"></div>
-                    </div>
-
-                    <div class="auth-separator">
-                        <span>ou</span>
-                    </div>
-
-                    <!-- Formulaire email existant -->
-                    <div class="form-group">
-                        <label for="registerName">Nom</label>
-                        <input type="text" id="registerName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerEmail">Email</label>
-                        <input type="email" id="registerEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerPassword">Mot de passe</label>
-                        <input type="password" id="registerPassword" required>
-                    </div>
-                    <button type="button" class="auth-btn" id="registerBtn">
-                        <i data-lucide="user-plus"></i>
-                        Créer mon compte
-                    </button>
-                    <div class="auth-error" id="registerError"></div>
-                </div>
-            </div>
-        </div>
         <main class="marketing-content">
             <h2>Contact</h2>
             <p>Une question ou une suggestion&nbsp;? Écrivez-nous à <a href="mailto:contact@skillence.ai">contact@skillence.ai</a>.</p>
@@ -110,8 +38,6 @@
 
     <script src="assets/js/auth-check.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="assets/js/googleAuth.js"></script>
-    <script type="module" src="assets/js/auth.js"></script>
     <script type="module" src="assets/js/navigation.js"></script>
     <script>
         lucide.createIcons();
