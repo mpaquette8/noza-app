@@ -62,11 +62,6 @@ class AuthManager {
 
                 showNotification('Connexion Google réussie !', 'success');
                 
-                // Charger les cours de l'utilisateur
-                if (typeof courseManager !== 'undefined' && courseManager.loadUserCourses) {
-                    courseManager.loadUserCourses();
-                }
-
                 window.location.href = '/app/';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
@@ -289,10 +284,6 @@ function setupAuthListeners() {
 
             if (result.success) {
                 showNotification('Connexion réussie !', 'success');
-                // Charger les cours de l'utilisateur si la fonction existe
-                if (typeof courseManager !== 'undefined' && courseManager.loadUserCourses) {
-                    courseManager.loadUserCourses();
-                }
             } else {
                 utils.handleAuthError(result);
             }
