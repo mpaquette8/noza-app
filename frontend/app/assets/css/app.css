@@ -2455,6 +2455,33 @@ body::before {
     animation: pop 0.3s ease;
 }
 
+.onboarding-step-badge.completed {
+    background: #48bb78;
+    color: #fff;
+    opacity: 1;
+    position: relative;
+}
+
+.onboarding-step-badge.completed::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.onboarding-step-badge.completed-animated {
+    animation: completedPulse 0.6s ease-out;
+}
+
+@keyframes completedPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); background: #68d391; }
+    100% { transform: scale(1); }
+}
+
 .onboarding-step-badge.current {
     background: #4299e1;
     color: #fff;
