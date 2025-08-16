@@ -116,13 +116,17 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Route pour la page d'accueil
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/home.html'));
-});
+// Servir les fichiers statiques pour l'application et le marketing
+app.use('/app', express.static(path.join(__dirname, '../../frontend/app')));
+app.use('/', express.static(path.join(__dirname, '../../frontend/marketing')));
 
-// Servir les fichiers statiques du frontend
-app.use(express.static(path.join(__dirname, '../../frontend')));
+// Routes pour les applications frontend
+app.get('/app*', (_, res) =>
+  res.sendFile(path.join(__dirname, '../../frontend/app/index.html'))
+);
+app.get('/', (_, res) =>
+  res.sendFile(path.join(__dirname, '../../frontend/marketing/index.html'))
+);
 
 // Routes API
 app.use('/api', apiRoutes);
