@@ -2319,3 +2319,49 @@ body::before {
     margin-right: 10px;
 }
 
+/* Onboarding progress components */
+.onboarding-progress-container {
+    margin-bottom: 12px;
+}
+
+.onboarding-progress-bar {
+    height: 4px;
+    background: #4299e1;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+.onboarding-step-badges {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.onboarding-step-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.5;
+    transition: background 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+}
+
+.onboarding-step-badge.active {
+    background: #4299e1;
+    color: #fff;
+    opacity: 1;
+}
+
+.onboarding-highlight {
+    box-shadow: 0 0 0 3px #FFD54F, 0 0 8px #FFD54F;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1000;
+}
+

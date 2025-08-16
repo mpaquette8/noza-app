@@ -120,7 +120,7 @@ function showOnboardingTips() {
     ];
 
     const style = document.createElement('style');
-    style.textContent = '.onboarding-highlight{box-shadow:0 0 0 3px #FFD54F;border-radius:4px;position:relative;z-index:1000;} .onboarding-tip{position:absolute;background:#333;color:#fff;padding:8px 12px;border-radius:4px;z-index:1001;max-width:260px;}';
+    style.textContent = '.onboarding-tip{position:absolute;background:#333;color:#fff;padding:8px 12px;border-radius:4px;z-index:1001;max-width:260px;}';
     document.head.appendChild(style);
 
     const tip = document.createElement('div');
@@ -134,6 +134,10 @@ function showOnboardingTips() {
         if (previous) previous.classList.remove('onboarding-highlight');
 
         if (index >= steps.length) {
+            const progressBar = document.querySelector('.onboarding-progress-bar');
+            if (progressBar) progressBar.style.width = '100%';
+            const badges = document.querySelectorAll('.onboarding-step-badge');
+            badges.forEach(b => b.classList.add('active'));
             tip.remove();
             localStorage.setItem('onboardingSeen', '1');
             return;
@@ -155,6 +159,14 @@ function showOnboardingTips() {
 
         const progressEl = document.getElementById('onboardingProgress');
         if (progressEl) progressEl.textContent = step.progress;
+
+        const progressBar = document.querySelector('.onboarding-progress-bar');
+        if (progressBar) progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
+
+        const badges = document.querySelectorAll('.onboarding-step-badge');
+        badges.forEach((badge, i) => {
+            badge.classList.toggle('active', i <= index);
+        });
 
         const advance = () => {
             el.removeEventListener('click', advance);
