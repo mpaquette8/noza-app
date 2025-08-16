@@ -19,8 +19,9 @@ let currentConfig = {
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initialisation Hermès App');
-    
-    initializeApp();
+
+    // L'initialisation de l'interface est désormais gérée dans index.html
+    // pour permettre la vérification d'authentification avant chargement.
     setupEventListeners();
     
     // Charger l'historique selon l'authentification
@@ -540,3 +541,4 @@ function typewriterEffect(element, text, callback) {
 window.currentCourse = currentCourse;
 window.handleGenerateCourse = handleGenerateCourse;
 window.displayCourseMetadata = displayCourseMetadata;
+window.initializeApp = initializeApp;
