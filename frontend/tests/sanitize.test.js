@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const load = () => import('../assets/js/shared/sanitize.js');
+const load = () => import('../app/assets/js/shared/sanitize.js');
 
 test('sanitizeInput preserves multilingual scripts and punctuation', async () => {
   const { sanitizeInput } = await load();
