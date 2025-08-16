@@ -70,19 +70,19 @@ function getOnboardingSteps() {
             selector: '.example-topics',
             text: 'Choisissez un sujet ou utilisez un exemple ci-dessous',
             progress: 'Étape 1/3 : Choisissez votre sujet',
-            message: '🎉 Super, première étape réussie !'
+            message: '🎉 Parfait ! Sujet sélectionné'
         },
         {
             selector: '.new-selector-container',
-            text: "Personnalisez le style, la durée et l'intention",
+            text: "Personnalisez le style, la durée et l'intention de votre cours",
             progress: 'Étape 2/3 : Paramétrez votre cours',
-            message: '💪 Continuez comme ça !'
+            message: '💪 Excellent ! Paramètres configurés'
         },
         {
             selector: '#generateBtn',
-            text: 'Cliquez ici pour générer votre cours',
-            progress: 'Étape 3/3 : Décryptez votre sujet',
-            message: '🚀 Prêt à générer votre cours ?'
+            text: 'Cliquez ici pour générer votre premier cours personnalisé',
+            progress: 'Étape 3/3 : Générez votre cours',
+            message: '🚀 Bravo ! Votre cours est en cours de génération'
         }
     ];
     if (getUserLevel() === 'advanced') {
@@ -152,6 +152,7 @@ function setupEventListeners() {
             feedback.textContent = getFeedbackText(subjectValid);
             feedback.classList.toggle('valid', subjectValid);
             updateGenerateBtnState();
+            checkAndProgressOnboarding(0); // Étape 1 = index 0
         });
     }
 
@@ -248,9 +249,7 @@ function showOnboardingTips() {
     `;
     document.head.appendChild(style);
 
-    const tip = document.createElement('div');
-    tip.className = 'onboarding-tip';
-    document.body.appendChild(tip);
+    let tip;
 
     let index = parseInt(localStorage.getItem('onboardingIndex') || '0');
     let completedSteps = JSON.parse(localStorage.getItem('onboardingCompleted') || '[]');
@@ -259,6 +258,23 @@ function showOnboardingTips() {
         localStorage.setItem('onboardingIndex', index.toString());
         localStorage.setItem('onboardingCompleted', JSON.stringify(completedSteps));
     };
+
+    // Valider rétroactivement les étapes basées sur l'état actuel
+    const validatePreviousSteps = () => {
+        const subjectInput = document.getElementById('subject');
+        if (subjectInput && subjectInput.value.trim()) {
+            if (!completedSteps.includes(0)) completedSteps.push(0);
+        }
+
+        // Vérifier si config différente des valeurs par défaut
+        if (currentConfig.style !== 'neutral' || currentConfig.duration !== 'short' || currentConfig.intent !== 'discover') {
+            if (!completedSteps.includes(1)) completedSteps.push(1);
+        }
+
+        saveProgress();
+    };
+
+    validatePreviousSteps();
 
     const endOnboarding = () => {
         const highlighted = document.querySelector('.onboarding-highlight');
@@ -280,6 +296,16 @@ function showOnboardingTips() {
     };
 
     const showStep = () => {
+        // Nettoyer les anciens event listeners pour éviter les doublons
+        const existingTip = document.querySelector('.onboarding-tip');
+        if (existingTip) {
+            existingTip.remove();
+        }
+
+        tip = document.createElement('div');
+        tip.className = 'onboarding-tip';
+        document.body.appendChild(tip);
+
         saveProgress();
         const previous = document.querySelector('.onboarding-highlight');
         if (previous) previous.classList.remove('onboarding-highlight');
@@ -317,12 +343,22 @@ function showOnboardingTips() {
         if (progressEl) progressEl.textContent = step.progress;
 
         const progressBar = document.querySelector('.onboarding-progress-bar');
-        if (progressBar) progressBar.style.width = `${(completedSteps.length / steps.length) * 100}%`;
+        if (progressBar) progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
 
         const badges = document.querySelectorAll('.onboarding-step-badge');
         badges.forEach((badge, i) => {
-            badge.classList.toggle('active', completedSteps.includes(i));
-            badge.classList.toggle('current', i === index);
+            const isCompleted = completedSteps.includes(i);
+            const isCurrent = i === index;
+
+            badge.classList.toggle('completed', isCompleted);
+            badge.classList.toggle('current', isCurrent && !isCompleted);
+            badge.classList.toggle('active', isCurrent || isCompleted);
+
+            // Animation pour nouvelle étape complétée
+            if (isCompleted && !badge.classList.contains('completed-animated')) {
+                badge.classList.add('completed-animated');
+                setTimeout(() => badge.classList.remove('completed-animated'), 600);
+            }
         });
 
         const prevBtn = tip.querySelector('.onboarding-prev');
@@ -383,6 +419,58 @@ function showOnboardingTips() {
     saveProgress();
 }
 
+function checkAndProgressOnboarding(stepIndex) {
+    // Vérifier si onboarding actif
+    if (localStorage.getItem('onboardingSeen')) return;
+
+    const currentIndex = parseInt(localStorage.getItem('onboardingIndex') || '0');
+    const completedSteps = JSON.parse(localStorage.getItem('onboardingCompleted') || '[]');
+
+    // Valider selon les conditions spécifiques de chaque étape
+    let isValid = false;
+    switch(stepIndex) {
+        case 0: // Étape 1 : Sujet saisi
+            const subjectInput = document.getElementById('subject');
+            isValid = subjectInput && subjectInput.value.trim().length > 0;
+            break;
+        case 1: // Étape 2 : Paramètres modifiés
+            isValid = currentConfig.style !== 'neutral' || 
+                      currentConfig.duration !== 'short' || 
+                      currentConfig.intent !== 'discover';
+            break;
+        case 2: // Étape 3 : Cours généré
+            isValid = currentCourse !== null;
+            break;
+    }
+
+    if (isValid && stepIndex === currentIndex && !completedSteps.includes(stepIndex)) {
+        completedSteps.push(stepIndex);
+        localStorage.setItem('onboardingCompleted', JSON.stringify(completedSteps));
+
+        // Passer à l'étape suivante automatiquement
+        const newIndex = currentIndex + 1;
+        localStorage.setItem('onboardingIndex', newIndex.toString());
+
+        // Attribuer badge spécifique à l'étape
+        const stepBadges = {
+            0: { id: 'first_subject', label: 'Premier sujet', emoji: '📝' },
+            1: { id: 'customization', label: 'Personnalisation', emoji: '⚙️' },
+            2: { id: 'first_course', label: 'Premier cours', emoji: '🎓' }
+        };
+
+        if (stepBadges[stepIndex]) {
+            const badge = stepBadges[stepIndex];
+            saveBadge(badge.id, badge.label, badge.emoji);
+            showMotivation(`${badge.emoji} Badge déverrouillé : ${badge.label} !`);
+        }
+
+        // Relancer l'affichage de l'étape
+        if (document.querySelector('.onboarding-tip')) {
+            showOnboardingTips(); // Redémarrer pour mettre à jour
+        }
+    }
+}
+
 function launchConfetti() {
     for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
@@ -438,6 +526,7 @@ function showFirstCourseChallenge() {
 
 // Gestionnaires d'événements principaux
 async function handleGenerateCourse() {
+    checkAndProgressOnboarding(2); // Étape 3 = index 2
     const subject = document.getElementById('subject').value.trim();
     const subjectLength = subject.length;
     const isLegacyPayload = !currentConfig.style && !currentConfig.duration && !currentConfig.intent;
@@ -603,6 +692,7 @@ function setupNewSelectors() {
             btn.setAttribute('aria-checked', 'false');
             btn.addEventListener('click', () => {
                 updateSelection(type, value, btn);
+                checkAndProgressOnboarding(1); // Étape 2 = index 1
             });
             btn.addEventListener('keydown', (e) => {
                 if (['ArrowRight', 'ArrowDown'].includes(e.key)) {
