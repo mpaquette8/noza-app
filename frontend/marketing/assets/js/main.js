@@ -247,6 +247,7 @@ function setupNewSelectors() {
             btn.setAttribute('aria-describedby', tooltip.id);
             btn.addEventListener('click', () => {
                 updateSelection(type, value, btn);
+                checkAndProgressOnboarding(1);
             });
             btn.addEventListener('keydown', (e) => {
                 if (['ArrowRight', 'ArrowDown'].includes(e.key)) {
