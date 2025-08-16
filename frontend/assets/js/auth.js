@@ -406,15 +406,12 @@ async function initializeGoogleAuth() {
 }
 
 // Initialiser les event listeners quand le DOM est chargé
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM chargé, configuration de l\'authentification...');
-
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM chargé, configuration de l'authentification...");
+    setupAuthListeners();
     const authSection = document.getElementById('authSection');
     if (authSection) {
-        const separators = document.querySelectorAll('.auth-separator');
-        separators.forEach(el => el.style.display = 'none');
-
-        setupAuthListeners();
+        document.querySelectorAll('.auth-separator').forEach(el => el.style.display = 'none');
         initializeGoogleAuth();
     }
 });
