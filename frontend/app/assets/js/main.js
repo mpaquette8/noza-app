@@ -109,8 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (courseManager) {
         courseManager.updateHistoryDisplay();
     }
-    
+
     utils.initializeLucide();
+
+    displayEarnedBadges();
 
     if (!localStorage.getItem('onboardingSeen')) {
         showOnboardingTips();
@@ -272,6 +274,9 @@ function showOnboardingTips() {
         localStorage.removeItem('onboardingIndex');
         localStorage.removeItem('onboardingCompleted');
         showMotivation('🎓 Onboarding terminé !');
+        launchConfetti();
+        saveBadge('onboarding', 'Onboarding terminé', '🎓');
+        displayEarnedBadges();
     };
 
     const showStep = () => {
@@ -378,6 +383,59 @@ function showOnboardingTips() {
     saveProgress();
 }
 
+function launchConfetti() {
+    for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confetti.style.animationDelay = Math.random() + 's';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+    }
+}
+
+function saveBadge(id, label, emoji) {
+    const badges = JSON.parse(localStorage.getItem('earnedBadges') || '[]');
+    if (!badges.some(b => b.id === id)) {
+        badges.push({ id, label, emoji });
+        localStorage.setItem('earnedBadges', JSON.stringify(badges));
+    }
+}
+
+function displayEarnedBadges() {
+    const badges = JSON.parse(localStorage.getItem('earnedBadges') || '[]');
+    if (!badges.length) return;
+    let container = document.getElementById('earnedBadges');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'earnedBadges';
+        container.className = 'earned-badges';
+        const userSection = document.getElementById('userSection');
+        if (userSection) {
+            userSection.appendChild(container);
+        } else {
+            document.body.appendChild(container);
+        }
+    }
+    container.innerHTML = '';
+    badges.forEach(b => {
+        const badgeEl = document.createElement('div');
+        badgeEl.className = 'earned-badge';
+        badgeEl.innerHTML = `${b.emoji || '🏅'}<span>${b.label}</span>`;
+        container.appendChild(badgeEl);
+    });
+}
+
+function showFirstCourseChallenge() {
+    const container = document.getElementById('generatedCourse');
+    if (!container) return;
+    const challenge = document.createElement('div');
+    challenge.className = 'first-course-challenge';
+    challenge.innerHTML = '<strong>Défi :</strong> Résumez ce cours en une phrase dans le chat !';
+    container.prepend(challenge);
+}
+
 // Gestionnaires d'événements principaux
 async function handleGenerateCourse() {
     const subject = document.getElementById('subject').value.trim();
@@ -403,6 +461,11 @@ async function handleGenerateCourse() {
                 const durationLabel = DURATION_LABELS[course.duration] || course.duration;
                 const intentLabel = INTENT_LABELS[course.intent] || course.intent;
                 displayCourseMetadata(styleLabel, durationLabel, intentLabel);
+
+                if (!localStorage.getItem('firstCourseChallengeShown')) {
+                    showFirstCourseChallenge();
+                    localStorage.setItem('firstCourseChallengeShown', '1');
+                }
 
                 if (typeof gtag === 'function') {
                     gtag('event', 'course_generation', {

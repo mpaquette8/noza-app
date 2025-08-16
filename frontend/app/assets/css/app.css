@@ -2502,3 +2502,51 @@ body::before {
     margin: 8px 0;
 }
 
+/* Confetti animation */
+.confetti {
+    position: fixed;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    opacity: 0.9;
+    z-index: 2000;
+    animation: confetti-fall 3s linear forwards;
+}
+
+@keyframes confetti-fall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Earned badges */
+.earned-badges {
+    display: flex;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.earned-badge {
+    background: #ffd700;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.earned-badge span {
+    margin-left: 4px;
+}
+
+/* First course challenge */
+.first-course-challenge {
+    background: #fffae6;
+    border-left: 4px solid #ffcb2b;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
