@@ -419,6 +419,33 @@ function showOnboardingTips() {
     saveProgress();
 }
 
+function updateOnboardingProgress() {
+    const index = parseInt(localStorage.getItem('onboardingIndex') || '0');
+    const completedSteps = JSON.parse(localStorage.getItem('onboardingCompleted') || '[]');
+    const steps = getOnboardingSteps();
+
+    const progressEl = document.getElementById('onboardingProgress');
+    if (progressEl) {
+        const progressText = steps[index] ? steps[index].progress : '';
+        progressEl.textContent = progressText;
+    }
+
+    const progressBar = document.querySelector('.onboarding-progress-bar');
+    if (progressBar) {
+        const width = steps.length ? ((Math.min(index + 1, steps.length)) / steps.length) * 100 : 0;
+        progressBar.style.width = `${width}%`;
+    }
+
+    const badges = document.querySelectorAll('.onboarding-step-badge');
+    badges.forEach((badge, i) => {
+        const isCompleted = completedSteps.includes(i);
+        const isCurrent = i === index;
+        badge.classList.toggle('completed', isCompleted);
+        badge.classList.toggle('current', isCurrent && !isCompleted);
+        badge.classList.toggle('active', isCurrent || isCompleted);
+    });
+}
+
 function checkAndProgressOnboarding(stepIndex) {
     // Vérifier si onboarding actif
     if (localStorage.getItem('onboardingSeen')) return;
@@ -463,10 +490,9 @@ function checkAndProgressOnboarding(stepIndex) {
             saveBadge(badge.id, badge.label, badge.emoji);
             showMotivation(`${badge.emoji} Badge déverrouillé : ${badge.label} !`);
         }
-
-        // Relancer l'affichage de l'étape
+        updateOnboardingProgress();
         if (document.querySelector('.onboarding-tip')) {
-            showOnboardingTips(); // Redémarrer pour mettre à jour
+            showOnboardingTips();
         }
     }
 }
