@@ -80,6 +80,14 @@ function setupEventListeners() {
         if (closeConfigBtn) closeConfigBtn.addEventListener('click', toggleNavigation);
     }
 
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (configPanel) configPanel.classList.remove('open');
+            if (headerNav) headerNav.classList.remove('open');
+            if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+
     // Chat
     setupChatEventListeners();
 }
@@ -220,11 +228,46 @@ async function askQuestion() {
 
 // Gestion des nouveaux sélecteurs de configuration
 function setupNewSelectors() {
-    document.querySelectorAll('.selector-group button').forEach(btn => {
-        btn.addEventListener('click', () => {
+    document.querySelectorAll('.selector-group').forEach(group => {
+        group.setAttribute('role', 'radiogroup');
+        const buttons = Array.from(group.querySelectorAll('button'));
+        buttons.forEach((btn, index) => {
             const type = btn.dataset.type;
             const value = btn.dataset.value;
-            updateSelection(type, value, btn);
+            btn.setAttribute('role', 'radio');
+            btn.setAttribute('aria-checked', 'false');
+            const label = btn.textContent || btn.dataset.value;
+            const tooltip = document.createElement('span');
+            tooltip.id = `tooltip-${type}-${value}`;
+            tooltip.setAttribute('role', 'tooltip');
+            tooltip.textContent = label;
+            tooltip.style.position = 'absolute';
+            tooltip.style.left = '-9999px';
+            btn.after(tooltip);
+            btn.setAttribute('aria-describedby', tooltip.id);
+            btn.addEventListener('click', () => {
+                updateSelection(type, value, btn);
+            });
+            btn.addEventListener('keydown', (e) => {
+                if (['ArrowRight', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                    buttons[(index + 1) % buttons.length].focus();
+                } else if (['ArrowLeft', 'ArrowUp'].includes(e.key)) {
+                    e.preventDefault();
+                    buttons[(index - 1 + buttons.length) % buttons.length].focus();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    btn.click();
+                } else if (e.key === 'Escape') {
+                    const configPanel = document.querySelector('.configuration-panel');
+                    const headerNav = document.getElementById('headerNav');
+                    const menuToggle = document.getElementById('menuToggle');
+                    if (configPanel) configPanel.classList.remove('open');
+                    if (headerNav) headerNav.classList.remove('open');
+                    if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+                    menuToggle?.focus();
+                }
+            });
         });
     });
 }
@@ -233,9 +276,11 @@ function updateSelection(type, value, selectedBtn) {
     currentConfig[type] = value;
     document.querySelectorAll(`.selector-group button[data-type="${type}"]`).forEach(btn => {
         btn.classList.remove('active');
+        btn.setAttribute('aria-checked', 'false');
     });
     if (selectedBtn) {
         selectedBtn.classList.add('active');
+        selectedBtn.setAttribute('aria-checked', 'true');
     }
 }
 
