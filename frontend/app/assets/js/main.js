@@ -18,12 +18,89 @@ let currentConfig = {
     intent: 'discover'
 };
 
+// Récupère le niveau utilisateur stocké en session
+function getUserLevel() {
+    return sessionStorage.getItem('userLevel') || 'beginner';
+}
+
+// Retourne un message adapté au niveau utilisateur
+function getFeedbackText(isValid) {
+    const level = getUserLevel();
+    if (isValid) {
+        return level === 'advanced'
+            ? 'Sujet confirmé, prêt pour une analyse poussée !'
+            : 'Super sujet, prêt à décrypter !';
+    }
+    return level === 'advanced'
+        ? 'Indiquez un sujet précis à décrypter'
+        : 'Décrivez votre sujet ✍️';
+}
+
+// Propose des sujets d'exemple dynamiques selon l'heure
+function getDynamicExampleTopics() {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+        return ['Petit-déjeuner équilibré', 'Productivité matinale', 'Initiation au yoga'];
+    } else if (hour < 18) {
+        return ['Gestion de projet', 'Cuisine rapide', 'Marketing digital'];
+    }
+    return ['Relaxation du soir', 'Cuisine du monde', 'Préparer sa journée de demain'];
+}
+
+// Insère les sujets d'exemple dans le DOM
+function populateExampleTopics() {
+    const container = document.querySelector('.example-topics');
+    if (!container) return;
+    const topics = getDynamicExampleTopics();
+    container.innerHTML = '';
+    topics.forEach(topic => {
+        const btn = document.createElement('button');
+        btn.className = 'example-topic';
+        btn.dataset.subject = topic;
+        btn.title = `Cliquez pour explorer ${topic}`;
+        btn.textContent = topic;
+        container.appendChild(btn);
+    });
+}
+
+// Détermine les étapes d'onboarding selon le niveau utilisateur
+function getOnboardingSteps() {
+    const baseSteps = [
+        {
+            selector: '.example-topics',
+            text: 'Choisissez un sujet ou utilisez un exemple ci-dessous',
+            progress: 'Étape 1/3 : Choisissez votre sujet',
+            message: '🎉 Super, première étape réussie !'
+        },
+        {
+            selector: '.new-selector-container',
+            text: "Personnalisez le style, la durée et l'intention",
+            progress: 'Étape 2/3 : Paramétrez votre cours',
+            message: '💪 Continuez comme ça !'
+        },
+        {
+            selector: '#generateBtn',
+            text: 'Cliquez ici pour générer votre cours',
+            progress: 'Étape 3/3 : Décryptez votre sujet',
+            message: '🚀 Prêt à générer votre cours ?'
+        }
+    ];
+    if (getUserLevel() === 'advanced') {
+        return [
+            { ...baseSteps[0], progress: 'Étape 1/2 : Choisissez votre sujet' },
+            { ...baseSteps[2], progress: 'Étape 2/2 : Décryptez votre sujet' }
+        ];
+    }
+    return baseSteps;
+}
+
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initialisation Hermès App');
 
     // L'initialisation de l'interface est désormais gérée dans index.html
     // pour permettre la vérification d'authentification avant chargement.
+    populateExampleTopics();
     setupEventListeners();
     
     // Charger l'historique selon l'authentification
@@ -70,7 +147,7 @@ function setupEventListeners() {
         subjectInput.addEventListener('input', () => {
             const value = subjectInput.value.trim();
             subjectValid = value.length > 0;
-            feedback.textContent = subjectValid ? 'Super sujet, prêt à décrypter !' : 'Décrivez votre sujet ✍️';
+            feedback.textContent = getFeedbackText(subjectValid);
             feedback.classList.toggle('valid', subjectValid);
             updateGenerateBtnState();
         });
@@ -159,26 +236,7 @@ function showMotivation(message) {
 }
 
 function showOnboardingTips() {
-    const steps = [
-        {
-            selector: '.example-topics',
-            text: 'Choisissez un sujet ou utilisez un exemple ci-dessous',
-            progress: 'Étape 1/3 : Choisissez votre sujet',
-            message: '🎉 Super, première étape réussie !'
-        },
-        {
-            selector: '.new-selector-container',
-            text: "Personnalisez le style, la durée et l'intention",
-            progress: 'Étape 2/3 : Paramétrez votre cours',
-            message: '💪 Continuez comme ça !'
-        },
-        {
-            selector: '#generateBtn',
-            text: 'Cliquez ici pour générer votre cours',
-            progress: 'Étape 3/3 : Décryptez votre sujet',
-            message: '🚀 Prêt à générer votre cours ?'
-        }
-    ];
+    const steps = getOnboardingSteps();
 
     const style = document.createElement('style');
     style.textContent = `
