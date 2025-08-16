@@ -163,16 +163,21 @@ function setupEventListeners() {
 
     exampleTopics.forEach(btn => {
         btn.classList.add('pulse');
-        btn.addEventListener('click', () => {
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('.example-topic')) {
             const subjectField = document.getElementById('subject');
             if (subjectField) {
-                subjectField.value = btn.dataset.subject || btn.textContent;
+                const subject = e.target.dataset.subject || e.target.textContent;
+                subjectField.value = subject;
                 // Déclenche manuellement l'événement d'entrée pour mettre à jour l'état
                 subjectField.dispatchEvent(new Event('input'));
                 // Marquer l'étape comme complétée et avancer automatiquement
-                checkAndProgressOnboarding(0);
+                checkAndProgressOnboarding(0); // Pour passer à l'étape 2/3
+                updateGenerateBtnState();
             }
-        });
+        }
     });
 
     if (menuToggle) {
