@@ -1,18 +1,21 @@
 export function initNavigation() {
   const menuToggle = document.getElementById('menuToggle');
-  const nav = document.querySelector('.header-nav');
+  const nav = document.getElementById('headerNav');
 
   if (!menuToggle || !nav) {
     return;
   }
 
-  // Ensure aria-expanded is set
-  menuToggle.setAttribute('aria-expanded', 'false');
+  const updateAria = () => {
+    const expanded = nav.classList.contains('open');
+    menuToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  };
+
+  updateAria();
 
   menuToggle.addEventListener('click', () => {
-    const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-    menuToggle.setAttribute('aria-expanded', String(!expanded));
     nav.classList.toggle('open');
+    updateAria();
   });
 }
 

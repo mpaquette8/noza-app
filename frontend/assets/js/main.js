@@ -48,7 +48,7 @@ function setupEventListeners() {
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
     const menuToggle = document.getElementById('menuToggle');
     const configPanel = document.querySelector('.configuration-panel');
-    const headerNav = document.querySelector('.header-nav');
+    const headerNav = document.getElementById('headerNav');
     const closeConfigBtn = document.getElementById('closeConfigBtn');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
@@ -57,12 +57,16 @@ function setupEventListeners() {
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
 
     if (menuToggle) {
-        menuToggle.setAttribute('aria-expanded', 'false');
+        const updateAria = () => {
+            const expanded = headerNav && headerNav.classList.contains('open');
+            menuToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        };
+        updateAria();
+
         const toggleNavigation = () => {
-            const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-            menuToggle.setAttribute('aria-expanded', String(!expanded));
             if (headerNav) headerNav.classList.toggle('open');
             if (configPanel) configPanel.classList.toggle('open');
+            updateAria();
         };
 
         menuToggle.addEventListener('click', toggleNavigation);
