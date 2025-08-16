@@ -234,6 +234,10 @@ function showOnboardingTips() {
             return;
         }
 
+        if (typeof gtag === 'function') {
+            gtag('event', 'onboarding_step_enter', { step: index + 1 });
+        }
+
         el.classList.add('onboarding-highlight');
         tip.innerHTML = `
             <div>${step.text}</div>
@@ -264,6 +268,9 @@ function showOnboardingTips() {
         if (prevBtn) {
             prevBtn.disabled = index === 0;
             prevBtn.addEventListener('click', () => {
+                if (typeof gtag === 'function') {
+                    gtag('event', 'onboarding_step_exit', { step: index + 1, action: 'prev' });
+                }
                 index = Math.max(0, index - 1);
                 saveProgress();
                 showStep();
@@ -272,6 +279,12 @@ function showOnboardingTips() {
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
                 if (!completedSteps.includes(index)) completedSteps.push(index);
+                if (typeof gtag === 'function') {
+                    gtag('event', 'onboarding_step_exit', {
+                        step: index + 1,
+                        action: index === steps.length - 1 ? 'complete' : 'next'
+                    });
+                }
                 index++;
                 saveProgress();
                 showMotivation(step.message);
@@ -281,6 +294,9 @@ function showOnboardingTips() {
         if (skipStepBtn) {
             skipStepBtn.addEventListener('click', () => {
                 if (!completedSteps.includes(index)) completedSteps.push(index);
+                if (typeof gtag === 'function') {
+                    gtag('event', 'onboarding_step_exit', { step: index + 1, action: 'skip' });
+                }
                 index++;
                 saveProgress();
                 showMotivation(step.message);
@@ -291,7 +307,13 @@ function showOnboardingTips() {
 
     const skipTutorialBtn = document.getElementById('skipTutorial');
     if (skipTutorialBtn) {
-        skipTutorialBtn.addEventListener('click', endOnboarding);
+        skipTutorialBtn.addEventListener('click', () => {
+            if (typeof gtag === 'function') {
+                gtag('event', 'onboarding_step_exit', { step: index + 1, action: 'abandon' });
+                gtag('event', 'onboarding_tutorial_skip', { step: index + 1 });
+            }
+            endOnboarding();
+        });
     }
 
     showStep();
