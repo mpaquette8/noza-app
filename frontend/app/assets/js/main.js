@@ -156,7 +156,11 @@ function showOnboardingTips() {
     ];
 
     const style = document.createElement('style');
-    style.textContent = '.onboarding-tip{position:absolute;background:#333;color:#fff;padding:8px 12px;border-radius:4px;z-index:1001;max-width:260px;}';
+    style.textContent = `
+        .onboarding-tip{position:absolute;background:#333;color:#fff;padding:8px 12px;border-radius:4px;z-index:1001;max-width:260px;}
+        .onboarding-buttons{display:flex;gap:8px;margin-top:8px;}
+        .onboarding-buttons button{background:#fff;color:#333;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;}
+    `;
     document.head.appendChild(style);
 
     const tip = document.createElement('div');
@@ -165,17 +169,25 @@ function showOnboardingTips() {
 
     let index = 0;
 
+    const endOnboarding = () => {
+        const highlighted = document.querySelector('.onboarding-highlight');
+        if (highlighted) highlighted.classList.remove('onboarding-highlight');
+        const progressBar = document.querySelector('.onboarding-progress-bar');
+        if (progressBar) progressBar.style.width = '100%';
+        const badges = document.querySelectorAll('.onboarding-step-badge');
+        badges.forEach(b => b.classList.add('active'));
+        tip.remove();
+        const skipBtn = document.getElementById('skipTutorial');
+        if (skipBtn) skipBtn.remove();
+        localStorage.setItem('onboardingSeen', '1');
+    };
+
     const showStep = () => {
         const previous = document.querySelector('.onboarding-highlight');
         if (previous) previous.classList.remove('onboarding-highlight');
 
         if (index >= steps.length) {
-            const progressBar = document.querySelector('.onboarding-progress-bar');
-            if (progressBar) progressBar.style.width = '100%';
-            const badges = document.querySelectorAll('.onboarding-step-badge');
-            badges.forEach(b => b.classList.add('active'));
-            tip.remove();
-            localStorage.setItem('onboardingSeen', '1');
+            endOnboarding();
             return;
         }
 
@@ -188,7 +200,13 @@ function showOnboardingTips() {
         }
 
         el.classList.add('onboarding-highlight');
-        tip.textContent = step.text;
+        tip.innerHTML = `
+            <div>${step.text}</div>
+            <div class="onboarding-buttons">
+                <button class="onboarding-prev">Précédent</button>
+                <button class="onboarding-next">Suivant</button>
+                <button class="onboarding-skip-step">Ignorer</button>
+            </div>`;
         const rect = el.getBoundingClientRect();
         tip.style.top = `${rect.bottom + window.scrollY + 8}px`;
         tip.style.left = `${rect.left + window.scrollX}px`;
@@ -204,13 +222,34 @@ function showOnboardingTips() {
             badge.classList.toggle('active', i <= index);
         });
 
-        const advance = () => {
-            el.removeEventListener('click', advance);
-            index++;
-            showStep();
-        };
-        el.addEventListener('click', advance);
+        const prevBtn = tip.querySelector('.onboarding-prev');
+        const nextBtn = tip.querySelector('.onboarding-next');
+        const skipStepBtn = tip.querySelector('.onboarding-skip-step');
+        if (prevBtn) {
+            prevBtn.disabled = index === 0;
+            prevBtn.addEventListener('click', () => {
+                index = Math.max(0, index - 1);
+                showStep();
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                index++;
+                showStep();
+            });
+        }
+        if (skipStepBtn) {
+            skipStepBtn.addEventListener('click', () => {
+                index++;
+                showStep();
+            });
+        }
     };
+
+    const skipTutorialBtn = document.getElementById('skipTutorial');
+    if (skipTutorialBtn) {
+        skipTutorialBtn.addEventListener('click', endOnboarding);
+    }
 
     showStep();
 }
