@@ -167,7 +167,10 @@ function setupEventListeners() {
             const subjectField = document.getElementById('subject');
             if (subjectField) {
                 subjectField.value = btn.dataset.subject || btn.textContent;
+                // Déclenche manuellement l'événement d'entrée pour mettre à jour l'état
                 subjectField.dispatchEvent(new Event('input'));
+                // Marquer l'étape comme complétée et avancer automatiquement
+                checkAndProgressOnboarding(0);
             }
         });
     });
@@ -450,8 +453,8 @@ function checkAndProgressOnboarding(stepIndex) {
     // Vérifier si onboarding actif
     if (localStorage.getItem('onboardingSeen')) return;
 
-    const currentIndex = parseInt(localStorage.getItem('onboardingIndex') || '0');
-    const completedSteps = JSON.parse(localStorage.getItem('onboardingCompleted') || '[]');
+    let currentIndex = parseInt(localStorage.getItem('onboardingIndex') || '0');
+    let completedSteps = JSON.parse(localStorage.getItem('onboardingCompleted') || '[]');
 
     // Valider selon les conditions spécifiques de chaque étape
     let isValid = false;
@@ -470,13 +473,18 @@ function checkAndProgressOnboarding(stepIndex) {
             break;
     }
 
-    if (isValid && stepIndex === currentIndex && !completedSteps.includes(stepIndex)) {
+    if (!isValid) return;
+
+    // Marquer l'étape comme complétée si ce n'est pas déjà fait
+    if (!completedSteps.includes(stepIndex)) {
         completedSteps.push(stepIndex);
         localStorage.setItem('onboardingCompleted', JSON.stringify(completedSteps));
+    }
 
-        // Passer à l'étape suivante automatiquement
-        const newIndex = currentIndex + 1;
-        localStorage.setItem('onboardingIndex', newIndex.toString());
+    // Avancer uniquement si l'utilisateur est sur l'étape actuelle
+    if (stepIndex === currentIndex) {
+        currentIndex = stepIndex + 1;
+        localStorage.setItem('onboardingIndex', currentIndex.toString());
 
         // Attribuer badge spécifique à l'étape
         const stepBadges = {
@@ -490,6 +498,7 @@ function checkAndProgressOnboarding(stepIndex) {
             saveBadge(badge.id, badge.label, badge.emoji);
             showMotivation(`${badge.emoji} Badge déverrouillé : ${badge.label} !`);
         }
+
         updateOnboardingProgress();
         showOnboardingTips();
     }
