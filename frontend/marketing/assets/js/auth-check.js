@@ -9,11 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authLink) {
         if (isLoggedIn()) {
             authLink.textContent = 'Mon espace';
-            authLink.href = '../app/index.html';
-            if (authSection) authSection.style.display = 'none';
+            authLink.href = '/app/';
+            if (authSection) {
+                authSection.style.display = 'none';
+                window.location.href = '/app/';
+            }
         } else {
             authLink.textContent = 'Login/Signup';
-            authLink.href = '../marketing/auth.html';
+            authLink.href = '/auth.html';
         }
     }
 });
