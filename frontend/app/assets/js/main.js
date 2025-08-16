@@ -136,22 +136,37 @@ function updateGenerateBtnState() {
     }
 }
 
+function showMotivation(message) {
+    const note = document.createElement('div');
+    note.className = 'onboarding-motivation';
+    note.textContent = message;
+    document.body.appendChild(note);
+    requestAnimationFrame(() => note.classList.add('show'));
+    setTimeout(() => {
+        note.classList.remove('show');
+        setTimeout(() => note.remove(), 300);
+    }, 2000);
+}
+
 function showOnboardingTips() {
     const steps = [
         {
             selector: '.example-topics',
             text: 'Choisissez un sujet ou utilisez un exemple ci-dessous',
-            progress: 'Étape 1/3 : Choisissez votre sujet'
+            progress: 'Étape 1/3 : Choisissez votre sujet',
+            message: '🎉 Super, première étape réussie !'
         },
         {
             selector: '.new-selector-container',
             text: "Personnalisez le style, la durée et l'intention",
-            progress: 'Étape 2/3 : Paramétrez votre cours'
+            progress: 'Étape 2/3 : Paramétrez votre cours',
+            message: '💪 Continuez comme ça !'
         },
         {
             selector: '#generateBtn',
             text: 'Cliquez ici pour générer votre cours',
-            progress: 'Étape 3/3 : Décryptez votre sujet'
+            progress: 'Étape 3/3 : Décryptez votre sujet',
+            message: '🚀 Prêt à générer votre cours ?'
         }
     ];
 
@@ -167,7 +182,13 @@ function showOnboardingTips() {
     tip.className = 'onboarding-tip';
     document.body.appendChild(tip);
 
-    let index = 0;
+    let index = parseInt(localStorage.getItem('onboardingIndex') || '0');
+    let completedSteps = JSON.parse(localStorage.getItem('onboardingCompleted') || '[]');
+
+    const saveProgress = () => {
+        localStorage.setItem('onboardingIndex', index.toString());
+        localStorage.setItem('onboardingCompleted', JSON.stringify(completedSteps));
+    };
 
     const endOnboarding = () => {
         const highlighted = document.querySelector('.onboarding-highlight');
@@ -180,9 +201,13 @@ function showOnboardingTips() {
         const skipBtn = document.getElementById('skipTutorial');
         if (skipBtn) skipBtn.remove();
         localStorage.setItem('onboardingSeen', '1');
+        localStorage.removeItem('onboardingIndex');
+        localStorage.removeItem('onboardingCompleted');
+        showMotivation('🎓 Onboarding terminé !');
     };
 
     const showStep = () => {
+        saveProgress();
         const previous = document.querySelector('.onboarding-highlight');
         if (previous) previous.classList.remove('onboarding-highlight');
 
@@ -215,11 +240,12 @@ function showOnboardingTips() {
         if (progressEl) progressEl.textContent = step.progress;
 
         const progressBar = document.querySelector('.onboarding-progress-bar');
-        if (progressBar) progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
+        if (progressBar) progressBar.style.width = `${(completedSteps.length / steps.length) * 100}%`;
 
         const badges = document.querySelectorAll('.onboarding-step-badge');
         badges.forEach((badge, i) => {
-            badge.classList.toggle('active', i <= index);
+            badge.classList.toggle('active', completedSteps.includes(i));
+            badge.classList.toggle('current', i === index);
         });
 
         const prevBtn = tip.querySelector('.onboarding-prev');
@@ -229,18 +255,25 @@ function showOnboardingTips() {
             prevBtn.disabled = index === 0;
             prevBtn.addEventListener('click', () => {
                 index = Math.max(0, index - 1);
+                saveProgress();
                 showStep();
             });
         }
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
+                if (!completedSteps.includes(index)) completedSteps.push(index);
                 index++;
+                saveProgress();
+                showMotivation(step.message);
                 showStep();
             });
         }
         if (skipStepBtn) {
             skipStepBtn.addEventListener('click', () => {
+                if (!completedSteps.includes(index)) completedSteps.push(index);
                 index++;
+                saveProgress();
+                showMotivation(step.message);
                 showStep();
             });
         }
@@ -252,6 +285,7 @@ function showOnboardingTips() {
     }
 
     showStep();
+    saveProgress();
 }
 
 // Gestionnaires d'événements principaux

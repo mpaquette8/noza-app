@@ -2424,6 +2424,13 @@ body::before {
 }
 
 .onboarding-step-badge.active {
+    background: #48bb78;
+    color: #fff;
+    opacity: 1;
+    animation: pop 0.3s ease;
+}
+
+.onboarding-step-badge.current {
     background: #4299e1;
     color: #fff;
     opacity: 1;
@@ -2434,6 +2441,31 @@ body::before {
     border-radius: 4px;
     position: relative;
     z-index: 1000;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.onboarding-motivation {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #48bb78;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1002;
+}
+
+.onboarding-motivation.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 .skip-tutorial-btn {
