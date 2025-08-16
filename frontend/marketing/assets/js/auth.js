@@ -67,7 +67,7 @@ class AuthManager {
                     courseManager.loadUserCourses();
                 }
 
-                window.location.href = '../app/index.html';
+                window.location.href = '/app/';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.handleGoogleLogin(googleResponse));
@@ -103,7 +103,7 @@ class AuthManager {
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
-                window.location.href = '../app/index.html';
+                window.location.href = '/app/';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.login(email, password));
@@ -140,7 +140,7 @@ class AuthManager {
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
-                window.location.href = '../app/index.html';
+                window.location.href = '/app/';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
                 this.showAction(data.error || 'Service indisponible', 'Réessayer', () => this.register(name, email, password));
@@ -171,7 +171,7 @@ class AuthManager {
         }
 
         this.updateUI();
-        window.location.href = '../marketing/index.html';
+        window.location.href = '/';
     }
 
     // VÉRIFIER SI CONNECTÉ
@@ -223,7 +223,7 @@ class AuthManager {
             }
             if (mainContent) mainContent.style.display = 'grid';
             if (authNavLink) {
-                authNavLink.href = '../app/index.html';
+                authNavLink.href = '/app/';
                 authNavLink.textContent = "Accéder à l'app";
             }
         } else {
@@ -231,7 +231,7 @@ class AuthManager {
             if (userSection) userSection.style.display = 'none';
             if (mainContent) mainContent.style.display = 'none';
             if (authNavLink) {
-                authNavLink.href = '../marketing/auth.html';
+                authNavLink.href = '/auth.html';
                 authNavLink.textContent = 'Login/Signup';
             }
         }
