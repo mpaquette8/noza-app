@@ -32,6 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     utils.initializeLucide();
+
+    if (!localStorage.getItem('onboardingSeen')) {
+        showOnboardingTips();
+    }
+
     console.log('✅ App initialisée');
 });
 
@@ -47,6 +52,7 @@ function setupEventListeners() {
     const generateQuiz = document.getElementById('generateQuiz');
     const copyContent = document.getElementById('copyContent');
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
+    const exampleTopics = document.querySelectorAll('.example-topic');
     const menuToggle = document.getElementById('menuToggle');
     const configPanel = document.querySelector('.configuration-panel');
     const headerNav = document.getElementById('headerNav');
@@ -56,6 +62,15 @@ function setupEventListeners() {
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
+
+    exampleTopics.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const subjectField = document.getElementById('subject');
+            if (subjectField) {
+                subjectField.value = btn.dataset.subject || btn.textContent;
+            }
+        });
+    });
 
     if (menuToggle) {
         const updateAria = () => {
@@ -83,6 +98,73 @@ function setupEventListeners() {
 
     // Chat
     setupChatEventListeners();
+}
+
+function showOnboardingTips() {
+    const steps = [
+        {
+            selector: '.example-topics',
+            text: 'Choisissez un sujet ou utilisez un exemple ci-dessous',
+            progress: 'Étape 1/3 : Choisissez votre sujet'
+        },
+        {
+            selector: '.new-selector-container',
+            text: "Personnalisez le style, la durée et l'intention",
+            progress: 'Étape 2/3 : Paramétrez votre cours'
+        },
+        {
+            selector: '#generateBtn',
+            text: 'Cliquez ici pour générer votre cours',
+            progress: 'Étape 3/3 : Décryptez votre sujet'
+        }
+    ];
+
+    const style = document.createElement('style');
+    style.textContent = '.onboarding-highlight{box-shadow:0 0 0 3px #FFD54F;border-radius:4px;position:relative;z-index:1000;} .onboarding-tip{position:absolute;background:#333;color:#fff;padding:8px 12px;border-radius:4px;z-index:1001;max-width:260px;}';
+    document.head.appendChild(style);
+
+    const tip = document.createElement('div');
+    tip.className = 'onboarding-tip';
+    document.body.appendChild(tip);
+
+    let index = 0;
+
+    const showStep = () => {
+        const previous = document.querySelector('.onboarding-highlight');
+        if (previous) previous.classList.remove('onboarding-highlight');
+
+        if (index >= steps.length) {
+            tip.remove();
+            localStorage.setItem('onboardingSeen', '1');
+            return;
+        }
+
+        const step = steps[index];
+        const el = document.querySelector(step.selector);
+        if (!el) {
+            index++;
+            showStep();
+            return;
+        }
+
+        el.classList.add('onboarding-highlight');
+        tip.textContent = step.text;
+        const rect = el.getBoundingClientRect();
+        tip.style.top = `${rect.bottom + window.scrollY + 8}px`;
+        tip.style.left = `${rect.left + window.scrollX}px`;
+
+        const progressEl = document.getElementById('onboardingProgress');
+        if (progressEl) progressEl.textContent = step.progress;
+
+        const advance = () => {
+            el.removeEventListener('click', advance);
+            index++;
+            showStep();
+        };
+        el.addEventListener('click', advance);
+    };
+
+    showStep();
 }
 
 // Gestionnaires d'événements principaux
@@ -542,3 +624,4 @@ window.currentCourse = currentCourse;
 window.handleGenerateCourse = handleGenerateCourse;
 window.displayCourseMetadata = displayCourseMetadata;
 window.initializeApp = initializeApp;
+window.showOnboardingTips = showOnboardingTips;
