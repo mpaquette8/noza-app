@@ -419,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Export global
 window.authManager = authManager;
 window.setupAuthListeners = setupAuthListeners;
+window.AuthManager = AuthManager;
 
 console.log('Script auth.js chargé');
 
