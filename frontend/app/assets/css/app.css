@@ -233,9 +233,10 @@ body::before {
         display: none;
         position: absolute;
         top: 100%;
-        right: 20px;
+        left: 0;
+        right: 0;
         background: white;
-        padding: 10px 20px;
+        padding: 10px 0;
         border-radius: 10px;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     }
@@ -246,11 +247,28 @@ body::before {
 
     .header-nav ul {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
+        align-items: center;
     }
 
     .header-nav a {
         color: #2d3748;
+        font-size: 0.9rem;
+        padding: 6px 8px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .header p {
+        display: none;
     }
 
     .menu-toggle {
@@ -441,6 +459,13 @@ body::before {
 
 .selector-group button[data-tooltip]:hover::after {
     opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .selector-group button[data-tooltip]::after {
+        top: calc(100% + 5px);
+        bottom: auto;
+    }
 }
 
 #subjectFeedback {
