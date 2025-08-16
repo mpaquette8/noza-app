@@ -8,6 +8,8 @@ import { courseManager, STYLE_LABELS, DURATION_LABELS, INTENT_LABELS } from './c
 let currentCourse = null;
 let currentQuiz = null;
 let quizState = { answered: 0, correct: 0 };
+let subjectValid = false;
+let readyTriggered = false;
 
 // Configuration par défaut pour les nouveaux sélecteurs
 let currentConfig = {
@@ -57,6 +59,20 @@ function setupEventListeners() {
     const configPanel = document.querySelector('.configuration-panel');
     const headerNav = document.getElementById('headerNav');
     const closeConfigBtn = document.getElementById('closeConfigBtn');
+    const subjectInput = document.getElementById('subject');
+
+    if (subjectInput) {
+        const feedback = document.createElement('div');
+        feedback.id = 'subjectFeedback';
+        subjectInput.parentNode?.insertAdjacentElement('afterend', feedback);
+        subjectInput.addEventListener('input', () => {
+            const value = subjectInput.value.trim();
+            subjectValid = value.length > 0;
+            feedback.textContent = subjectValid ? 'Super sujet, prêt à décrypter !' : 'Décrivez votre sujet ✍️';
+            feedback.classList.toggle('valid', subjectValid);
+            updateGenerateBtnState();
+        });
+    }
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
@@ -64,10 +80,12 @@ function setupEventListeners() {
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
 
     exampleTopics.forEach(btn => {
+        btn.classList.add('pulse');
         btn.addEventListener('click', () => {
             const subjectField = document.getElementById('subject');
             if (subjectField) {
                 subjectField.value = btn.dataset.subject || btn.textContent;
+                subjectField.dispatchEvent(new Event('input'));
             }
         });
     });
@@ -98,6 +116,24 @@ function setupEventListeners() {
 
     // Chat
     setupChatEventListeners();
+
+    updateGenerateBtnState();
+}
+
+function updateGenerateBtnState() {
+    const generateBtn = document.getElementById('generateBtn');
+    if (!generateBtn) return;
+    if (subjectValid) {
+        generateBtn.classList.add('blink');
+        if (!readyTriggered) {
+            generateBtn.classList.add('ready');
+            readyTriggered = true;
+            setTimeout(() => generateBtn.classList.remove('ready'), 1000);
+        }
+    } else {
+        generateBtn.classList.remove('blink');
+        readyTriggered = false;
+    }
 }
 
 function showOnboardingTips() {
@@ -315,10 +351,19 @@ async function askQuestion() {
 
 // Gestion des nouveaux sélecteurs de configuration
 function setupNewSelectors() {
+    document.querySelectorAll('.selector-group').forEach(group => {
+        group.classList.add('highlight');
+    });
+
     document.querySelectorAll('.selector-group button').forEach(btn => {
+        const type = btn.dataset.type;
+        const value = btn.dataset.value;
+        let label;
+        if (type === 'style') label = STYLE_LABELS[value];
+        else if (type === 'duration') label = DURATION_LABELS[value];
+        else if (type === 'intent') label = INTENT_LABELS[value];
+        if (label) btn.setAttribute('data-tooltip', label);
         btn.addEventListener('click', () => {
-            const type = btn.dataset.type;
-            const value = btn.dataset.value;
             updateSelection(type, value, btn);
         });
     });
