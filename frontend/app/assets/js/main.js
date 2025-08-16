@@ -491,9 +491,7 @@ function checkAndProgressOnboarding(stepIndex) {
             showMotivation(`${badge.emoji} Badge déverrouillé : ${badge.label} !`);
         }
         updateOnboardingProgress();
-        if (document.querySelector('.onboarding-tip')) {
-            showOnboardingTips();
-        }
+        showOnboardingTips();
     }
 }
 
