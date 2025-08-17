@@ -72,6 +72,17 @@ body {
     flex: 1;
 }
 
+.header-logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+    width: auto;
+    max-width: 200px;
+}
+
 .header h1 {
     font-family: 'Inter', sans-serif;
     font-size: 2rem;
