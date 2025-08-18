@@ -8,6 +8,8 @@ import { courseManager, STYLE_LABELS, DURATION_LABELS, INTENT_LABELS } from './c
 let currentCourse = null;
 let currentQuiz = null;
 let quizState = { answered: 0, correct: 0 };
+let currentOnDemandQuiz = null;
+let selectedQuizLevel = 'beginner';
 
 // Configuration par défaut pour les nouveaux sélecteurs
 let currentConfig = {
@@ -80,6 +82,23 @@ function setupEventListeners() {
 
         if (closeConfigBtn) closeConfigBtn.addEventListener('click', toggleNavigation);
     }
+
+    const openQuizOnDemand = document.getElementById('openQuizOnDemand');
+    const closeQuizOnDemand = document.getElementById('closeQuizOnDemand');
+    const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
+
+    if (openQuizOnDemand) openQuizOnDemand.addEventListener('click', showQuizOnDemandSection);
+    if (closeQuizOnDemand) closeQuizOnDemand.addEventListener('click', hideQuizOnDemandSection);
+    if (generateOnDemandQuiz) generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
+
+    const levelButtons = document.querySelectorAll('.level-btn');
+    levelButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            levelButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedQuizLevel = btn.dataset.level;
+        });
+    });
 
     // Chat
     setupChatEventListeners();
@@ -535,6 +554,73 @@ function typewriterEffect(element, text, callback) {
     }
     
     typeWriter();
+}
+
+function showQuizOnDemandSection() {
+    const section = document.getElementById('quizOnDemandSection');
+    if (!section) return;
+    section.style.display = 'block';
+    const subjectInput = document.getElementById('quizSubject');
+    if (subjectInput) subjectInput.focus();
+    utils.initializeLucide();
+}
+
+function hideQuizOnDemandSection() {
+    const section = document.getElementById('quizOnDemandSection');
+    if (!section) return;
+    section.style.display = 'none';
+    const subjectInput = document.getElementById('quizSubject');
+    if (subjectInput) subjectInput.value = '';
+    const questionCount = document.getElementById('questionCount');
+    if (questionCount) questionCount.selectedIndex = 0;
+    const levelSelect = document.getElementById('quizLevel');
+    if (levelSelect) levelSelect.value = 'beginner';
+    const levelButtons = document.querySelectorAll('.level-btn');
+    levelButtons.forEach(btn => btn.classList.remove('active'));
+    selectedQuizLevel = 'beginner';
+}
+
+async function handleGenerateOnDemandQuiz() {
+    const subjectInput = document.getElementById('quizSubject');
+    const questionCountSelect = document.getElementById('questionCount');
+    const subject = subjectInput ? subjectInput.value.trim() : '';
+    const questionCount = questionCountSelect ? parseInt(questionCountSelect.value, 10) : 5;
+
+    if (!subject) {
+        utils.handleAuthError('Veuillez entrer un sujet pour le quiz');
+        return;
+    }
+
+    utils.showLoading(['generateOnDemandQuiz']);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/ai/generate-ondemand-quiz`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authManager.getAuthHeaders()
+            },
+            body: JSON.stringify({ subject, level: selectedQuizLevel, questionCount })
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.quiz) {
+            const quiz = data.quiz;
+            currentOnDemandQuiz = quiz;
+            currentQuiz = quiz;
+            hideQuizOnDemandSection();
+            displayQuiz(quiz);
+        } else {
+            utils.handleAuthError(data.error || 'Erreur lors de la génération du quiz', true);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        utils.handleAuthError('Erreur lors de la génération du quiz: ' + error.message, true);
+    } finally {
+        utils.hideLoading(['generateOnDemandQuiz']);
+        utils.initializeLucide();
+    }
 }
 
 // Exposer globalement
