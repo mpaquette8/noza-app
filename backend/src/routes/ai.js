@@ -25,6 +25,8 @@ const generateQuizLimiter = createRateLimiter(RATE_LIMITS.AI.GENERATE_QUIZ);
 const suggestQuestionsLimiter = createRateLimiter(RATE_LIMITS.AI.SUGGEST_QUESTIONS);
 const randomSubjectLimiter = createRateLimiter(RATE_LIMITS.AI.RANDOM_SUBJECT);
 const subjectCategoriesLimiter = createRateLimiter(RATE_LIMITS.AI.SUBJECT_CATEGORIES);
+const generateOnDemandQuizLimiter = createRateLimiter(RATE_LIMITS.AI.GENERATE_QUIZ);
+const quizHistoryLimiter = createRateLimiter(RATE_LIMITS.AI.SUGGEST_QUESTIONS);
 
 // Toutes les routes nécessitent une authentification
 router.use(authenticate);
@@ -37,5 +39,7 @@ router.post('/generate-quiz', generateQuizLimiter, asyncHandler(aiController.gen
 router.post('/suggest-questions', suggestQuestionsLimiter, asyncHandler(aiController.suggestQuestions));
 router.get('/random-subject', randomSubjectLimiter, asyncHandler(aiController.getRandomSubject));
 router.get('/subject-categories', subjectCategoriesLimiter, asyncHandler(aiController.getSubjectCategories));
+router.post('/generate-ondemand-quiz', generateOnDemandQuizLimiter, asyncHandler(aiController.generateOnDemandQuiz));
+router.get('/quiz-history', quizHistoryLimiter, asyncHandler(aiController.getQuizHistory));
 
 module.exports = router;
