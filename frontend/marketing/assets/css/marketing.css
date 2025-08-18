@@ -189,16 +189,98 @@ body {
 /* ==========================================================================
    3. Configuration Container
    ========================================================================== */
-.configuration-container {
-    background: white;
-    border-radius: 15px;
+ .configuration-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 20px;
     padding: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    border: 2px solid #e2e8f0;
     height: fit-content;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     position: relative;
+}
+
+.config-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.config-card.primary-card {
+    border-color: #3182ce;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    z-index: 3;
+}
+
+.config-card.secondary-card {
+    border-color: #cbd5e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.config-card.tertiary-card {
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    z-index: 1;
+}
+
+.quick-config {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.quick-config .preset {
+    padding: 8px 12px;
+    background: #f7fafc;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.quick-config .preset:hover {
+    background: #e2e8f0;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-tertiary {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3182ce;
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: var(--text-primary);
+}
+
+.btn-tertiary {
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.collapsible {
+    cursor: pointer;
+}
+
+.collapsible .toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.collapsible.open .toggle-icon {
+    transform: rotate(180deg);
 }
 
 .config-close-btn {
@@ -1935,6 +2017,8 @@ body {
     
     .configuration-container {
         order: 1;
+        grid-template-columns: 1fr;
+        padding: 16px;
         max-height: none;
         overflow-y: visible;
     }
@@ -1975,9 +2059,14 @@ body {
         gap: 10px;
     }
     
-    .configuration-container,
+    .configuration-container {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
     .course-display {
-        padding: 15px;
+        padding: 12px;
         border-radius: 12px;
     }
     
@@ -2015,7 +2104,11 @@ body {
         font-size: 1.5rem;
     }
     
-    .configuration-container,
+    .configuration-container {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+
     .course-display {
         padding: 12px;
     }
