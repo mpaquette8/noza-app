@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "npm install --prefix backend",
-    "start": "npm start --prefix backend"
+    "start": "npm start --prefix backend",
+    "test": "node --test frontend/tests/*.js"
   },
   "engines": {
     "node": ">=18"
