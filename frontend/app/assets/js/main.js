@@ -9,7 +9,6 @@ let currentCourse = null;
 let currentQuiz = null;
 let quizState = { answered: 0, correct: 0 };
 let currentOnDemandQuiz = null;
-let selectedQuizLevel = 'beginner';
 
 
 // Initialisation de l'application
@@ -83,15 +82,6 @@ function setupEventListeners() {
     if (openQuizOnDemand) openQuizOnDemand.addEventListener('click', showQuizOnDemandSection);
     if (closeQuizOnDemand) closeQuizOnDemand.addEventListener('click', hideQuizOnDemandSection);
     if (generateOnDemandQuiz) generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
-
-    const levelButtons = document.querySelectorAll('.level-btn');
-    levelButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            levelButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedQuizLevel = btn.dataset.level;
-        });
-    });
 
     // Chat
     setupChatEventListeners();
@@ -555,10 +545,7 @@ function hideQuizOnDemandSection() {
     const questionCount = document.getElementById('questionCount');
     if (questionCount) questionCount.selectedIndex = 0;
     const levelSelect = document.getElementById('quizLevel');
-    if (levelSelect) levelSelect.value = 'beginner';
-    const levelButtons = document.querySelectorAll('.level-btn');
-    levelButtons.forEach(btn => btn.classList.remove('active'));
-    selectedQuizLevel = 'beginner';
+    if (levelSelect) levelSelect.value = 'intermediate'; // Valeur par défaut
 }
 
 async function handleGenerateOnDemandQuiz() {
@@ -575,13 +562,15 @@ async function handleGenerateOnDemandQuiz() {
     utils.showLoading(['generateOnDemandQuiz']);
 
     try {
+        const levelSelect = document.getElementById('quizLevel');
+        const level = levelSelect ? levelSelect.value : 'intermediate';
         const response = await fetch(`${API_BASE_URL}/ai/generate-ondemand-quiz`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 ...authManager.getAuthHeaders()
             },
-            body: JSON.stringify({ subject, level: selectedQuizLevel, questionCount })
+            body: JSON.stringify({ subject, level, questionCount })
         });
 
         const data = await response.json();
