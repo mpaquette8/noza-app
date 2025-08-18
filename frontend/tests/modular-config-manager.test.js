@@ -76,9 +76,8 @@ test('preset selection updates advanced controls', async () => {
   assert.ok(intentMaster.classList.contains('active'));
 });
 
-test('quiz buttons reflect quiz availability', async () => {
+test('quiz button reflects quiz availability', async () => {
   const generateQuizBtn = createElement();
-  const openQuizBtn = createElement();
   const statusEl = { textContent: '', style: {} };
 
   global.document = {
@@ -86,7 +85,6 @@ test('quiz buttons reflect quiz availability', async () => {
     querySelector() { return null; },
     getElementById(id) {
       if (id === 'generateQuiz') return generateQuizBtn;
-      if (id === 'openQuizOnDemand') return openQuizBtn;
       if (id === 'quizStatus') return statusEl;
       return null;
     }
@@ -98,7 +96,6 @@ test('quiz buttons reflect quiz availability', async () => {
   manager.init();
 
   assert.ok(generateQuizBtn.disabled);
-  assert.ok(!openQuizBtn.disabled);
   assert.strictEqual(statusEl.textContent, 'Seul le "Quiz du cours" requiert un cours généré');
 
   manager.enableQuizCard();

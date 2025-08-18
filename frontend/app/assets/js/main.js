@@ -75,13 +75,10 @@ function setupEventListeners() {
         if (closeConfigBtn) closeConfigBtn.addEventListener('click', toggleNavigation);
     }
 
-    const openQuizOnDemand = document.getElementById('openQuizOnDemand');
-    const closeQuizOnDemand = document.getElementById('closeQuizOnDemand');
     const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
-
-    if (openQuizOnDemand) openQuizOnDemand.addEventListener('click', showQuizOnDemandSection);
-    if (closeQuizOnDemand) closeQuizOnDemand.addEventListener('click', hideQuizOnDemandSection);
-    if (generateOnDemandQuiz) generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
+    if (generateOnDemandQuiz) {
+        generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
+    }
 
     // Chat
     setupChatEventListeners();
@@ -345,6 +342,10 @@ function switchTab(tabName) {
     });
     const activeContent = document.getElementById(`${tabName}Tab`);
     if (activeContent) activeContent.style.display = 'block';
+
+    if (tabName === 'quiz-on-demand') {
+        showQuizOnDemandSection();
+    }
 }
 
 // Générer et afficher un quiz
@@ -365,8 +366,8 @@ async function handleGenerateQuiz() {
     }
 }
 
-function displayQuiz(quiz) {
-    const quizSection = document.getElementById('quizSection');
+function displayQuiz(quiz, containerId = 'quizSection') {
+    const quizSection = document.getElementById(containerId);
     if (!quizSection) return;
 
     quizState = { answered: 0, correct: 0 };
@@ -524,28 +525,28 @@ function typewriterEffect(element, text, callback) {
 }
 
 function showQuizOnDemandSection() {
-    const section = document.getElementById('quizOnDemandSection');
-    const emptyState = document.getElementById('emptyState');
-    const courseContent = document.getElementById('courseContent');
-    if (emptyState) emptyState.style.display = 'none';
-    if (courseContent) courseContent.style.display = 'block';
-    if (!section) return;
-    section.style.display = 'block';
+    const form = document.getElementById('quizOnDemandSection');
+    const results = document.getElementById('quizOnDemandResults');
+    if (form) form.style.display = 'block';
+    if (results) results.style.display = 'none';
     const subjectInput = document.getElementById('quizSubject');
     if (subjectInput) subjectInput.focus();
     utils.initializeLucide();
 }
 
 function hideQuizOnDemandSection() {
-    const section = document.getElementById('quizOnDemandSection');
-    if (!section) return;
-    section.style.display = 'none';
-    const subjectInput = document.getElementById('quizSubject');
-    if (subjectInput) subjectInput.value = '';
-    const questionCount = document.getElementById('questionCount');
-    if (questionCount) questionCount.selectedIndex = 0;
-    const levelSelect = document.getElementById('quizLevel');
-    if (levelSelect) levelSelect.value = 'intermediate'; // Valeur par défaut
+    const form = document.getElementById('quizOnDemandSection');
+    const results = document.getElementById('quizOnDemandResults');
+    if (form) {
+        form.style.display = 'none';
+        const subjectInput = document.getElementById('quizSubject');
+        if (subjectInput) subjectInput.value = '';
+        const questionCount = document.getElementById('questionCount');
+        if (questionCount) questionCount.selectedIndex = 0;
+        const levelSelect = document.getElementById('quizLevel');
+        if (levelSelect) levelSelect.value = 'intermediate';
+    }
+    if (results) results.style.display = 'block';
 }
 
 async function handleGenerateOnDemandQuiz() {
@@ -580,12 +581,10 @@ async function handleGenerateOnDemandQuiz() {
             currentOnDemandQuiz = quiz;
             currentQuiz = quiz;
             hideQuizOnDemandSection();
-            document.getElementById('emptyState').style.display = 'none';
-            document.getElementById('courseContent').style.display = 'block';
-            displayQuiz(quiz);
-            const quizSection = document.getElementById('quizSection');
-            if (quizSection) {
-                quizSection.scrollIntoView({ behavior: 'smooth' });
+            displayQuiz(quiz, 'quizOnDemandResults');
+            const resultSection = document.getElementById('quizOnDemandResults');
+            if (resultSection) {
+                resultSection.scrollIntoView({ behavior: 'smooth' });
             }
         } else {
             utils.handleAuthError(data.error || 'Erreur lors de la génération du quiz', true);
