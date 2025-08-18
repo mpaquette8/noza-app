@@ -50,7 +50,7 @@ function setupEventListeners() {
     const copyContent = document.getElementById('copyContent');
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
     const menuToggle = document.getElementById('menuToggle');
-    const configPanel = document.querySelector('.configuration-panel');
+    const configPanel = document.querySelector('.configuration-container');
     const headerNav = document.getElementById('headerNav');
     const closeConfigBtn = document.getElementById('closeConfigBtn');
 

@@ -20,7 +20,7 @@ function initializeApp() {
 
 function setupEventListeners() {
     const menuToggle = document.getElementById('menuToggle');
-    const configPanel = document.querySelector('.configuration-panel');
+    const configPanel = document.querySelector('.configuration-container');
     const headerNav = document.getElementById('headerNav');
     const closeConfigBtn = document.getElementById('closeConfigBtn');
 
