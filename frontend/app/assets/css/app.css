@@ -666,9 +666,15 @@ body::before {
     font-weight: 500;
 }
 
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 /* --- Main Generate Button - Style CTA Attractif --- */
 .generate-btn {
-    width: 100%;
+    flex: 1;
+    width: auto;
     padding: 18px;
     background: linear-gradient(135deg, #4299e1, #3182ce, #2c5282);
     color: white;
@@ -2517,7 +2523,8 @@ body::before {
 }
 
 .generate-quiz-btn {
-    width: 100%;
+    flex: 1;
+    width: auto;
     padding: 12px 20px;
     border: none;
     border-radius: 8px;
