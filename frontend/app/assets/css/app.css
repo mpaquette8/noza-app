@@ -2319,3 +2319,128 @@ body::before {
     margin-right: 10px;
 }
 
+/* ==========================================================================
+   Quiz On-Demand Styles
+   ========================================================================== */
+.quiz-ondemand-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffffff, #f7fafc);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.close-section-btn {
+    background: none;
+    border: none;
+    color: #4a5568;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: color 0.2s;
+}
+
+.close-section-btn:hover {
+    color: #2d3748;
+}
+
+.quiz-ondemand-section .form-group label {
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.quiz-ondemand-section .form-group input,
+.quiz-ondemand-section .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    background: #f7fafc;
+    color: #2d3748;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.quiz-ondemand-section .form-group input:focus,
+.quiz-ondemand-section .form-group select:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.3);
+    outline: none;
+}
+
+.level-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.level-btn {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.level-btn:hover {
+    background: linear-gradient(135deg, #63b3ed, #4299e1);
+    transform: translateY(-2px);
+}
+
+.level-btn.active {
+    background: linear-gradient(135deg, #2b6cb0, #2c5282);
+}
+
+.generate-quiz-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.generate-quiz-btn:hover {
+    background: linear-gradient(135deg, #68d391, #48bb78);
+    transform: translateY(-2px);
+}
+
+.quiz-ondemand-btn {
+    background: linear-gradient(135deg, #805ad5, #6b46c1);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.quiz-ondemand-btn:hover {
+    background: linear-gradient(135deg, #b794f4, #805ad5);
+    transform: translateY(-2px);
+}
+
+.quiz-options {
+    display: flex;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .quiz-options {
+        flex-direction: column;
+    }
+}
+
+
