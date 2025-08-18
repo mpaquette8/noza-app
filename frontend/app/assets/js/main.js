@@ -610,7 +610,13 @@ async function handleGenerateOnDemandQuiz() {
             currentOnDemandQuiz = quiz;
             currentQuiz = quiz;
             hideQuizOnDemandSection();
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('courseContent').style.display = 'block';
             displayQuiz(quiz);
+            const quizSection = document.getElementById('quizSection');
+            if (quizSection) {
+                quizSection.scrollIntoView({ behavior: 'smooth' });
+            }
         } else {
             utils.handleAuthError(data.error || 'Erreur lors de la génération du quiz', true);
         }
