@@ -83,17 +83,15 @@ export class ModularConfigManager {
     }
 
     updateQuizCardState() {
-        const quizCard = document.querySelector('.config-card.secondary-card');
         const statusEl = document.getElementById('quizStatus');
-        if (!quizCard || !statusEl) return;
+        if (!statusEl) return;
 
         const enabled = this.cardStates.quizEnabled;
-        quizCard.classList.toggle('disabled', !enabled);
-        quizCard.style.opacity = enabled ? '1' : '0.5';
-        quizCard.querySelectorAll('button').forEach(btn => {
-            btn.disabled = !enabled;
-        });
-        statusEl.textContent = enabled ? 'Prêt' : 'Disponible après génération';
+        const generateQuizBtn = document.getElementById('generateQuiz');
+        if (generateQuizBtn) {
+            generateQuizBtn.disabled = !enabled;
+        }
+        statusEl.textContent = enabled ? 'Prêt' : 'Seul le "Quiz du cours" requiert un cours généré';
         statusEl.style.color = enabled ? '#38a169' : '#718096';
     }
 
