@@ -1,3 +1,6 @@
+// backend/prisma/schema.prisma
+// REMPLACE le contenu actuel par celui-ci
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,6 +23,7 @@ model User {
   
   courses      Course[]
   chatHistories ChatHistory[]
+  quizzes      Quiz[]        // 👈 NOUVELLE LIGNE
   
   @@map("users")
 }
@@ -41,6 +45,7 @@ model Course {
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   chatHistories      ChatHistory[]
+  quizzes           Quiz[]        // 👈 NOUVELLE LIGNE
 
   @@map("courses")
   @@index([userId, createdAt])
@@ -58,4 +63,25 @@ model ChatHistory {
   course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   
   @@map("chat_histories")
+}
+
+// 👈 NOUVEAU MODÈLE - AJOUTER À LA FIN
+model Quiz {
+  id          String   @id @default(cuid())
+  subject     String   // "Photosynthèse", "Histoire de France", etc.
+  level       String   // "beginner", "intermediate", "expert", "hybrid"
+  type        String   @default("ondemand") // "course", "ondemand", "review"
+  questions   Json     // Stockage des questions/réponses/explications
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  courseId    String?  // Optionnel - lié à un cours spécifique
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  
+  @@map("quizzes")
+  @@index([userId, createdAt])
+  @@index([userId, type])
 }
