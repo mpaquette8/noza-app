@@ -187,9 +187,9 @@ body {
 }
 
 /* ==========================================================================
-   3. Configuration Panel - Style Panneau de Contrôle Éducatif
+   3. Configuration Container
    ========================================================================== */
-.configuration-panel {
+.configuration-container {
     background: white;
     border-radius: 15px;
     padding: 20px;
@@ -199,18 +199,6 @@ body {
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     position: relative;
-}
-
-.configuration-panel::before {
-    content: '🎓';
-    position: absolute;
-    top: -15px;
-    right: 20px;
-    font-size: 2rem;
-    background: white;
-    padding: 5px 10px;
-    border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .config-close-btn {
@@ -234,7 +222,7 @@ body {
         grid-template-columns: 1fr;
     }
 
-    .configuration-panel {
+    .configuration-container {
         position: fixed;
         top: 0;
         left: 0;
@@ -246,7 +234,7 @@ body {
         z-index: 1000;
     }
 
-    .configuration-panel.open {
+    .configuration-container.open {
         transform: translateX(0);
     }
 
@@ -1945,7 +1933,7 @@ body {
         overflow: visible;
     }
     
-    .configuration-panel {
+    .configuration-container {
         order: 1;
         max-height: none;
         overflow-y: visible;
@@ -1987,7 +1975,7 @@ body {
         gap: 10px;
     }
     
-    .configuration-panel,
+    .configuration-container,
     .course-display {
         padding: 15px;
         border-radius: 12px;
@@ -2027,7 +2015,7 @@ body {
         font-size: 1.5rem;
     }
     
-    .configuration-panel,
+    .configuration-container,
     .course-display {
         padding: 12px;
     }

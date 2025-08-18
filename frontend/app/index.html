@@ -28,61 +28,80 @@
         </div>
 
         <div class="main-content">
-            <div class="configuration-panel">
+            <div class="configuration-container">
                 <button class="config-close-btn" id="closeConfigBtn">
                     <i data-lucide="x"></i>
                 </button>
-                <button class="generate-btn" id="generateBtn">
-                    <i data-lucide="sparkles"></i>
-                    Décrypter le sujet
-                </button>
 
-                <button class="quiz-ondemand-btn" id="openQuizOnDemand">
-                    <i data-lucide="brain"></i>
-                    Quiz Sur Demande
-                </button>
-
-                <h2 style="margin: 40px 0 20px 0; color: #F0F0F0;">Configuration</h2>
-                <div class="form-group">
-                    <label for="subject">Sujet à décrypter</label>
-                    <div class="subject-input-container">
-                        <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
-                        <button type="button" class="random-subject-btn" id="randomSubjectBtn">
-                            <i data-lucide="sparkles"></i>
-                            Générer un sujet aléatoire
-                            <i data-lucide="dice-6"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="new-selector-container">
-                        <div class="selector-group">
-                            <div class="selector-title">🖋️ Style</div>
-                            <div class="selector-buttons">
-                                <button data-type="style" data-value="neutral" class="active">Neutre</button>
-                                <button data-type="style" data-value="pedagogical">Pédagogique</button>
-                                <button data-type="style" data-value="storytelling">Narratif</button>
-                            </div>
-                        </div>
-                        <div class="selector-group">
-                            <div class="selector-title">⏱️ Durée</div>
-                            <div class="selector-buttons">
-                                <button data-type="duration" data-value="short" class="active">Courte</button>
-                                <button data-type="duration" data-value="medium">Moyenne</button>
-                                <button data-type="duration" data-value="long">Longue</button>
-                            </div>
-                        </div>
-                        <div class="selector-group">
-                            <div class="selector-title">🎯 Intention</div>
-                            <div class="selector-buttons">
-                                <button data-type="intent" data-value="discover" class="active">Découvrir</button>
-                                <button data-type="intent" data-value="learn">Apprendre</button>
-                                <button data-type="intent" data-value="master">Maîtriser</button>
-                                <button data-type="intent" data-value="expert">Expert</button>
-                            </div>
+                <div class="config-card primary-card">
+                    <div class="form-group">
+                        <label for="subject">Sujet à décrypter</label>
+                        <div class="subject-input-container">
+                            <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
+                            <button type="button" class="random-subject-btn" id="randomSubjectBtn">
+                                <i data-lucide="sparkles"></i>
+                                Générer un sujet aléatoire
+                                <i data-lucide="dice-6"></i>
+                            </button>
                         </div>
                     </div>
+                    <button class="generate-btn" id="generateBtn">
+                        <i data-lucide="sparkles"></i>
+                        Décrypter le sujet
+                    </button>
                 </div>
+
+                <div class="config-card secondary-card">
+                    <div id="quizStatus" class="quiz-status"></div>
+                    <div class="level-selector">
+                        <button class="level-btn active" data-level="beginner">Débutant</button>
+                        <button class="level-btn" data-level="intermediate">Intermédiaire</button>
+                        <button class="level-btn" data-level="expert">Expert</button>
+                        <button class="level-btn" data-level="hybrid">Hybride</button>
+                        <button class="level-btn" data-level="hybridExpert">Hybride Expert</button>
+                    </div>
+                    <button class="generate-quiz-btn" id="generateQuiz">
+                        <i data-lucide="help-circle"></i>
+                        Quiz du cours
+                    </button>
+                    <button class="quiz-ondemand-btn" id="openQuizOnDemand">
+                        <i data-lucide="brain"></i>
+                        Quiz Sur Demande
+                    </button>
+                </div>
+
+                <details class="config-card tertiary-card">
+                    <summary>Paramètres avancés</summary>
+                    <div class="advanced-settings">
+                        <div class="new-selector-container">
+                            <div class="selector-group">
+                                <div class="selector-title">🖋️ Style</div>
+                                <div class="selector-buttons">
+                                    <button data-type="style" data-value="neutral" class="active">Neutre</button>
+                                    <button data-type="style" data-value="pedagogical">Pédagogique</button>
+                                    <button data-type="style" data-value="storytelling">Narratif</button>
+                                </div>
+                            </div>
+                            <div class="selector-group">
+                                <div class="selector-title">⏱️ Durée</div>
+                                <div class="selector-buttons">
+                                    <button data-type="duration" data-value="short" class="active">Courte</button>
+                                    <button data-type="duration" data-value="medium">Moyenne</button>
+                                    <button data-type="duration" data-value="long">Longue</button>
+                                </div>
+                            </div>
+                            <div class="selector-group">
+                                <div class="selector-title">🎯 Intention</div>
+                                <div class="selector-buttons">
+                                    <button data-type="intent" data-value="discover" class="active">Découvrir</button>
+                                    <button data-type="intent" data-value="learn">Apprendre</button>
+                                    <button data-type="intent" data-value="master">Maîtriser</button>
+                                    <button data-type="intent" data-value="expert">Expert</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <div class="course-display">
@@ -112,10 +131,6 @@
                             <button class="action-btn" id="copyContent">
                                 <i data-lucide="copy"></i>
                                 Copier
-                            </button>
-                            <button class="action-btn" id="generateQuiz">
-                                <i data-lucide="help-circle"></i>
-                                Quiz
                             </button>
                         </div>
                         <div id="generatedCourse"></div>
