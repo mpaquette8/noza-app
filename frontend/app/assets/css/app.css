@@ -2573,6 +2573,15 @@ body::before {
     gap: 15px;
 }
 
+/* Nouvel onglet Quiz sur demande */
+#openQuizOnDemand {
+    display: none;
+}
+
+#quizOnDemandResults {
+    margin-top: 20px;
+}
+
 @media (max-width: 768px) {
     .quiz-options {
         flex-direction: column;
