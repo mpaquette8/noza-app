@@ -558,6 +558,10 @@ function typewriterEffect(element, text, callback) {
 
 function showQuizOnDemandSection() {
     const section = document.getElementById('quizOnDemandSection');
+    const emptyState = document.getElementById('emptyState');
+    const courseContent = document.getElementById('courseContent');
+    if (emptyState) emptyState.style.display = 'none';
+    if (courseContent) courseContent.style.display = 'block';
     if (!section) return;
     section.style.display = 'block';
     const subjectInput = document.getElementById('quizSubject');
