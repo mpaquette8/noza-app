@@ -76,24 +76,19 @@ test('preset selection updates advanced controls', async () => {
   assert.ok(intentMaster.classList.contains('active'));
 });
 
-test('quiz card disabled then enabled', async () => {
-  const quizBtn = createElement();
-  const quizCard = createElement({ className: 'config-card secondary-card' });
-  quizCard.querySelectorAll = (sel) => sel === 'button' ? [quizBtn] : [];
-
+test('quiz buttons reflect quiz availability', async () => {
+  const generateQuizBtn = createElement();
+  const openQuizBtn = createElement();
   const statusEl = { textContent: '', style: {} };
+
   global.document = {
-    querySelectorAll(selector) {
-      if (selector === '.quick-config [data-preset]') return [];
-      if (selector === '.selector-group button') return [];
-      return [];
-    },
-    querySelector(selector) {
-      if (selector === '.config-card.secondary-card') return quizCard;
-      return null;
-    },
+    querySelectorAll() { return []; },
+    querySelector() { return null; },
     getElementById(id) {
-      return id === 'quizStatus' ? statusEl : null;
+      if (id === 'generateQuiz') return generateQuizBtn;
+      if (id === 'openQuizOnDemand') return openQuizBtn;
+      if (id === 'quizStatus') return statusEl;
+      return null;
     }
   };
   global.window = { Event: class { constructor(type) { this.type = type; } } };
@@ -102,12 +97,11 @@ test('quiz card disabled then enabled', async () => {
   const manager = new ModularConfigManager();
   manager.init();
 
-  assert.ok(quizBtn.disabled);
-  assert.ok(quizCard.classList.contains('disabled'));
-  assert.strictEqual(statusEl.textContent, 'Disponible après génération');
+  assert.ok(generateQuizBtn.disabled);
+  assert.ok(!openQuizBtn.disabled);
+  assert.strictEqual(statusEl.textContent, 'Seul le "Quiz du cours" requiert un cours généré');
 
   manager.enableQuizCard();
-  assert.ok(!quizBtn.disabled);
-  assert.ok(!quizCard.classList.contains('disabled'));
+  assert.ok(!generateQuizBtn.disabled);
   assert.strictEqual(statusEl.textContent, 'Prêt');
 });
