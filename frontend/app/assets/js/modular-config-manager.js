@@ -84,16 +84,27 @@ export class ModularConfigManager {
 
     updateQuizCardState() {
         const quizCard = document.querySelector('.config-card.secondary-card');
-        if (!quizCard) return;
-        quizCard.classList.toggle('disabled', !this.cardStates.quizEnabled);
+        const statusEl = document.getElementById('quizStatus');
+        if (!quizCard || !statusEl) return;
+
+        const enabled = this.cardStates.quizEnabled;
+        quizCard.classList.toggle('disabled', !enabled);
+        quizCard.style.opacity = enabled ? '1' : '0.5';
         quizCard.querySelectorAll('button').forEach(btn => {
-            btn.disabled = !this.cardStates.quizEnabled;
+            btn.disabled = !enabled;
         });
+        statusEl.textContent = enabled ? 'Prêt' : 'Disponible après génération';
+        statusEl.style.color = enabled ? '#38a169' : '#718096';
     }
 
     enableQuizCard() {
         this.cardStates.quizEnabled = true;
         this.updateQuizCardState();
+        const quizCard = document.querySelector('.config-card.secondary-card');
+        if (quizCard) {
+            quizCard.classList.add('activated');
+            setTimeout(() => quizCard.classList.remove('activated'), 300);
+        }
     }
 }
 
