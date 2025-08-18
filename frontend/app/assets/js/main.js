@@ -11,12 +11,6 @@ let quizState = { answered: 0, correct: 0 };
 let currentOnDemandQuiz = null;
 let selectedQuizLevel = 'beginner';
 
-// Configuration par défaut pour les nouveaux sélecteurs
-let currentConfig = {
-    style: 'neutral',
-    duration: 'short',
-    intent: 'discover'
-};
 
 // Initialisation de l'application
 document.addEventListener('DOMContentLoaded', function() {
@@ -39,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeApp() {
     // Configuration initiale de l'interface
-    setupNewSelectors();
     setupFormControls();
 }
 
@@ -108,7 +101,9 @@ function setupEventListeners() {
 async function handleGenerateCourse() {
     const subject = document.getElementById('subject').value.trim();
     const subjectLength = subject.length;
-    const isLegacyPayload = !currentConfig.style && !currentConfig.duration && !currentConfig.intent;
+    const cfg = typeof configManager !== 'undefined' ? configManager.getConfig() : {};
+    const { style, duration, intent } = cfg;
+    const isLegacyPayload = !style && !duration && !intent;
 
     if (!subject) {
         utils.handleAuthError('Veuillez entrer un sujet pour le décryptage');
@@ -119,9 +114,9 @@ async function handleGenerateCourse() {
         if (courseManager) {
             const course = await courseManager.generateCourse(
                 subject,
-                currentConfig.style,
-                currentConfig.duration,
-                currentConfig.intent
+                style,
+                duration,
+                intent
             );
             if (course) {
                 currentCourse = course;
@@ -129,12 +124,15 @@ async function handleGenerateCourse() {
                 const durationLabel = DURATION_LABELS[course.duration] || course.duration;
                 const intentLabel = INTENT_LABELS[course.intent] || course.intent;
                 displayCourseMetadata(styleLabel, durationLabel, intentLabel);
+                if (typeof configManager !== 'undefined') {
+                    configManager.enableQuizCard();
+                }
 
                 if (typeof gtag === 'function') {
                     gtag('event', 'course_generation', {
-                        style: currentConfig.style,
-                        duration: currentConfig.duration,
-                        intent: currentConfig.intent,
+                        style,
+                        duration,
+                        intent,
                         isLegacyPayload,
                         subject_length: subjectLength
                     });
@@ -235,27 +233,6 @@ async function askQuestion() {
     } finally {
         if (typingMessage) typingMessage.remove();
         chatInput.value = '';
-    }
-}
-
-// Gestion des nouveaux sélecteurs de configuration
-function setupNewSelectors() {
-    document.querySelectorAll('.selector-group button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.dataset.type;
-            const value = btn.dataset.value;
-            updateSelection(type, value, btn);
-        });
-    });
-}
-
-function updateSelection(type, value, selectedBtn) {
-    currentConfig[type] = value;
-    document.querySelectorAll(`.selector-group button[data-type="${type}"]`).forEach(btn => {
-        btn.classList.remove('active');
-    });
-    if (selectedBtn) {
-        selectedBtn.classList.add('active');
     }
 }
 
