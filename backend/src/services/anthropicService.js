@@ -521,6 +521,73 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
     }
   }
 
+  async generateOnDemandQuiz(subject, level = 'intermediate', questionCount = 5) {
+    if (this.offline) {
+      return [];
+    }
+    try {
+      const levelInstructions = {
+        beginner: "Réponds de manière très simple, sans jargon technique, comme si tu t'adressais à un débutant complet. Utilise des analogies simples et du vocabulaire accessible.",
+        intermediate: "Réponds de manière détaillée mais accessible, avec du vocabulaire technique de base expliqué. Équilibre entre précision et clarté.",
+        expert: "Réponds de manière technique et précise, en utilisant le vocabulaire spécialisé approprié. Assume que l'utilisateur a des connaissances avancées.",
+        hybrid: "Réponds de manière experte mais ajoute des analogies ou des exemples concrets pour faciliter la compréhension. Combine précision technique et pédagogie.",
+        hybridExpert: "Réponds de manière très technique et complète avec tous les détails nécessaires, mais ajoute systématiquement des explications simples et des analogies du quotidien."
+      };
+
+      const prompt = `Tu es un expert pédagogique. Génère un quiz de ${questionCount} questions à choix multiples sur le sujet suivant :
+"${subject}"
+
+Niveau de vulgarisation : ${levelInstructions[level]}
+
+Format JSON attendu :
+{
+  "questions": [
+    {
+      "question": "Texte de la question",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct": 0,
+      "explanation": "Explication de la bonne réponse"
+    }
+  ]
+}
+
+Assure-toi que les questions couvrent les points clés du sujet et que les réponses incorrectes sont plausibles.`;
+
+      const response = await this.sendWithTimeout({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 3000,
+        temperature: 0.2,
+        messages: [{
+          role: 'user',
+          content: prompt
+        }]
+      });
+
+      const content = response.content[0].text;
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+
+      if (jsonMatch) {
+        const quizData = JSON.parse(jsonMatch[0]);
+        return quizData.questions;
+      } else {
+        throw new Error('Format de réponse invalide');
+      }
+    } catch (error) {
+      const code = this.categorizeError(error);
+      logger.error('Erreur génération quiz à la demande', { code, error });
+      if (code === ERROR_CODES.IA_ERROR) {
+        this.offline = true;
+        const err = new Error(this.getOfflineMessage());
+        err.code = code;
+        err.offline = true;
+        throw err;
+      }
+      const err = new Error('Erreur lors de la génération du quiz à la demande');
+      err.code = code;
+      throw err;
+    }
+  }
+
   // Suggérer des questions
   async suggestQuestions(courseContent, level = 'intermediate') {
     if (this.offline) {
