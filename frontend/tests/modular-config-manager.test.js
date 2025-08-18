@@ -20,6 +20,7 @@ function createElement({ className = '', dataset = {} } = {}) {
       contains(cls) { return this.classes.has(cls); }
     },
     disabled: false,
+    style: {},
     eventListeners: {},
     addEventListener(type, cb) { (this.eventListeners[type] ||= []).push(cb); },
     dispatchEvent(evt) { (this.eventListeners[evt.type] || []).forEach(cb => cb(evt)); }
@@ -37,6 +38,7 @@ test('preset selection updates advanced controls', async () => {
   const intentMaster = createElement({ dataset: { type: 'intent', value: 'master' } });
   const allButtons = [styleNeutral, styleStory, durationShort, durationLong, intentDiscover, intentMaster];
 
+  const statusEl = { textContent: '', style: {} };
   global.document = {
     querySelectorAll(selector) {
       if (selector === '.quick-config [data-preset]') return [presetDefault, presetExpert];
@@ -51,6 +53,9 @@ test('preset selection updates advanced controls', async () => {
       if (selector === '[data-type="intent"][data-value="master"]') return intentMaster;
       if (selector === '.config-card.secondary-card') return null; // not used here
       return null;
+    },
+    getElementById(id) {
+      return id === 'quizStatus' ? statusEl : null;
     }
   };
   global.window = { Event: class { constructor(type) { this.type = type; } } };
@@ -76,6 +81,7 @@ test('quiz card disabled then enabled', async () => {
   const quizCard = createElement({ className: 'config-card secondary-card' });
   quizCard.querySelectorAll = (sel) => sel === 'button' ? [quizBtn] : [];
 
+  const statusEl = { textContent: '', style: {} };
   global.document = {
     querySelectorAll(selector) {
       if (selector === '.quick-config [data-preset]') return [];
@@ -85,6 +91,9 @@ test('quiz card disabled then enabled', async () => {
     querySelector(selector) {
       if (selector === '.config-card.secondary-card') return quizCard;
       return null;
+    },
+    getElementById(id) {
+      return id === 'quizStatus' ? statusEl : null;
     }
   };
   global.window = { Event: class { constructor(type) { this.type = type; } } };
@@ -95,8 +104,10 @@ test('quiz card disabled then enabled', async () => {
 
   assert.ok(quizBtn.disabled);
   assert.ok(quizCard.classList.contains('disabled'));
+  assert.strictEqual(statusEl.textContent, 'Disponible après génération');
 
   manager.enableQuizCard();
   assert.ok(!quizBtn.disabled);
   assert.ok(!quizCard.classList.contains('disabled'));
+  assert.strictEqual(statusEl.textContent, 'Prêt');
 });
