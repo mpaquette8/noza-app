@@ -1,6 +1,7 @@
 // backend/src/controllers/aiController.js
 const { createResponse, sanitizeInput, logger } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES, AI_ERROR_MESSAGES } = require('../utils/constants');
+const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES, AI_ERROR_MESSAGES, LIMITS } = require('../utils/constants');
+const { prisma } = require('../config/database');
 const anthropicService = require('../services/anthropicService');
 
 class AiController {
@@ -97,6 +98,132 @@ class AiController {
         status = HTTP_STATUS.RATE_LIMIT;
       }
       const { response, statusCode } = createResponse(false, null, message, status, error.code);
+      res.status(statusCode).json(response);
+    }
+  }
+
+  // Générer un quiz à la demande
+  async generateOnDemandQuiz(req, res) {
+    if (anthropicService.isOffline()) {
+      const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+      return res.status(statusCode).json(response);
+    }
+    try {
+      const { subject, level = 'intermediate', questionCount = 5 } = req.body;
+
+      if (!subject) {
+        const { response, statusCode } = createResponse(false, null, 'Sujet requis', HTTP_STATUS.BAD_REQUEST);
+        return res.status(statusCode).json(response);
+      }
+
+      const allowedLevels = ['beginner', 'intermediate', 'expert', 'hybrid', 'hybridExpert'];
+      if (!allowedLevels.includes(level)) {
+        const { response, statusCode } = createResponse(false, null, 'Niveau invalide', HTTP_STATUS.BAD_REQUEST);
+        return res.status(statusCode).json(response);
+      }
+
+      const count = parseInt(questionCount, 10);
+      if (isNaN(count) || count < 1 || count > LIMITS.MAX_QUIZ_QUESTIONS) {
+        const { response, statusCode } = createResponse(false, null, 'Nombre de questions invalide', HTTP_STATUS.BAD_REQUEST);
+        return res.status(statusCode).json(response);
+      }
+
+      const sanitizedSubject = sanitizeInput(subject, 200);
+      const questions = await anthropicService.generateOnDemandQuiz(sanitizedSubject, level, count);
+
+      await prisma.quiz.create({
+        data: {
+          subject: sanitizedSubject,
+          level,
+          type: 'ondemand',
+          questions,
+          userId: req.user.id
+        }
+      });
+
+      logger.info('Quiz à la demande généré', {
+        userId: req.user.id,
+        subject: sanitizedSubject,
+        level,
+        questionsCount: questions.length
+      });
+
+      const { response } = createResponse(true, { quiz: { questions } });
+      res.json(response);
+    } catch (error) {
+      logger.error('Erreur génération quiz à la demande', { error, code: error.code });
+      if (error.offline) {
+        const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
+        return res.status(statusCode).json(response);
+      }
+      let message = AI_ERROR_MESSAGES[error.code] || ERROR_MESSAGES.SERVER_ERROR;
+      let status = HTTP_STATUS.SERVER_ERROR;
+      if (error.code === ERROR_CODES.IA_TIMEOUT) {
+        status = HTTP_STATUS.SERVICE_UNAVAILABLE;
+      } else if (error.code === ERROR_CODES.QUOTA_EXCEEDED) {
+        status = HTTP_STATUS.RATE_LIMIT;
+      }
+      const { response, statusCode } = createResponse(false, null, message, status, error.code);
+      res.status(statusCode).json(response);
+    }
+  }
+
+  // Récupérer l'historique des quiz
+  async getQuizHistory(req, res) {
+    try {
+      const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+      const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 10, 1), LIMITS.MAX_HISTORY_ITEMS);
+      const skip = (page - 1) * limit;
+      const { type } = req.query;
+
+      const where = { userId: req.user.id };
+      if (type) {
+        where.type = type;
+      }
+
+      const [quizzes, total] = await prisma.$transaction([
+        prisma.quiz.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+          select: {
+            id: true,
+            subject: true,
+            level: true,
+            type: true,
+            questions: true,
+            createdAt: true
+          }
+        }),
+        prisma.quiz.count({ where })
+      ]);
+
+      const formatted = quizzes.map((q) => ({
+        id: q.id,
+        subject: q.subject,
+        level: q.level,
+        type: q.type,
+        questionCount: Array.isArray(q.questions)
+          ? q.questions.length
+          : Array.isArray(q.questions?.questions)
+          ? q.questions.questions.length
+          : 0,
+        createdAt: q.createdAt
+      }));
+
+      const pagination = {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      };
+
+      const { response } = createResponse(true, { quizzes: formatted, pagination });
+      res.json(response);
+    } catch (error) {
+      logger.error('Erreur récupération historique quiz', error);
+      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
       res.status(statusCode).json(response);
     }
   }
