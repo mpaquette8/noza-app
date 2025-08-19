@@ -187,16 +187,20 @@
     <script type="module" src="assets/js/auth.js"></script>
     <script type="module">
       import { ModularConfigManager } from './assets/js/modular-config-manager.js';
+      import { authManager } from './assets/js/auth.js';
+
       document.addEventListener('DOMContentLoaded', () => {
         window.configManager = new ModularConfigManager();
         configManager.init();
 
-        const authManager = new AuthManager();
         if (!authManager.isAuthenticated()) {
           window.location.href = '/auth.html';
           return;
         }
-        initializeApp();
+
+        if (typeof window.initializeApp === 'function') {
+          window.initializeApp();
+        }
       });
     </script>
     <script type="module" src="assets/js/course-manager.js"></script>
