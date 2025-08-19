@@ -161,8 +161,16 @@ body::before {
     width: 100%;
     margin: 20px 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 20px;
+}
+
+.decryptage-left {
+    flex: 0 0 65%;
+}
+
+.decryptage-right {
+    flex: 0 0 35%;
 }
 
 .config-card {
@@ -364,14 +372,16 @@ body::before {
 /* --- Nouveaux sélecteurs de configuration --- */
 .new-selector-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 25px;
+    justify-content: space-between;
 }
 
 .selector-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    flex: 1;
 }
 
 .selector-buttons {
@@ -400,6 +410,21 @@ body::before {
     background: linear-gradient(135deg, #4299e1, #3182ce);
     color: white;
     border-color: #3182ce;
+}
+
+@media (max-width: 768px) {
+    .decryptage-controls {
+        flex-direction: column;
+    }
+
+    .decryptage-left,
+    .decryptage-right {
+        flex: 0 0 100%;
+    }
+
+    .new-selector-container {
+        flex-direction: column;
+    }
 }
 
 /* --- Gauge Slider System - Style Moderne --- */
