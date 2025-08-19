@@ -10,8 +10,10 @@ The `POST /api/courses` endpoint now supports the following parameters:
 - `teacher_type` (string, required): teaching persona. Accepted values: `methodical`, `passionate`, `analogist`, `pragmatic`, `benevolent`, `synthetic`.
 - `detailLevel` (number, deprecated): legacy field mapped to `duration`.
 - `vulgarizationLevel` (number, deprecated): legacy field mapped to `vulgarization`.
+- `style` (string, deprecated): maps to `vulgarization`.
+- `intent` (string, deprecated): maps to `teacher_type`.
 
-### Sample payload
+### Sample request
 
 ```json
 {
@@ -22,7 +24,25 @@ The `POST /api/courses` endpoint now supports the following parameters:
 }
 ```
 
-Legacy clients may continue to send `detailLevel` and `vulgarizationLevel`. These fields remain supported for backward compatibility but will be removed in a future release. Former fields `style` and `intent` are no longer supported.
+### Sample response
+
+```json
+{
+  "success": true,
+  "course": {
+    "id": "course-id",
+    "subject": "Introduction to Algebra",
+    "detailLevel": 2,
+    "vulgarizationLevel": 2,
+    "vulgarization": "enlightened",
+    "duration": "medium",
+    "teacherType": "methodical",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+Legacy clients may continue to send `detailLevel`, `vulgarizationLevel`, `style`, and `intent`. These fields are mapped to `duration`, `vulgarization`, `vulgarization`, and `teacher_type` respectively for backward compatibility but will be removed in a future release.
 
 ## Running the Server
 
