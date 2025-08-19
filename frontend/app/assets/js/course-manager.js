@@ -92,7 +92,9 @@ class CourseManager {
     };
     notification.appendChild(text);
     notification.appendChild(btn);
-    document.body.appendChild(notification);
+    // Place notifications within the course tab when available to match the new in-tab layout
+    const container = document.querySelector('#courseTab') || document.body;
+    container.appendChild(notification);
   }
 
   savePendingRequest(payload) {
