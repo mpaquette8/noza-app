@@ -1,6 +1,3 @@
-// backend/prisma/schema.prisma
-// REMPLACE le contenu actuel par celui-ci
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,20 +8,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String?  // ← Devient optionnel pour les comptes Google
-  avatar    String?  // ← Nouveau : URL de la photo de profil Google
-  googleId  String?  @unique // ← Nouveau : ID Google unique
-  provider  String   @default("email") // ← Nouveau : "email" ou "google"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  courses      Course[]
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  password      String?
+  avatar        String?
+  googleId      String?       @unique
+  provider      String        @default("email")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   chatHistories ChatHistory[]
-  quizzes      Quiz[]        // 👈 NOUVELLE LIGNE
-  
+  courses       Course[]
+  quizzes       Quiz[]
   @@map("users")
 }
 
@@ -32,21 +27,25 @@ model Course {
   id                 String   @id @default(cuid())
   subject            String
   content            String   @db.Text
-  /// @deprecated Use vulgarization, duration, and teacherType instead
+  
+  // Anciens champs (gardés temporairement)
   detailLevel        Int?
-  /// @deprecated Use vulgarization, duration, and teacherType instead
   vulgarizationLevel Int?
-  vulgarization      String
+  style              String?   // ← Rendre optionnel
+  intent             String?   // ← Rendre optionnel
+  
+  // NOUVEAUX champs
+  vulgarization      String?   // ← NOUVEAU
+  teacherType        String?   // ← CORRIGÉ: camelCase au lieu de snake_case
+  
   duration           String
-  teacherType        String
   createdAt          DateTime @default(now())
   
   userId             String
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   chatHistories      ChatHistory[]
-  quizzes           Quiz[]        // 👈 NOUVELLE LIGNE
-
+  quizzes           Quiz[]
   @@map("courses")
   @@index([userId, createdAt])
 }
@@ -55,33 +54,25 @@ model ChatHistory {
   id        String   @id @default(cuid())
   messages  Json
   createdAt DateTime @default(now())
-  
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   courseId  String?
   course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@map("chat_histories")
 }
 
-// 👈 NOUVEAU MODÈLE - AJOUTER À LA FIN
 model Quiz {
-  id          String   @id @default(cuid())
-  subject     String   // "Photosynthèse", "Histoire de France", etc.
-  level       String   // "beginner", "intermediate", "expert", "hybrid"
-  type        String   @default("ondemand") // "course", "ondemand", "review"
-  questions   Json     // Stockage des questions/réponses/explications
-  createdAt   DateTime @default(now())
-  
-  // Relations
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  courseId    String?  // Optionnel - lié à un cours spécifique
-  course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
-  
-  @@map("quizzes")
+  id        String   @id @default(cuid())
+  subject   String
+  level     String
+  type      String   @default("ondemand")
+  questions Json
+  createdAt DateTime @default(now())
+  userId    String
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId, createdAt])
   @@index([userId, type])
+  @@map("quizzes")
 }
