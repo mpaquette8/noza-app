@@ -4,10 +4,11 @@ import { utils, API_BASE_URL } from './utils/utils.js';
 import { authManager } from './auth.js';
 
 // Mapping for human-readable labels and icons
-export const STYLE_LABELS = {
-  neutral: 'Neutre',
-  pedagogical: 'Pédagogique',
-  storytelling: 'Narratif'
+export const VULGARIZATION_LABELS = {
+  general_public: 'Grand public',
+  enlightened: 'Éclairé',
+  knowledgeable: 'Connaisseur',
+  expert: 'Expert'
 };
 
 export const DURATION_LABELS = {
@@ -16,11 +17,13 @@ export const DURATION_LABELS = {
   long: 'Longue'
 };
 
-export const INTENT_LABELS = {
-  discover: 'Découvrir',
-  learn: 'Apprendre',
-  master: 'Maîtriser',
-  expert: 'Expert'
+export const TEACHER_TYPE_LABELS = {
+  methodical: 'Méthodique',
+  passionate: 'Passionné',
+  analogist: 'Analogiste',
+  pragmatic: 'Pragmatique',
+  benevolent: 'Bienveillant',
+  synthetic: 'Synthétique'
 };
 
 // Rate limit between costly actions
@@ -103,7 +106,7 @@ class CourseManager {
   }
 
   // Générer un cours
-  async generateCourse(subject, style, duration, intent) {
+  async generateCourse(subject, vulgarization, duration, teacher_type) {
     if (!this.checkRateLimit()) {
       return null;
     }
@@ -116,14 +119,14 @@ class CourseManager {
       const payload = {
         subject: utils.sanitizeInput(subject, 500)
       };
-      if (style && STYLE_LABELS[style]) {
-        payload.style = utils.sanitizeInput(style);
+      if (vulgarization && VULGARIZATION_LABELS[vulgarization]) {
+        payload.vulgarization = utils.sanitizeInput(vulgarization);
       }
       if (duration && DURATION_LABELS[duration]) {
         payload.duration = utils.sanitizeInput(duration);
       }
-      if (intent && INTENT_LABELS[intent]) {
-        payload.intent = utils.sanitizeInput(intent);
+      if (teacher_type && TEACHER_TYPE_LABELS[teacher_type]) {
+        payload.teacher_type = utils.sanitizeInput(teacher_type);
       }
 
       const response = await fetch(`${API_BASE_URL}/courses`, {
@@ -153,9 +156,9 @@ class CourseManager {
       if (data.success) {
         this.currentCourse = {
           ...data.course,
-          style: data.course?.style || style,
+          vulgarization: data.course?.vulgarization || vulgarization,
           duration: data.course?.duration || duration,
-          intent: data.course?.intent || intent
+          teacher_type: data.course?.teacher_type || teacher_type
         };
         this.invalidateCache();
         setCache(`noza-course-${this.currentCourse.id}`, this.currentCourse);
@@ -164,7 +167,7 @@ class CourseManager {
         utils.showNotification('Cours généré avec succès !', 'success');
         return this.currentCourse;
       } else if (data.code === 'IA_TIMEOUT') {
-        this.showAction(data.error || 'Le service IA a expiré', 'Réessayer', () => this.generateCourse(subject, style, duration, intent));
+        this.showAction(data.error || 'Le service IA a expiré', 'Réessayer', () => this.generateCourse(subject, vulgarization, duration, teacher_type));
       } else if (data.code === 'QUOTA_EXCEEDED') {
         this.showAction(data.error || 'Quota IA dépassé', 'Sauvegarder', () => this.savePendingRequest(payload));
       } else {
@@ -274,9 +277,9 @@ class CourseManager {
           courses = data.courses.map(course => ({
             id: course.id,
             subject: course.subject,
-            style: course.style,
+            vulgarization: course.vulgarization,
             duration: course.duration,
-            intent: course.intent,
+            teacher_type: course.teacher_type,
             createdAt: course.createdAt
           }));
           this.hasMore = data.pagination.page * data.pagination.limit < data.pagination.total;
@@ -306,9 +309,9 @@ class CourseManager {
       id: course.id,
       subject: course.subject,
       content: course.content,
-      style: course.style,
+      vulgarization: course.vulgarization,
       duration: course.duration,
-      intent: course.intent,
+      teacher_type: course.teacher_type,
       createdAt: course.createdAt || new Date().toISOString()
     };
 
@@ -335,17 +338,17 @@ class CourseManager {
     } else {
       historyTab.innerHTML = this.history
         .map(course => {
-          const styleLabel = STYLE_LABELS[course.style] || course.style;
+          const vulgarizationLabel = VULGARIZATION_LABELS[course.vulgarization] || course.vulgarization;
           const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-          const intentLabel = INTENT_LABELS[course.intent] || course.intent;
+          const teacherTypeLabel = TEACHER_TYPE_LABELS[course.teacher_type] || course.teacher_type;
 
           return `
         <div class="history-item" onclick="courseManager.loadCourseFromHistory('${course.id}')">
           <h4>${course.subject}</h4>
           <p>
-            <span><i data-lucide="pen-line"></i> ${styleLabel}</span>
+            <span><i data-lucide="pen-line"></i> ${vulgarizationLabel}</span>
             | <span><i data-lucide="clock"></i> ${durationLabel}</span>
-            | <span><i data-lucide="target"></i> ${intentLabel}</span>
+            | <span><i data-lucide="user"></i> ${teacherTypeLabel}</span>
           </p>
           <small>${new Date(course.createdAt).toLocaleDateString()}</small>
         </div>
@@ -401,10 +404,10 @@ class CourseManager {
       this.currentCourse = course;
       this.displayCourse(course);
       if (typeof displayCourseMetadata === 'function') {
-        const styleLabel = STYLE_LABELS[course.style] || course.style;
+        const vulgarizationLabel = VULGARIZATION_LABELS[course.vulgarization] || course.vulgarization;
         const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-        const intentLabel = INTENT_LABELS[course.intent] || course.intent;
-        displayCourseMetadata(styleLabel, durationLabel, intentLabel);
+        const teacherTypeLabel = TEACHER_TYPE_LABELS[course.teacher_type] || course.teacher_type;
+        displayCourseMetadata(vulgarizationLabel, durationLabel, teacherTypeLabel);
       }
       utils.showNotification('Cours chargé depuis l\'historique', 'success');
     }

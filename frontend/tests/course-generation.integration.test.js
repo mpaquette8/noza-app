@@ -48,13 +48,13 @@ test('course generation triggered from decryptage controls', async () => {
   };
 
   global.configManager = {
-    getConfig() { return { style: 'storytelling', duration: 'long', intent: 'master' }; },
+    getConfig() { return { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic' }; },
     enableQuizCard() {}
   };
 
   global.courseManager = {
-    async generateCourse(subject, style, duration, intent) {
-      calledWith = { subject, style, duration, intent };
+    async generateCourse(subject, vulgarization, duration, teacher_type) {
+      calledWith = { subject, vulgarization, duration, teacher_type };
       return {};
     }
   };
@@ -62,10 +62,10 @@ test('course generation triggered from decryptage controls', async () => {
   global.utils = { initializeLucide() {} };
 
   async function handleGenerateCourse() {
-    const subject = document.getElementById('subject').value.trim();
-    const { style, duration, intent } = configManager.getConfig();
-    await courseManager.generateCourse(subject, style, duration, intent);
-    utils.initializeLucide();
+      const subject = document.getElementById('subject').value.trim();
+      const { vulgarization, duration, teacher_type } = configManager.getConfig();
+      await courseManager.generateCourse(subject, vulgarization, duration, teacher_type);
+      utils.initializeLucide();
   }
 
   const btn = document.querySelector('.decryptage-controls #generateBtn');
@@ -74,8 +74,8 @@ test('course generation triggered from decryptage controls', async () => {
 
   assert.deepStrictEqual(calledWith, {
     subject: 'Quantum Mechanics',
-    style: 'storytelling',
+    vulgarization: 'expert',
     duration: 'long',
-    intent: 'master'
+    teacher_type: 'synthetic'
   });
 });
