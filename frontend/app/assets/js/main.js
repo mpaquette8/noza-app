@@ -500,7 +500,7 @@ async function generateRandomQuizSubject() {
         const data = await response.json();
 
         if (data.success) {
-            typewriterEffectInput(subjectInput, data.subject, () => {
+            typewriterEffect(subjectInput, data.subject, () => {
                 randomBtn.disabled = false;
                 randomBtn.classList.remove('spinning');
                 randomBtn.innerHTML = '<i data-lucide="sparkles"></i>Générer un sujet aléatoire <i data-lucide="dice-6"></i>';
@@ -522,37 +522,29 @@ async function generateRandomQuizSubject() {
     }
 }
 
-function typewriterEffectInput(element, text, callback) {
-    element.value = '';
-    let i = 0;
-
-    function typeWriter() {
-        if (i < text.length) {
-            element.value += text.charAt(i);
-            i++;
-            setTimeout(typeWriter, 30); // Vitesse de frappe
-        } else if (callback) {
-            callback();
-        }
-    }
-
-    typeWriter();
-}
-
 function typewriterEffect(element, text, callback) {
-    element.value = '';
+    const isInput = element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
+    if (isInput) {
+        element.value = '';
+    } else {
+        element.textContent = '';
+    }
     let i = 0;
-    
+
     function typeWriter() {
         if (i < text.length) {
-            element.value += text.charAt(i);
+            if (isInput) {
+                element.value += text.charAt(i);
+            } else {
+                element.textContent += text.charAt(i);
+            }
             i++;
             setTimeout(typeWriter, 30); // Vitesse de frappe
         } else if (callback) {
             callback();
         }
     }
-    
+
     typeWriter();
 }
 
