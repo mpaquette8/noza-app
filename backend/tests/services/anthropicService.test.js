@@ -27,14 +27,14 @@ test('createPrompt includes duration word counts', () => {
     [DURATIONS.LONG]: 4200
   };
   for (const [duration, count] of Object.entries(mapping)) {
-    const prompt = anthropicService.createPrompt('Sujet', TEACHER_TYPES.METHODICAL, duration, VULGARIZATION_LEVELS.ENLIGHTENED);
+    const prompt = anthropicService.createPrompt('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, duration, TEACHER_TYPES.METHODICAL);
     assert.match(prompt, new RegExp(`${count} mots`));
   }
 });
 
 test('createPrompt includes distinct teacher type instructions', () => {
-  const promptMethod = anthropicService.createPrompt('Sujet', TEACHER_TYPES.METHODICAL, DURATIONS.MEDIUM, VULGARIZATION_LEVELS.ENLIGHTENED);
-  const promptPassion = anthropicService.createPrompt('Sujet', TEACHER_TYPES.PASSIONATE, DURATIONS.MEDIUM, VULGARIZATION_LEVELS.ENLIGHTENED);
+  const promptMethod = anthropicService.createPrompt('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.MEDIUM, TEACHER_TYPES.METHODICAL);
+  const promptPassion = anthropicService.createPrompt('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.MEDIUM, TEACHER_TYPES.PASSIONATE);
 
   assert.match(promptMethod, /approche méthodique et structurée/);
   assert.match(promptPassion, /passion et enthousiasme/);
@@ -88,7 +88,7 @@ test('APIUserAbortError does not trigger offline mode', async () => {
   };
 
   try {
-    await anthropicService.generateCourse('Sujet', TEACHER_TYPES.METHODICAL, DURATIONS.SHORT, VULGARIZATION_LEVELS.ENLIGHTENED);
+    await anthropicService.generateCourse('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.SHORT, TEACHER_TYPES.METHODICAL);
     assert.fail('generateCourse should throw');
   } catch (err) {
     assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);

@@ -14,7 +14,7 @@ const DURATION_TO_WORDS = {
 };
 
 // Instructions to adapt tone and approach based on teacher type
-const TEACHER_TYPE_INSTRUCTIONS = {
+const TEACHER_STYLE_INSTRUCTIONS = {
   [TEACHER_TYPES.METHODICAL]: "Adopte une approche méthodique et structurée.",
   [TEACHER_TYPES.PASSIONATE]: "Transmets l'information avec passion et enthousiasme.",
   [TEACHER_TYPES.ANALOGIST]: "Utilise des analogies pour expliquer les concepts.",
@@ -24,7 +24,7 @@ const TEACHER_TYPE_INSTRUCTIONS = {
 };
 
 // Guidance based on vulgarization level
-const VULGARIZATION_GUIDANCE = {
+const VULGARIZATION_INSTRUCTIONS = {
   [VULGARIZATION_LEVELS.GENERAL_PUBLIC]: "Explique les concepts de manière simple pour le grand public.",
   [VULGARIZATION_LEVELS.ENLIGHTENED]: "Suppose un public curieux avec quelques connaissances préalables.",
   [VULGARIZATION_LEVELS.KNOWLEDGEABLE]: "Adresse un public possédant de bonnes connaissances de base.",
@@ -111,9 +111,12 @@ class AnthropicService {
 
 // Créer un prompt selon les paramètres fournis
 // Remplace UNIQUEMENT le contenu de createPrompt par ceci
-createPrompt(subject, teacherType, duration, vulgarizationLevel) {
-  const teacherInstruction = TEACHER_TYPE_INSTRUCTIONS[teacherType] || TEACHER_TYPE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
-  const vulgarizationInstruction = VULGARIZATION_GUIDANCE[vulgarizationLevel] || '';
+createPrompt(subject, vulgarization, duration, teacherType) {
+  const teacherInstruction =
+    TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
+    TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
+  const vulgarizationInstruction =
+    VULGARIZATION_INSTRUCTIONS[vulgarization] || '';
   const durationConstraint = this.getDurationConstraint(duration);
 
   return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
@@ -275,14 +278,25 @@ RENDU ATTENDU :
   }
 
   // Générer un cours
-  async generateCourse(subject, teacherType, duration, vulgarizationLevel) {
+  async generateCourse(subject, vulgarization, duration, teacherType) {
     if (this.offline) {
       return this.getOfflineMessage();
     }
-    try {
-      const prompt = this.createPrompt(subject, teacherType, duration, vulgarizationLevel);
 
-      logger.info('Génération cours', { subject, teacherType, duration, vulgarizationLevel });
+    // Fallback for legacy parameter order
+    if (Object.values(TEACHER_TYPES).includes(vulgarization)) {
+      const legacyTeacher = vulgarization;
+      const legacyVulgarization = teacherType;
+      teacherType = legacyTeacher;
+      vulgarization = legacyVulgarization;
+    }
+
+    teacherType = teacherType || TEACHER_TYPES.METHODICAL;
+
+    try {
+      const prompt = this.createPrompt(subject, vulgarization, duration, teacherType);
+
+      logger.info('Génération cours', { subject, vulgarization, duration, teacherType });
 
       const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',
