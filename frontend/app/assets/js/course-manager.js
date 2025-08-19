@@ -236,7 +236,6 @@ class CourseManager {
 
   // Afficher un cours
   displayCourse(course) {
-    document.getElementById('emptyState').style.display = 'none';
     document.getElementById('courseContent').style.display = 'block';
     const sanitizedContent = typeof utils.sanitizeHTML === 'function'
       ? utils.sanitizeHTML(course.content)
