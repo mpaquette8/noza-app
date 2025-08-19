@@ -626,4 +626,6 @@ async function handleGenerateOnDemandQuiz() {
 window.currentCourse = currentCourse;
 window.handleGenerateCourse = handleGenerateCourse;
 window.displayCourseMetadata = displayCourseMetadata;
+
+// Exposer globalement pour index.html
 window.initializeApp = initializeApp;
