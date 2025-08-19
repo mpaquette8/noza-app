@@ -14,12 +14,12 @@
         <!-- Section utilisateur connecté -->
         <div id="userSection" class="user-section">
             <div class="user-info">
-                <img id="userAvatar" class="user-avatar" src="" alt="" style="display: none;">
-                <i data-lucide="user-circle" id="userDefaultIcon"></i>
+                <img id="userAvatar" class="user-avatar" src="" alt="Avatar utilisateur" style="display: none;">
+                <i data-lucide="user-circle" id="userDefaultIcon" aria-hidden="true"></i>
                 <span class="user-name"></span>
             </div>
             <button class="logout-btn" id="logoutBtn">
-                <i data-lucide="log-out"></i>
+                <i data-lucide="log-out" aria-hidden="true"></i>
                 Déconnexion
             </button>
         </div>
@@ -35,9 +35,9 @@
 
             <div class="tab-content" id="courseTab">
                 <div class="empty-state" id="emptyState">
-                    <i data-lucide="book-open"></i>
+                    <i data-lucide="book-open" aria-hidden="true"></i>
                     <h3>Prêt à comprendre ?</h3>
-                    <p>Configurez votre cours dans le panneau de gauche et cliquez sur "Générer le cours" pour commencer.</p>
+                    <p>Configurez votre cours dans le panneau de gauche et utilisez les contrôles situés en haut de l’onglet pour commencer.</p>
                 </div>
                 <div class="decryptage-controls">
                     <div class="config-card primary-card">
@@ -46,9 +46,9 @@
                             <div class="subject-input-container">
                                 <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
                                 <button type="button" class="random-subject-btn" id="randomSubjectBtn">
-                                    <i data-lucide="sparkles"></i>
+                                    <i data-lucide="sparkles" aria-hidden="true"></i>
                                     Générer un sujet aléatoire
-                                    <i data-lucide="dice-6"></i>
+                                    <i data-lucide="dice-6" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
@@ -83,11 +83,11 @@
                         </div>
                         <div class="action-buttons">
                             <button class="generate-btn" id="generateBtn">
-                                <i data-lucide="sparkles"></i>
+                                <i data-lucide="sparkles" aria-hidden="true"></i>
                                 Décrypter le sujet
                             </button>
                             <button class="generate-quiz-btn" id="generateQuiz" disabled>
-                                <i data-lucide="help-circle"></i>
+                                <i data-lucide="help-circle" aria-hidden="true"></i>
                                 Quiz du cours
                             </button>
                         </div>
@@ -97,15 +97,15 @@
                         <div id="quizSection" style="display: none;"></div>
                         <div class="course-actions">
                             <button class="action-btn" id="exportPdf">
-                                <i data-lucide="file-text"></i>
+                                <i data-lucide="file-text" aria-hidden="true"></i>
                                 Exporter PDF
                             </button>
                             <button class="action-btn" id="exportDocx">
-                                <i data-lucide="file-text"></i>
+                                <i data-lucide="file-text" aria-hidden="true"></i>
                                 Exporter DOCX
                             </button>
                             <button class="action-btn" id="copyContent">
-                                <i data-lucide="copy"></i>
+                                <i data-lucide="copy" aria-hidden="true"></i>
                                 Copier
                             </button>
                         </div>
@@ -115,7 +115,7 @@
                             <div class="chat-input-container">
                                 <textarea class="chat-input" id="chatInput" placeholder="Comment je peux t'aider ?" rows="2"></textarea>
                                 <button class="chat-send-btn" id="chatSendBtn">
-                                    <i data-lucide="send"></i>
+                                    <i data-lucide="send" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
@@ -146,7 +146,7 @@
                             </select>
                         </div>
                         <button class="generate-btn" id="generateOnDemandQuiz">
-                            <i data-lucide="help-circle"></i>
+                            <i data-lucide="help-circle" aria-hidden="true"></i>
                             Générer le quiz
                         </button>
                     </div>
@@ -154,14 +154,14 @@
                 </div>
                 <div class="tab-content" id="historyTab" style="display: none;">
                     <div class="empty-state">
-                        <i data-lucide="history"></i>
+                        <i data-lucide="history" aria-hidden="true"></i>
                         <h3>Aucun historique</h3>
                         <p>Vos cours générés apparaîtront ici automatiquement.</p>
                     </div>
                 </div>
                 <div class="tab-content" id="pathsTab" style="display: none;">
                     <div class="empty-state">
-                        <i data-lucide="map"></i>
+                        <i data-lucide="map" aria-hidden="true"></i>
                         <h3>Aucun parcours</h3>
                         <p>Créez des parcours d'apprentissage en sauvegardant vos cours.</p>
                     </div>
