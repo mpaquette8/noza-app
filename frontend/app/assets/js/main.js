@@ -62,9 +62,17 @@ function setupEventListeners() {
 async function handleGenerateCourse() {
     const subject = document.getElementById('subject').value.trim();
     const subjectLength = subject.length;
-    const cfg = typeof configManager !== 'undefined' ? configManager.getConfig() : {};
+    const cfg = (typeof configManager !== 'undefined' && configManager) ?
+        configManager.getConfig() : {
+          vulgarization: 'enlightened',
+          duration: 'medium',
+          teacher_type: 'methodical'
+        };
+    const isLegacyPayload = !cfg.vulgarization && !cfg.duration && !cfg.teacher_type;
+    cfg.vulgarization ??= 'enlightened';
+    cfg.duration ??= 'medium';
+    cfg.teacher_type ??= 'methodical';
     const { vulgarization, duration, teacher_type } = cfg;
-    const isLegacyPayload = !vulgarization && !duration && !teacher_type;
 
     if (!subject) {
         utils.handleAuthError('Veuillez entrer un sujet pour le décryptage');
