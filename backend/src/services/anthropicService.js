@@ -109,21 +109,123 @@ class AnthropicService {
     return words ? `Le cours doit contenir environ ${words} mots.` : '';
   }
 
-// Créer un prompt selon les paramètres fournis
-// Remplace UNIQUEMENT le contenu de createPrompt par ceci
-createPrompt(subject, vulgarization, duration, teacherType) {
-  const teacherInstruction =
-    TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
-    TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
-  const vulgarizationInstruction =
-    VULGARIZATION_INSTRUCTIONS[vulgarization] || '';
-  const durationConstraint = this.getDurationConstraint(duration);
+  detectContentType(subject) {
+    const lower = subject.toLowerCase();
+    if (/(code|programmation|algorithm(e)?|javascript|python)/.test(lower)) {
+      return 'code';
+    }
+    if (/(math(ématique)?|équation|formule|calcul|théorème)/.test(lower)) {
+      return 'math';
+    }
+    if (/(citation|définition|quote|proverbe)/.test(lower)) {
+      return 'quote';
+    }
+    return 'general';
+  }
 
-  return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
+  getAdaptiveInstructions(contentType, teacherType, vulgarization, duration) {
+    const teacherInstruction =
+      TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
+      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
+    const vulgarizationInstruction =
+      VULGARIZATION_INSTRUCTIONS[vulgarization] || '';
+    const durationConstraint = this.getDurationConstraint(duration);
 
-${teacherInstruction}
-${vulgarizationInstruction}
-${durationConstraint}
+    let contentInstruction = '';
+    switch (contentType) {
+      case 'math':
+        contentInstruction =
+          'Si des formules sont nécessaires, utilise uniquement des blocs <div class="formula"> et ajoute un bloc générique pour les interpréter.';
+        break;
+      case 'code':
+        contentInstruction =
+          'Si du code est pertinent, insère-le uniquement dans des blocs <div class="code-block">.';
+        break;
+      case 'quote':
+        contentInstruction =
+          'Si une citation est utile, place-la dans un bloc <div class="quote-block">.';
+        break;
+    }
+
+    return [teacherInstruction, vulgarizationInstruction, durationConstraint, contentInstruction]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  createPrompt(subject, vulgarization, duration, teacherType) {
+    const contentType = this.detectContentType(subject);
+    const adaptiveInstructions = this.getAdaptiveInstructions(
+      contentType,
+      teacherType,
+      vulgarization,
+      duration
+    );
+
+    const baseBlocks = [
+      `1) BLOC GÉNÉRIQUE :
+<div class="styled-block">
+  <div class="block-title">Titre de la section</div>
+  <p>Contenu substantiel…</p>
+</div>`,
+      `2) BLOC CONCEPT CLÉ :
+<div class="styled-block concept-block">
+  <div class="block-title">Concept Clé</div>
+  <p>Explication claire…</p>
+</div>`,
+      `3) BLOC EXEMPLE PRATIQUE :
+<div class="styled-block example-block">
+  <div class="block-title">Exemple Pratique</div>
+  <p>Cas concret…</p>
+</div>`,
+      `4) BLOC CONSEILS PRATIQUES :
+<div class="styled-block practical-tips-block">
+  <div class="block-title">Conseils Pratiques</div>
+  <ul>
+    <li>Conseil 1…</li>
+  </ul>
+</div>`,
+      `5) BLOC ANALOGIE :
+<div class="styled-block analogy-block">
+  <div class="block-title">Analogie</div>
+  <p>Comparaison explicative…</p>
+</div>`,
+      `6) BLOC CONCLUSION (obligatoire) :
+<div class="styled-block conclusion-block">
+  <div class="block-title">Conclusion</div>
+  <p>Synthèse…</p>
+</div>`,
+    ];
+
+    const specializedBlocks = [];
+    if (contentType === 'math') {
+      specializedBlocks.push(`FORMULE MATHÉMATIQUE :
+<div class="formula">
+  <p>Formule ou équation…</p>
+</div>`);
+    }
+    if (contentType === 'quote') {
+      specializedBlocks.push(`CITATION :
+<div class="quote-block">
+  <p>“Citation exacte…” — Auteur</p>
+</div>`);
+    }
+    if (contentType === 'code') {
+      specializedBlocks.push(`CODE :
+<div class="code-block">
+  <pre><code>// Code ou pseudo-code
+</code></pre>
+</div>`);
+    }
+
+    const specializedText = specializedBlocks.length
+      ? '\nBLOCS SPÉCIALISÉS (uniquement si nécessaire) :\n' +
+        specializedBlocks.join('\n\n') +
+        '\n'
+      : '';
+
+    return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
+
+${adaptiveInstructions}
 
 OBJECTIF GÉNÉRAL :
 - Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre différents types de blocs.
@@ -134,66 +236,10 @@ CONTRAINTES DE MISE EN FORME (HTML + CSS fournis) :
 - Chaque bloc .styled-block DOIT contenir un <div class="block-title"> avec un intitulé clair.
 - Utilise une alternance de blocs pour le rythme visuel (générique → concept → exemple → conseils → analogie, etc.).
 
-BLOCS DISPONIBLES (tu DOIS utiliser ces classes EXACTES, casse incluse) :
-1) BLOC GÉNÉRIQUE (intro, notions de base, pour aller plus loin) :
-<div class="styled-block">
-  <div class="block-title">Titre de la section</div>
-  <p>Contenu substantiel (≥ 2–3 phrases)…</p>
-</div>
-
-2) BLOC CONCEPT CLÉ (notions importantes) :
-<div class="styled-block concept-block">
-  <div class="block-title">Concept Clé</div>
-  <p>Explication claire, contexte, limites…</p>
-</div>
-
-3) BLOC EXEMPLE PRATIQUE (cas concrets, applications) :
-<div class="styled-block example-block">
-  <div class="block-title">Exemple Pratique</div>
-  <p>Cas, étapes, résultat attendu…</p>
-</div>
-
-4) BLOC CONSEILS PRATIQUES (tips, checklists, erreurs fréquentes) :
-<div class="styled-block practical-tips-block">
-  <div class="block-title">Conseils Pratiques</div>
-  <ul>
-    <li>Conseil 1…</li>
-    <li>Conseil 2…</li>
-  </ul>
-</div>
-
-5) BLOC ANALOGIE (comparaisons/métaphores pour comprendre) :
-<div class="styled-block analogy-block">
-  <div class="block-title">Analogie</div>
-  <p>Comparaison explicative…</p>
-</div>
-
-6) BLOC CONCLUSION (obligatoire à la fin) :
-<div class="styled-block conclusion-block">
-  <div class="block-title">Conclusion</div>
-  <p>Synthèse et points à retenir…</p>
-</div>
-
-BLOCS SPÉCIALISÉS :
-7) FORMULE MATHÉMATIQUE (exclusif aux équations) :
-<div class="formula">
-  <p>Formule ou équation (LaTeX inline/texte)…</p>
-</div>
-
-8) CITATION (définition officielle, source, énoncé marquant) :
-<div class="quote-block">
-  <p>“Citation exacte…” — Auteur/Source</p>
-</div>
-
-9) CODE (si pertinent) :
-<div class="code-block">
-  <pre><code>// Code ou pseudo-code
-</code></pre>
-</div>
-
+BLOCS DISPONIBLES :
+${baseBlocks.join('\n\n')}${specializedText}
 RÈGLES IMPORTANTES :
 - TOUJOURS inclure un <div class="block-title"> dans chaque .styled-block.
-- TOUJOURS interpréter les blocs d’une formule : après chaque <div class="formula">, ajoute un bloc générique qui décompose les termes (symboles, unités, intuition).
 - NE JAMAIS mettre une formule dans un autre bloc que <div class="formula">.
 - NE JAMAIS mettre du code hors <div class="code-block">.
 - Chaque bloc doit avoir un contenu substantiel (≥ 2–3 phrases).
@@ -202,82 +248,14 @@ RÈGLES IMPORTANTES :
 
 STRUCTURE REQUISE (ordre conseillé) :
 <h1>Titre du Cours</h1>
-
-<div class="styled-block">
-  <div class="block-title">Introduction</div>
-  <p>Contexte, objectifs d’apprentissage, plan…</p>
-</div>
-
-<div class="styled-block concept-block">
-  <div class="block-title">Concepts Fondamentaux</div>
-  <p>Définitions, idées clés, cadre…</p>
-</div>
-
-<div class="styled-block">
-  <div class="block-title">Décomposition & Pédagogie</div>
-  <p>Progression pas-à-pas, erreurs fréquentes, liens entre notions…</p>
-</div>
-
-<div class="formula">
-  <p>Équation/Relation importante (si applicable)</p>
-</div>
-
-<div class="styled-block">
-  <div class="block-title">Interprétation de la Formule</div>
-  <p>Signification des termes, unités, intuition, cas limites…</p>
-</div>
-
-<div class="styled-block example-block">
-  <div class="block-title">Exemple Pratique</div>
-  <p>Application guidée, étapes, résultat et vérifications…</p>
-</div>
-
-<div class="styled-block practical-tips-block">
-  <div class="block-title">Conseils Pratiques</div>
-  <ul>
-    <li>Heuristiques, checklists, pièges à éviter…</li>
-  </ul>
-</div>
-
-<div class="styled-block analogy-block">
-  <div class="block-title">Analogie</div>
-  <p>Mise en perspective pour l’intuition…</p>
-</div>
-
-<div class="quote-block">
-  <p>Définition, théorème, ou citation utile (optionnel)</p>
-</div>
-
-<div class="code-block">
-  <pre><code>// Démo ou pseudo-code (si pertinent)
-</code></pre>
-</div>
-
-<div class="styled-block conclusion-block">
-  <div class="block-title">Conclusion</div>
-  <p>Récapitulatif, points d’ancrage, prochaines étapes…</p>
-</div>
-
-<div class="styled-block">
-  <div class="block-title">Pour aller plus loin</div>
-  <ul>
-    <li>Question 1…</li>
-    <li>Question 2…</li>
-    <li>Question 3…</li>
-  </ul>
-  <p>Suggestions de lectures/cours : Ressource A, Ressource B, Ressource C…</p>
-</div>
-
-CONTRAINTES DE STYLE & TON :
-- Pédagogie active : exemples concrets, analogies, définitions claires.
-- Vocabulaire adapté au style demandé ; explique les termes spécialisés dès leur première apparition.
-- Fluidité rédactionnelle (transitions entre sections) et mise en évidence des points clés.
+<div class="styled-block">...</div>
+<div class="styled-block conclusion-block">...</div>
 
 RENDU ATTENDU :
 - Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).`;
   }
 
-  // Générer un cours
+// Générer un cours
   async generateCourse(subject, vulgarization, duration, teacherType) {
     if (this.offline) {
       return this.getOfflineMessage();
