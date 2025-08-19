@@ -32,13 +32,26 @@ test('createPrompt includes duration word counts', () => {
   }
 });
 
-test('createPrompt includes distinct teacher type instructions', () => {
-  const promptMethod = anthropicService.createPrompt('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.MEDIUM, TEACHER_TYPES.METHODICAL);
-  const promptPassion = anthropicService.createPrompt('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.MEDIUM, TEACHER_TYPES.PASSIONATE);
+test('createPrompt includes teacher and vulgarization instructions', () => {
+  const promptMethod = anthropicService.createPrompt(
+    'Sujet',
+    VULGARIZATION_LEVELS.GENERAL_PUBLIC,
+    DURATIONS.MEDIUM,
+    TEACHER_TYPES.METHODICAL
+  );
+  const promptPassion = anthropicService.createPrompt(
+    'Sujet',
+    VULGARIZATION_LEVELS.KNOWLEDGEABLE,
+    DURATIONS.MEDIUM,
+    TEACHER_TYPES.PASSIONATE
+  );
 
   assert.match(promptMethod, /approche méthodique et structurée/);
   assert.match(promptPassion, /passion et enthousiasme/);
   assert.notStrictEqual(promptMethod, promptPassion);
+
+  assert.match(promptMethod, /grand public/);
+  assert.match(promptPassion, /bonnes connaissances de base/);
 });
 
 test('sendWithTimeout retries on overload errors', async () => {
