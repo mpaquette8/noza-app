@@ -588,7 +588,8 @@ body::before {
 
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    align-items: stretch;
 }
 
 /* --- Main Generate Button - Style CTA Attractif --- */
@@ -643,6 +644,78 @@ body::before {
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+/* === CORRECTION ALIGNEMENT BOUTONS CÔTE À CÔTE === */
+.action-buttons .generate-btn,
+.action-buttons .generate-quiz-btn {
+    flex: 1;
+    width: auto;
+    padding: 18px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 60px;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* Bouton "Décrypter le sujet" */
+.action-buttons .generate-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce, #2c5282);
+    color: white;
+    box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+}
+
+.action-buttons .generate-btn:hover {
+    background: linear-gradient(135deg, #3182ce, #2c5282, #2a4365);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(66, 153, 225, 0.6);
+}
+
+/* Bouton "Quiz du cours" */
+.action-buttons .generate-quiz-btn {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+}
+
+.action-buttons .generate-quiz-btn:hover {
+    background: linear-gradient(135deg, #68d391, #48bb78);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(72, 187, 120, 0.6);
+}
+
+/* États désactivés avec hauteur conservée */
+.action-buttons .generate-btn:disabled,
+.action-buttons .generate-quiz-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0, #718096);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* Responsive - Conservation hauteur sur mobile */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .action-buttons .generate-btn,
+    .action-buttons .generate-quiz-btn {
+        min-height: 55px;
+        font-size: 1rem;
+        padding: 16px 20px;
+    }
 }
 
 /* ==========================================================================
