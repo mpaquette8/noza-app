@@ -154,9 +154,9 @@ class CourseController {
       // Génération du cours
       const courseContent = await anthropicService.generateCourse(
         sanitizedSubject,
-        params.teacherType,
+        params.vulgarization,
         params.duration,
-        params.vulgarization
+        params.teacherType
       );
 
       // Sauvegarde en base
