@@ -45,6 +45,8 @@ function setupEventListeners() {
     const configPanel = document.querySelector('.configuration-container');
     const headerNav = document.getElementById('headerNav');
     const closeConfigBtn = document.getElementById('closeConfigBtn');
+    const advancedToggle = document.getElementById('advancedToggle');
+    const advancedSettings = document.getElementById('advancedSettings');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
@@ -78,6 +80,18 @@ function setupEventListeners() {
     const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
     if (generateOnDemandQuiz) {
         generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
+    }
+
+    if (advancedToggle && advancedSettings) {
+        advancedToggle.addEventListener('click', () => {
+            const expanded = advancedToggle.getAttribute('aria-expanded') === 'true';
+            advancedToggle.setAttribute('aria-expanded', (!expanded).toString());
+            advancedSettings.hidden = expanded;
+            const icon = advancedToggle.querySelector('.chevron');
+            if (icon) {
+                icon.style.transform = expanded ? '' : 'rotate(180deg)';
+            }
+        });
     }
 
     // Chat
