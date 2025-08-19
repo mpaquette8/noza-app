@@ -38,7 +38,6 @@ test('preset selection updates advanced controls', async () => {
   const intentMaster = createElement({ dataset: { type: 'intent', value: 'master' } });
   const allButtons = [styleNeutral, styleStory, durationShort, durationLong, intentDiscover, intentMaster];
 
-  const statusEl = { textContent: '', style: {} };
   global.document = {
     querySelectorAll(selector) {
       if (selector === '.quick-config [data-preset]') return [presetDefault, presetExpert];
@@ -51,11 +50,10 @@ test('preset selection updates advanced controls', async () => {
       if (selector === '[data-type="style"][data-value="storytelling"]') return styleStory;
       if (selector === '[data-type="duration"][data-value="long"]') return durationLong;
       if (selector === '[data-type="intent"][data-value="master"]') return intentMaster;
-      if (selector === '.config-card.secondary-card') return null; // not used here
       return null;
     },
-    getElementById(id) {
-      return id === 'quizStatus' ? statusEl : null;
+    getElementById() {
+      return null;
     }
   };
   global.window = { Event: class { constructor(type) { this.type = type; } } };
@@ -78,14 +76,13 @@ test('preset selection updates advanced controls', async () => {
 
 test('quiz button reflects quiz availability', async () => {
   const generateQuizBtn = createElement();
-  const statusEl = { textContent: '', style: {} };
+  generateQuizBtn.disabled = true;
 
   global.document = {
     querySelectorAll() { return []; },
     querySelector() { return null; },
     getElementById(id) {
       if (id === 'generateQuiz') return generateQuizBtn;
-      if (id === 'quizStatus') return statusEl;
       return null;
     }
   };
@@ -96,9 +93,7 @@ test('quiz button reflects quiz availability', async () => {
   manager.init();
 
   assert.ok(generateQuizBtn.disabled);
-  assert.strictEqual(statusEl.textContent, 'Seul le "Quiz du cours" requiert un cours généré');
 
   manager.enableQuizCard();
   assert.ok(!generateQuizBtn.disabled);
-  assert.strictEqual(statusEl.textContent, 'Prêt');
 });

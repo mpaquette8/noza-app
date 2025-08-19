@@ -1,7 +1,6 @@
 export class ModularConfigManager {
     constructor() {
         this.currentPreset = 'default';
-        this.cardStates = { quizEnabled: false };
         this.presets = {
             default: { style: 'neutral', duration: 'short', intent: 'discover' },
             balanced: { style: 'pedagogical', duration: 'medium', intent: 'learn' },
@@ -14,7 +13,6 @@ export class ModularConfigManager {
         this.setupCardInteractions();
         this.setupPresets();
         this.setupCollapsibles();
-        this.updateQuizCardState();
     }
 
     getConfig() {
@@ -82,26 +80,10 @@ export class ModularConfigManager {
         });
     }
 
-    updateQuizCardState() {
-        const statusEl = document.getElementById('quizStatus');
-        if (!statusEl) return;
-
-        const enabled = this.cardStates.quizEnabled;
+    enableQuizCard() {
         const generateQuizBtn = document.getElementById('generateQuiz');
         if (generateQuizBtn) {
-            generateQuizBtn.disabled = !enabled;
-        }
-        statusEl.textContent = enabled ? 'Prêt' : 'Seul le "Quiz du cours" requiert un cours généré';
-        statusEl.style.color = enabled ? '#38a169' : '#718096';
-    }
-
-    enableQuizCard() {
-        this.cardStates.quizEnabled = true;
-        this.updateQuizCardState();
-        const quizCard = document.querySelector('.config-card.secondary-card');
-        if (quizCard) {
-            quizCard.classList.add('activated');
-            setTimeout(() => quizCard.classList.remove('activated'), 300);
+            generateQuizBtn.disabled = false;
         }
     }
 }
