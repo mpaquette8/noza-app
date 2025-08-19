@@ -34,14 +34,15 @@ test('vulgarizationLevel numeric values map to new vulgarization levels', () => 
   }
 });
 
-test('applies default duration and vulgarization when none provided', () => {
+test('applies default duration, vulgarization and teacherType when none provided', () => {
   const result = mapLegacyParams({});
   assert.strictEqual(result.duration, DURATIONS.MEDIUM);
   assert.strictEqual(result.vulgarization, VULGARIZATION_LEVELS.ENLIGHTENED);
   assert.strictEqual(result.vulgarizationLevel, LEGACY_VULGARIZATION_LEVELS.ENLIGHTENED);
+  assert.strictEqual(result.teacherType, TEACHER_TYPES.METHODICAL);
 });
 
-test('maps legacy style to teacherType', () => {
-  const result = mapLegacyParams({ style: 'inspiring' });
+test('returns provided teacherType', () => {
+  const result = mapLegacyParams({ teacherType: TEACHER_TYPES.PASSIONATE });
   assert.strictEqual(result.teacherType, TEACHER_TYPES.PASSIONATE);
 });
