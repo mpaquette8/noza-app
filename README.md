@@ -5,24 +5,24 @@
 The `POST /api/courses` endpoint now supports the following parameters:
 
 - `subject` (string, required): topic to generate a course about.
-- `style` (string, required): presentation style. Accepted values: `neutral`, `pedagogical`, `storytelling`.
+- `vulgarization` (string, required): target audience. Accepted values: `general_public`, `enlightened`, `knowledgeable`, `expert`.
 - `duration` (string, required): estimated course length. Accepted values: `short`, `medium`, `long`.
-- `intent` (string, required): learning intention. Accepted values: `discover`, `learn`, `master`, `expert`.
+- `teacher_type` (string, required): teaching persona. Accepted values: `methodical`, `passionate`, `analogist`, `pragmatic`, `benevolent`, `synthetic`.
 - `detailLevel` (number, deprecated): legacy field mapped to `duration`.
-- `vulgarizationLevel` (number, deprecated): legacy field mapped to `intent`.
+- `vulgarizationLevel` (number, deprecated): legacy field mapped to `vulgarization`.
 
 ### Sample payload
 
 ```json
 {
   "subject": "Introduction to Algebra",
-  "style": "pedagogical",
+  "vulgarization": "enlightened",
   "duration": "medium",
-  "intent": "learn"
+  "teacher_type": "methodical"
 }
 ```
 
-Legacy clients may continue to send `detailLevel` and `vulgarizationLevel`. These fields remain supported for backward compatibility but will be removed in a future release.
+Legacy clients may continue to send `detailLevel` and `vulgarizationLevel`. These fields remain supported for backward compatibility but will be removed in a future release. Former fields `style` and `intent` are no longer supported.
 
 ## Running the Server
 

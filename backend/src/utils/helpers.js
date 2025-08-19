@@ -62,8 +62,6 @@ const mapLegacyParams = ({
   vulgarizationLevel,
   teacherType,
   duration,
-  style,
-  intent,
   vulgarization,
 }) => {
   const durationMap = { 1: DURATIONS.SHORT, 2: DURATIONS.MEDIUM, 3: DURATIONS.LONG };
@@ -74,21 +72,7 @@ const mapLegacyParams = ({
     [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT,
   };
 
-  const styleMap = {
-    academic: TEACHER_TYPES.METHODICAL,
-    inspiring: TEACHER_TYPES.PASSIONATE,
-    pragmatic: TEACHER_TYPES.PRAGMATIC,
-  };
-
-  const intentMap = {
-    discover: TEACHER_TYPES.ANALOGIST,
-    learn: TEACHER_TYPES.METHODICAL,
-    master: TEACHER_TYPES.PASSIONATE,
-    expert: TEACHER_TYPES.SYNTHETIC,
-  };
-
-  const finalTeacherType =
-    teacherType || styleMap[style] || intentMap[intent] || TEACHER_TYPES.METHODICAL;
+  const finalTeacherType = teacherType || TEACHER_TYPES.METHODICAL;
   const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
   const finalVulgarization =
     vulgarization || vulgarizationMap[vulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;
