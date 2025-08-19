@@ -24,9 +24,9 @@ class CourseController {
             subject: true,
             detailLevel: true,
             vulgarizationLevel: true,
-            style: true,
+            vulgarization: true,
             duration: true,
-            intent: true,
+            teacherType: true,
             createdAt: true
           }
         }),
@@ -100,6 +100,7 @@ class CourseController {
         detailLevel,
         vulgarizationLevel,
         teacherType,
+        teacher_type,
         duration,
         style,
         intent,
@@ -118,13 +119,17 @@ class CourseController {
       }
 
       const isLegacyPayload =
-        teacherType == null && duration == null && vulgarization == null && hasDeprecatedParams;
+        teacherType == null &&
+        teacher_type == null &&
+        duration == null &&
+        vulgarization == null &&
+        hasDeprecatedParams;
 
       // Conversion et valeurs par défaut
       const params = mapLegacyParams({
         detailLevel,
         vulgarizationLevel,
-        teacherType,
+        teacherType: teacher_type ?? teacherType,
         duration,
         style,
         intent,

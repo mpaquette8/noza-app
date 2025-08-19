@@ -48,6 +48,10 @@ const courseValidation = [
     .trim()
     .isLength({ min: 1, max: 500 })
     .withMessage('Le sujet doit faire entre 1 et 500 caractères'),
+  body('teacher_type')
+    .optional()
+    .isIn(Object.values(TEACHER_TYPES))
+    .withMessage("Type d'enseignant invalide"),
   body('teacherType')
     .optional()
     .isIn(Object.values(TEACHER_TYPES))
