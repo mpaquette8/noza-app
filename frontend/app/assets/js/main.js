@@ -41,40 +41,11 @@ function setupEventListeners() {
     const generateQuiz = document.getElementById('generateQuiz');
     const copyContent = document.getElementById('copyContent');
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
-    const menuToggle = document.getElementById('menuToggle');
-    const configPanel = document.querySelector('.configuration-container');
-    const headerNav = document.getElementById('headerNav');
-    const closeConfigBtn = document.getElementById('closeConfigBtn');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
-
-    if (menuToggle) {
-        const updateAria = () => {
-            const expanded = headerNav && headerNav.classList.contains('open');
-            menuToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        };
-        updateAria();
-
-        const toggleNavigation = () => {
-            if (headerNav) headerNav.classList.toggle('open');
-            if (configPanel) configPanel.classList.toggle('open');
-            updateAria();
-        };
-
-        menuToggle.addEventListener('click', toggleNavigation);
-        menuToggle.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleNavigation();
-            }
-        });
-
-        if (closeConfigBtn) closeConfigBtn.addEventListener('click', toggleNavigation);
-    }
-
     const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
     if (generateOnDemandQuiz) {
         generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
