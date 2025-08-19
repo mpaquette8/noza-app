@@ -56,18 +56,26 @@ const courseValidation = [
     .optional()
     .isIn(Object.values(DURATIONS))
     .withMessage('Durée invalide'),
-  body('vulgarizationLevel')
+  body('vulgarization')
     .optional()
     .isIn(Object.values(VULGARIZATION_LEVELS))
     .withMessage('Niveau de vulgarisation invalide'),
+  body('vulgarizationLevel')
+    .optional()
+    .isInt({ min: 1, max: 4 })
+    .withMessage('Niveau de vulgarisation legacy invalide'),
   body('detailLevel')
     .optional()
     .isInt({ min: 1, max: 3 })
     .withMessage('Niveau de détail invalide'),
-  body('legacyVulgarizationLevel')
+  body('style')
     .optional()
-    .isInt({ min: 1, max: 4 })
-    .withMessage('Niveau de vulgarisation legacy invalide'),
+    .isString()
+    .withMessage('Style invalide'),
+  body('intent')
+    .optional()
+    .isString()
+    .withMessage('Intent invalide'),
   handleValidationErrors
 ];
 

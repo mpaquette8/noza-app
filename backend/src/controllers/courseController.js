@@ -95,24 +95,49 @@ class CourseController {
   // Générer un nouveau cours
   async generateCourse(req, res) {
     try {
-      const { subject, detailLevel, legacyVulgarizationLevel, teacherType, duration, vulgarizationLevel } = req.body;
+      const {
+        subject,
+        detailLevel,
+        vulgarizationLevel,
+        teacherType,
+        duration,
+        style,
+        intent,
+        vulgarization,
+      } = req.body;
 
       const deprecatedFields = [];
       if (detailLevel != null) deprecatedFields.push('detailLevel');
-      if (legacyVulgarizationLevel != null) deprecatedFields.push('legacyVulgarizationLevel');
+      if (vulgarizationLevel != null) deprecatedFields.push('vulgarizationLevel');
+      if (style != null) deprecatedFields.push('style');
+      if (intent != null) deprecatedFields.push('intent');
       const hasDeprecatedParams = deprecatedFields.length > 0;
 
       if (hasDeprecatedParams) {
         logger.warn('Utilisation de paramètres dépréciés', { deprecatedFields });
       }
 
-      const isLegacyPayload = (teacherType == null && duration == null && vulgarizationLevel == null) && hasDeprecatedParams;
+      const isLegacyPayload =
+        teacherType == null && duration == null && vulgarization == null && hasDeprecatedParams;
 
       // Conversion et valeurs par défaut
-      const params = mapLegacyParams({ detailLevel, legacyVulgarizationLevel, teacherType, duration, vulgarizationLevel });
+      const params = mapLegacyParams({
+        detailLevel,
+        vulgarizationLevel,
+        teacherType,
+        duration,
+        style,
+        intent,
+        vulgarization,
+      });
 
       // Validation
-      const validationErrors = validateCourseParams(subject, params.teacherType, params.duration, params.vulgarizationLevel);
+      const validationErrors = validateCourseParams(
+        subject,
+        params.vulgarization,
+        params.duration,
+        params.teacherType
+      );
       if (validationErrors.length > 0) {
         const { response, statusCode } = createResponse(false, null, validationErrors.join(', '), HTTP_STATUS.BAD_REQUEST);
         return res.status(statusCode).json(response);
@@ -126,7 +151,7 @@ class CourseController {
         sanitizedSubject,
         params.teacherType,
         params.duration,
-        params.vulgarizationLevel
+        params.vulgarization
       );
 
       // Sauvegarde en base
@@ -135,10 +160,10 @@ class CourseController {
           subject: sanitizedSubject,
           content: courseContent,
           detailLevel: parseInt(params.detailLevel),
-          legacyVulgarizationLevel: parseInt(params.legacyVulgarizationLevel),
+          vulgarizationLevel: parseInt(params.vulgarizationLevel),
           teacherType: params.teacherType,
           duration: params.duration,
-          vulgarizationLevel: params.vulgarizationLevel,
+          vulgarization: params.vulgarization,
           userId: req.user.id
         }
       });
@@ -148,7 +173,7 @@ class CourseController {
         userId: req.user.id,
         teacherType: params.teacherType,
         duration: params.duration,
-        vulgarizationLevel: params.vulgarizationLevel,
+        vulgarization: params.vulgarization,
         isLegacyPayload
       });
 
