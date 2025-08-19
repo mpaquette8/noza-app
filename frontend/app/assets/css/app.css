@@ -2569,33 +2569,5 @@ body::before {
     }
 }
 
-/* Advanced Settings Toggle */
-.advanced-toggle {
-  display:flex;
-  align-items:center;
-  gap:0.5rem;
-  background:none;
-  border:none;
-  color:#4a5568;
-  cursor:pointer;
-  margin-top:.5rem;
-}
-.advanced-toggle .chevron {
-  transition:transform .3s ease;
-}
-.advanced-settings {
-  overflow:hidden;
-  max-height:0;
-  opacity:0;
-  transition:max-height .3s ease, opacity .3s ease;
-}
-.advanced-settings.open {
-  max-height:500px; /* sufficiently large */
-  opacity:1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .advanced-toggle .chevron,
-  .advanced-settings { transition:none; }
-}
 
 
