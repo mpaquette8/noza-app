@@ -52,18 +52,20 @@ const courseValidation = [
     .optional()
     .isIn(Object.values(TEACHER_TYPES))
     .withMessage("Type d'enseignant invalide"),
-  body('teacherType')
-    .optional()
-    .isIn(Object.values(TEACHER_TYPES))
-    .withMessage("Type d'enseignant invalide"),
-  body('duration')
-    .optional()
-    .isIn(Object.values(DURATIONS))
-    .withMessage('Durée invalide'),
   body('vulgarization')
     .optional()
     .isIn(Object.values(VULGARIZATION_LEVELS))
     .withMessage('Niveau de vulgarisation invalide'),
+  body('duration')
+    .optional()
+    .isIn(Object.values(DURATIONS))
+    .withMessage('Durée invalide'),
+
+  // Alias de compatibilité
+  body('teacherType')
+    .optional()
+    .isIn(Object.values(TEACHER_TYPES))
+    .withMessage("Type d'enseignant invalide"),
   body('vulgarizationLevel')
     .optional()
     .isInt({ min: 1, max: 4 })
@@ -72,14 +74,6 @@ const courseValidation = [
     .optional()
     .isInt({ min: 1, max: 3 })
     .withMessage('Niveau de détail invalide'),
-  body('style')
-    .optional()
-    .isString()
-    .withMessage('Style invalide'),
-  body('intent')
-    .optional()
-    .isString()
-    .withMessage('Intent invalide'),
   handleValidationErrors
 ];
 

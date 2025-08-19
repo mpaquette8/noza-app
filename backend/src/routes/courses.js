@@ -23,7 +23,18 @@ router.get(
   asyncHandler(courseController.getAllCourses)
 );
 router.get('/:id', asyncHandler(courseController.getCourse));
-router.post('/', courseValidation, asyncHandler(courseController.generateCourse));
+router.post(
+  '/',
+  courseValidation,
+  (req, res, next) => {
+    // Compatibilité : accepter encore teacherType (camelCase)
+    if (req.body.teacherType && !req.body.teacher_type) {
+      req.body.teacher_type = req.body.teacherType;
+    }
+    next();
+  },
+  asyncHandler(courseController.generateCourse)
+);
 router.delete('/:id', asyncHandler(courseController.deleteCourse));
 
 module.exports = router;
