@@ -180,6 +180,14 @@ body::before {
     position: relative;
 }
 
+.configuration-container.hidden {
+    display: none;
+}
+
+.configuration-container.hidden + .course-display {
+    grid-column: 1 / -1;
+}
+
 .config-card {
     background: #fff;
     border-radius: 15px;
