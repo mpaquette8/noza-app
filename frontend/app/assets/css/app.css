@@ -86,19 +86,6 @@ body::before {
     margin-bottom: 0;
 }
 
-.menu-toggle {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    display: none;
-    font-size: 1.5rem;
-}
-
-.menu-toggle:focus {
-    outline: 2px solid #2b6cb0;
-    outline-offset: 2px;
-}
 
 /* --------------------------------------------------------------------------
    Navigation Menu - Couleurs & Interactions
@@ -167,25 +154,15 @@ body::before {
 }
 
 /* ==========================================================================
-   3. Configuration Container & Cards
+   3. Configuration Cards
    ========================================================================== */
-.configuration-container {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
+
+.decryptage-controls {
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    padding: 20px;
-    height: fit-content;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    position: relative;
-}
-
-.configuration-container.hidden {
-    display: none;
-}
-
-.configuration-container.hidden + .course-display {
-    grid-column: 1 / -1;
 }
 
 .config-card {
@@ -281,70 +258,6 @@ body::before {
     margin-top: 15px;
 }
 
-.config-close-btn {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .main-content {
-        grid-template-columns: 1fr;
-    }
-
-    .configuration-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 80%;
-        max-width: 320px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-    }
-
-    .configuration-container.open {
-        transform: translateX(0);
-    }
-
-    .config-close-btn {
-        display: block;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: none;
-        border: none;
-        color: #2d3748;
-        cursor: pointer;
-    }
-
-    .header-nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        right: 20px;
-        background: white;
-        padding: 10px 20px;
-        border-radius: 10px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    }
-
-    .header-nav.open {
-        display: block;
-    }
-
-    .header-nav ul {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .header-nav a {
-        color: #2d3748;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-}
 
 /* --- Form Groups & Inputs --- */
 .form-group {
@@ -1981,21 +1894,13 @@ body::before {
     .container {
         padding: 10px;
     }
-    
+
     .main-content {
         grid-template-columns: 1fr;
         gap: 15px;
         overflow: visible;
     }
-    
-    .configuration-container {
-        order: 1;
-        grid-template-columns: 1fr;
-        padding: 16px;
-        max-height: none;
-        overflow-y: visible;
-    }
-    
+
     .course-display {
         order: 2;
         height: auto;
@@ -2030,12 +1935,6 @@ body::before {
     
     .main-content {
         gap: 10px;
-    }
-    
-    .configuration-container {
-        grid-template-columns: 1fr;
-        padding: 12px;
-        border-radius: 12px;
     }
 
     .course-display {
@@ -2075,11 +1974,6 @@ body::before {
     
     .header h1 {
         font-size: 1.5rem;
-    }
-    
-    .configuration-container {
-        grid-template-columns: 1fr;
-        padding: 12px;
     }
 
     .course-display {
