@@ -1,5 +1,12 @@
 // backend/src/utils/helpers.js
-const { ERROR_MESSAGES, HTTP_STATUS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS, LEGACY_VULGARIZATION_LEVELS } = require('./constants');
+const {
+  ERROR_MESSAGES,
+  HTTP_STATUS,
+  DURATIONS,
+  TEACHER_TYPES,
+  VULGARIZATION_LEVELS,
+  LEGACY_VULGARIZATION_LEVELS,
+} = require('./constants');
 const sanitizeHtml = require('sanitize-html');
 
 // Formatage de réponse standardisé
@@ -27,51 +34,82 @@ const createResponse = (success, data = null, error = null, statusCode = HTTP_ST
 };
 
 // Validation des paramètres
-const validateCourseParams = (subject, teacherType, duration, vulgarizationLevel) => {
+const validateCourseParams = (subject, vulgarization, duration, teacherType) => {
   const errors = [];
 
   if (!subject || typeof subject !== 'string' || subject.trim().length === 0) {
     errors.push('Le sujet est requis');
   }
 
-  if (!teacherType || !Object.values(TEACHER_TYPES).includes(teacherType)) {
-    errors.push("Type d'enseignant invalide");
-  }
-
   if (!duration || !Object.values(DURATIONS).includes(duration)) {
     errors.push('Durée invalide');
   }
 
-  if (!vulgarizationLevel || !Object.values(VULGARIZATION_LEVELS).includes(vulgarizationLevel)) {
+  if (!vulgarization || !Object.values(VULGARIZATION_LEVELS).includes(vulgarization)) {
     errors.push('Niveau de vulgarisation invalide');
+  }
+
+  if (!teacherType || !Object.values(TEACHER_TYPES).includes(teacherType)) {
+    errors.push("Type d'enseignant invalide");
   }
 
   return errors;
 };
 
 // Conversion des anciens paramètres vers les nouveaux
-const mapLegacyParams = ({ detailLevel, legacyVulgarizationLevel, teacherType, duration, vulgarizationLevel }) => {
+const mapLegacyParams = ({
+  detailLevel,
+  vulgarizationLevel,
+  teacherType,
+  duration,
+  style,
+  intent,
+  vulgarization,
+}) => {
   const durationMap = { 1: DURATIONS.SHORT, 2: DURATIONS.MEDIUM, 3: DURATIONS.LONG };
   const vulgarizationMap = {
     [LEGACY_VULGARIZATION_LEVELS.GENERAL_PUBLIC]: VULGARIZATION_LEVELS.GENERAL_PUBLIC,
     [LEGACY_VULGARIZATION_LEVELS.ENLIGHTENED]: VULGARIZATION_LEVELS.ENLIGHTENED,
     [LEGACY_VULGARIZATION_LEVELS.KNOWLEDGEABLE]: VULGARIZATION_LEVELS.KNOWLEDGEABLE,
-    [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT
+    [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT,
   };
 
-  const finalTeacherType = teacherType || TEACHER_TYPES.METHODICAL;
-  const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
-  const finalVulgarization = vulgarizationLevel || vulgarizationMap[legacyVulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;
+  const styleMap = {
+    academic: TEACHER_TYPES.METHODICAL,
+    inspiring: TEACHER_TYPES.PASSIONATE,
+    pragmatic: TEACHER_TYPES.PRAGMATIC,
+  };
 
-  const finalDetail = detailLevel || parseInt(Object.keys(durationMap).find(key => durationMap[key] === finalDuration));
-  const finalLegacyVulgarization = legacyVulgarizationLevel || parseInt(Object.keys(vulgarizationMap).find(key => vulgarizationMap[key] === finalVulgarization));
+  const intentMap = {
+    discover: TEACHER_TYPES.ANALOGIST,
+    learn: TEACHER_TYPES.METHODICAL,
+    master: TEACHER_TYPES.PASSIONATE,
+    expert: TEACHER_TYPES.SYNTHETIC,
+  };
+
+  const finalTeacherType =
+    teacherType || styleMap[style] || intentMap[intent] || TEACHER_TYPES.METHODICAL;
+  const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
+  const finalVulgarization =
+    vulgarization || vulgarizationMap[vulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;
+
+  const finalDetail =
+    detailLevel ||
+    parseInt(Object.keys(durationMap).find((key) => durationMap[key] === finalDuration));
+  const finalLegacyVulgarization =
+    vulgarizationLevel ||
+    parseInt(
+      Object.keys(vulgarizationMap).find(
+        (key) => vulgarizationMap[key] === finalVulgarization
+      )
+    );
 
   return {
     teacherType: finalTeacherType,
     duration: finalDuration,
-    vulgarizationLevel: finalVulgarization,
+    vulgarization: finalVulgarization,
     detailLevel: finalDetail,
-    legacyVulgarizationLevel: finalLegacyVulgarization
+    vulgarizationLevel: finalLegacyVulgarization,
   };
 };
 

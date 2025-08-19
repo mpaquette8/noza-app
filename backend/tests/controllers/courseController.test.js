@@ -1,7 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const { mapLegacyParams } = require('../../src/utils/helpers');
-const { DURATIONS, VULGARIZATION_LEVELS, LEGACY_VULGARIZATION_LEVELS } = require('../../src/utils/constants');
+const {
+  DURATIONS,
+  VULGARIZATION_LEVELS,
+  LEGACY_VULGARIZATION_LEVELS,
+  TEACHER_TYPES,
+} = require('../../src/utils/constants');
 
 test('detailLevel numeric values map to durations', () => {
   const mapping = {
@@ -15,7 +20,7 @@ test('detailLevel numeric values map to durations', () => {
   }
 });
 
-test('legacyVulgarizationLevel numeric values map to new vulgarization levels', () => {
+test('vulgarizationLevel numeric values map to new vulgarization levels', () => {
   const mapping = {
     [LEGACY_VULGARIZATION_LEVELS.GENERAL_PUBLIC]: VULGARIZATION_LEVELS.GENERAL_PUBLIC,
     [LEGACY_VULGARIZATION_LEVELS.ENLIGHTENED]: VULGARIZATION_LEVELS.ENLIGHTENED,
@@ -23,13 +28,20 @@ test('legacyVulgarizationLevel numeric values map to new vulgarization levels', 
     [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT
   };
   for (const [level, expected] of Object.entries(mapping)) {
-    const result = mapLegacyParams({ legacyVulgarizationLevel: Number(level) });
-    assert.strictEqual(result.vulgarizationLevel, expected);
+    const result = mapLegacyParams({ vulgarizationLevel: Number(level) });
+    assert.strictEqual(result.vulgarization, expected);
+    assert.strictEqual(result.vulgarizationLevel, Number(level));
   }
 });
 
-test('applies default duration and vulgarization level when none provided', () => {
+test('applies default duration and vulgarization when none provided', () => {
   const result = mapLegacyParams({});
   assert.strictEqual(result.duration, DURATIONS.MEDIUM);
-  assert.strictEqual(result.vulgarizationLevel, VULGARIZATION_LEVELS.ENLIGHTENED);
+  assert.strictEqual(result.vulgarization, VULGARIZATION_LEVELS.ENLIGHTENED);
+  assert.strictEqual(result.vulgarizationLevel, LEGACY_VULGARIZATION_LEVELS.ENLIGHTENED);
+});
+
+test('maps legacy style to teacherType', () => {
+  const result = mapLegacyParams({ style: 'inspiring' });
+  assert.strictEqual(result.teacherType, TEACHER_TYPES.PASSIONATE);
 });
