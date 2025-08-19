@@ -2,7 +2,7 @@
 
 import { utils, API_BASE_URL } from './utils/utils.js';
 import { authManager } from './auth.js';
-import { courseManager, STYLE_LABELS, DURATION_LABELS, INTENT_LABELS } from './course-manager.js';
+import { courseManager, VULGARIZATION_LABELS, DURATION_LABELS, TEACHER_TYPE_LABELS } from './course-manager.js';
 
 // État global de l'application
 let currentCourse = null;
@@ -63,8 +63,8 @@ async function handleGenerateCourse() {
     const subject = document.getElementById('subject').value.trim();
     const subjectLength = subject.length;
     const cfg = typeof configManager !== 'undefined' ? configManager.getConfig() : {};
-    const { style, duration, intent } = cfg;
-    const isLegacyPayload = !style && !duration && !intent;
+    const { vulgarization, duration, teacher_type } = cfg;
+    const isLegacyPayload = !vulgarization && !duration && !teacher_type;
 
     if (!subject) {
         utils.handleAuthError('Veuillez entrer un sujet pour le décryptage');
@@ -75,25 +75,25 @@ async function handleGenerateCourse() {
         if (courseManager) {
             const course = await courseManager.generateCourse(
                 subject,
-                style,
+                vulgarization,
                 duration,
-                intent
+                teacher_type
             );
             if (course) {
                 currentCourse = course;
-                const styleLabel = STYLE_LABELS[course.style] || course.style;
+                const vulgarizationLabel = VULGARIZATION_LABELS[course.vulgarization] || course.vulgarization;
                 const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-                const intentLabel = INTENT_LABELS[course.intent] || course.intent;
-                displayCourseMetadata(styleLabel, durationLabel, intentLabel);
+                const teacherTypeLabel = TEACHER_TYPE_LABELS[course.teacher_type] || course.teacher_type;
+                displayCourseMetadata(vulgarizationLabel, durationLabel, teacherTypeLabel);
                 if (typeof configManager !== 'undefined') {
                     configManager.enableQuizCard();
                 }
 
                 if (typeof gtag === 'function') {
                     gtag('event', 'course_generation', {
-                        style,
+                        vulgarization,
                         duration,
-                        intent,
+                        teacher_type,
                         isLegacyPayload,
                         subject_length: subjectLength
                     });
@@ -105,16 +105,16 @@ async function handleGenerateCourse() {
     }
 }
 
-function displayCourseMetadata(style, duration, intent) {
+function displayCourseMetadata(vulgarization, duration, teacherType) {
     const container = document.getElementById('generatedCourse');
     if (!container) return;
 
     const badgesContainer = document.createElement('div');
     badgesContainer.className = 'message-badges';
     badgesContainer.innerHTML = `
-        <span class="message-badge course-badge">${style}</span>
+        <span class="message-badge course-badge">${vulgarization}</span>
         <span class="message-badge general-badge">${duration}</span>
-        <span class="message-badge level-badge">${intent}</span>
+        <span class="message-badge level-badge">${teacherType}</span>
     `;
 
     const existing = container.querySelector('.message-badges');

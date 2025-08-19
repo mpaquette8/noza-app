@@ -2,9 +2,9 @@ export class ModularConfigManager {
     constructor() {
         this.currentPreset = 'default';
         this.presets = {
-            default: { style: 'neutral', duration: 'short', intent: 'discover' },
-            balanced: { style: 'pedagogical', duration: 'medium', intent: 'learn' },
-            expert: { style: 'storytelling', duration: 'long', intent: 'master' }
+            default: { vulgarization: 'general_public', duration: 'short', teacher_type: 'methodical' },
+            balanced: { vulgarization: 'enlightened', duration: 'medium', teacher_type: 'pragmatic' },
+            expert: { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic' }
         };
         this.currentValues = { ...this.presets[this.currentPreset] };
     }
@@ -53,7 +53,7 @@ export class ModularConfigManager {
                 this.currentValues = { ...values };
 
                 // Update advanced controls
-                ['style', 'duration', 'intent'].forEach(type => {
+                ['vulgarization', 'duration', 'teacher_type'].forEach(type => {
                     const val = values[type];
                     document.querySelectorAll(`.selector-group button[data-type="${type}"]`).forEach(b => {
                         b.classList.toggle('active', b.dataset.value === val);
