@@ -102,16 +102,12 @@ class CourseController {
         teacherType,
         teacher_type,
         duration,
-        style,
-        intent,
         vulgarization,
       } = req.body;
 
       const deprecatedFields = [];
       if (detailLevel != null) deprecatedFields.push('detailLevel');
       if (vulgarizationLevel != null) deprecatedFields.push('vulgarizationLevel');
-      if (style != null) deprecatedFields.push('style');
-      if (intent != null) deprecatedFields.push('intent');
       const hasDeprecatedParams = deprecatedFields.length > 0;
 
       if (hasDeprecatedParams) {
@@ -131,8 +127,6 @@ class CourseController {
         vulgarizationLevel,
         teacherType: teacher_type ?? teacherType,
         duration,
-        style,
-        intent,
         vulgarization,
       });
 
