@@ -43,7 +43,7 @@ test('preset selection updates advanced controls', async () => {
       const sel = selector.replace(/^\.decryptage-controls\s*/, '');
       if (sel === '.quick-config [data-preset]') return [presetDefault, presetExpert];
       if (sel === '.selector-group button') return allButtons;
-      const typeMatch = sel.match(/\.selector-group button\[data-type="([^\"]+)"\]/);
+      const typeMatch = sel.match(/\.selector-group button\[data-type="([^"]+)"\]/);
       if (typeMatch) return allButtons.filter(b => b.dataset.type === typeMatch[1]);
       return [];
     },
@@ -54,12 +54,14 @@ test('preset selection updates advanced controls', async () => {
       if (sel === '[data-type="teacher_type"][data-value="synthetic"]') return teacherSynthetic;
       return null;
     },
-    getElementById() {
-      return null;
-    }
+    getElementById() { return null; },
+    addEventListener() {},
+    body: { appendChild() {} }
   };
-  global.window = { Event: class { constructor(type) { this.type = type; } } };
+  global.window = { Event: class { constructor(type) { this.type = type; } }, location: { origin: '' } };
+  global.localStorage = { getItem() { return null; }, setItem() {}, removeItem() {} };
 
+  const { VULGARIZATION_LABELS, TEACHER_TYPE_LABELS } = await import('../app/assets/js/course-manager.js');
   const { ModularConfigManager } = await load();
   const manager = new ModularConfigManager();
   manager.init();
@@ -74,6 +76,8 @@ test('preset selection updates advanced controls', async () => {
   assert.ok(vulgarizationExpert.classList.contains('active'));
   assert.ok(durationLong.classList.contains('active'));
   assert.ok(teacherSynthetic.classList.contains('active'));
+  assert.strictEqual(VULGARIZATION_LABELS[cfg.vulgarization], 'Expert');
+  assert.strictEqual(TEACHER_TYPE_LABELS[cfg.teacher_type], 'Synthétique');
 });
 
 test('quiz button reflects quiz availability', async () => {

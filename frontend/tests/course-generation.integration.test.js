@@ -44,8 +44,14 @@ test('course generation triggered from decryptage controls', async () => {
       if (selector === '.decryptage-controls #generateBtn') return generateBtn;
       return null;
     },
-    querySelectorAll() { return []; }
+    querySelectorAll() { return []; },
+    addEventListener() {},
+    body: { appendChild() {} }
   };
+  global.window = { location: { origin: '' } };
+  global.localStorage = { getItem() { return null; }, setItem() {}, removeItem() {} };
+
+  const { VULGARIZATION_LABELS, TEACHER_TYPE_LABELS } = await import('../app/assets/js/course-manager.js');
 
   global.configManager = {
     getConfig() { return { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic' }; },
@@ -78,4 +84,6 @@ test('course generation triggered from decryptage controls', async () => {
     duration: 'long',
     teacher_type: 'synthetic'
   });
+  assert.strictEqual(VULGARIZATION_LABELS[calledWith.vulgarization], 'Expert');
+  assert.strictEqual(TEACHER_TYPE_LABELS[calledWith.teacher_type], 'Synthétique');
 });
