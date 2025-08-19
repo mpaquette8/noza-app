@@ -1,7 +1,7 @@
 // backend/src/services/anthropicService.js
 const Anthropic = require('@anthropic-ai/sdk');
 const { logger } = require('../utils/helpers');
-const { LIMITS, STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../utils/constants');
+const { LIMITS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS, ERROR_CODES } = require('../utils/constants');
 
 const OFFLINE_MESSAGE = 'Service IA indisponible';
 const REQUEST_TIMEOUT = 30 * 1000; // 30s timeout for IA requests
@@ -13,19 +13,22 @@ const DURATION_TO_WORDS = {
   [DURATIONS.LONG]: 4200
 };
 
-// Instructions to adapt tone and style
-const STYLE_INSTRUCTIONS = {
-  [STYLES.NEUTRAL]: "Utilise un ton neutre et informatif.",
-  [STYLES.PEDAGOGICAL]: "Adopte un ton pédagogique, clair et structuré.",
-  [STYLES.STORYTELLING]: "Présente les informations sous la forme d'un récit engageant."
+// Instructions to adapt tone and approach based on teacher type
+const TEACHER_TYPE_INSTRUCTIONS = {
+  [TEACHER_TYPES.METHODICAL]: "Adopte une approche méthodique et structurée.",
+  [TEACHER_TYPES.PASSIONATE]: "Transmets l'information avec passion et enthousiasme.",
+  [TEACHER_TYPES.ANALOGIST]: "Utilise des analogies pour expliquer les concepts.",
+  [TEACHER_TYPES.PRAGMATIC]: "Mets l'accent sur les applications pratiques.",
+  [TEACHER_TYPES.BENEVOLENT]: "Adopte un ton bienveillant et encourageant.",
+  [TEACHER_TYPES.SYNTHETIC]: "Propose des synthèses claires et concises."
 };
 
-// Additional guidance based on learner intent
-const INTENT_ENHANCEMENTS = {
-  [INTENTS.DISCOVER]: "Mets l'accent sur la découverte des notions principales.",
-  [INTENTS.LEARN]: "Développe les concepts pour faciliter l'apprentissage.",
-  [INTENTS.MASTER]: "Fournis des détails approfondis et des exemples concrets pour maîtriser le sujet.",
-  [INTENTS.EXPERT]: "Approfondis chaque aspect avec un niveau d'expertise avancé."
+// Guidance based on vulgarization level
+const VULGARIZATION_GUIDANCE = {
+  [VULGARIZATION_LEVELS.GENERAL_PUBLIC]: "Explique les concepts de manière simple pour le grand public.",
+  [VULGARIZATION_LEVELS.ENLIGHTENED]: "Suppose un public curieux avec quelques connaissances préalables.",
+  [VULGARIZATION_LEVELS.KNOWLEDGEABLE]: "Adresse un public possédant de bonnes connaissances de base.",
+  [VULGARIZATION_LEVELS.EXPERT]: "Utilise un niveau de détail adapté à un public expert."
 };
 
 class AnthropicService {
@@ -106,17 +109,17 @@ class AnthropicService {
     return words ? `Le cours doit contenir environ ${words} mots.` : '';
   }
 
-  // Créer un prompt selon les paramètres fournis
-  // Remplace UNIQUEMENT le contenu de createPrompt par ceci
-createPrompt(subject, style, duration, intent) {
-  const styleInstruction = STYLE_INSTRUCTIONS[style] || STYLE_INSTRUCTIONS[STYLES.NEUTRAL];
-  const intentInstruction = INTENT_ENHANCEMENTS[intent] || '';
+// Créer un prompt selon les paramètres fournis
+// Remplace UNIQUEMENT le contenu de createPrompt par ceci
+createPrompt(subject, teacherType, duration, vulgarizationLevel) {
+  const teacherInstruction = TEACHER_TYPE_INSTRUCTIONS[teacherType] || TEACHER_TYPE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
+  const vulgarizationInstruction = VULGARIZATION_GUIDANCE[vulgarizationLevel] || '';
   const durationConstraint = this.getDurationConstraint(duration);
 
   return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
 
-${styleInstruction}
-${intentInstruction}
+${teacherInstruction}
+${vulgarizationInstruction}
 ${durationConstraint}
 
 OBJECTIF GÉNÉRAL :
@@ -272,14 +275,14 @@ RENDU ATTENDU :
   }
 
   // Générer un cours
-  async generateCourse(subject, style, duration, intent) {
+  async generateCourse(subject, teacherType, duration, vulgarizationLevel) {
     if (this.offline) {
       return this.getOfflineMessage();
     }
     try {
-      const prompt = this.createPrompt(subject, style, duration, intent);
+      const prompt = this.createPrompt(subject, teacherType, duration, vulgarizationLevel);
 
-      logger.info('Génération cours', { subject, style, duration, intent });
+      logger.info('Génération cours', { subject, teacherType, duration, vulgarizationLevel });
 
       const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',

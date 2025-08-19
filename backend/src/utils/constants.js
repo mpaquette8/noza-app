@@ -7,19 +7,30 @@ const DETAIL_LEVELS = {
   EXHAUSTIVE: 3
 };
 
-// Niveaux de vulgarisation
+// Niveaux de vulgarisation (nouveau format)
 const VULGARIZATION_LEVELS = {
+  GENERAL_PUBLIC: 'general_public',
+  ENLIGHTENED: 'enlightened',
+  KNOWLEDGEABLE: 'knowledgeable',
+  EXPERT: 'expert'
+};
+
+// Ancien mapping numérique conservé pour rétrocompatibilité
+const LEGACY_VULGARIZATION_LEVELS = {
   GENERAL_PUBLIC: 1,
   ENLIGHTENED: 2,
   KNOWLEDGEABLE: 3,
   EXPERT: 4
 };
 
-// Styles d'expression
-const STYLES = {
-  NEUTRAL: 'neutral',
-  PEDAGOGICAL: 'pedagogical',
-  STORYTELLING: 'storytelling'
+// Types d'enseignants
+const TEACHER_TYPES = {
+  METHODICAL: 'methodical',
+  PASSIONATE: 'passionate',
+  ANALOGIST: 'analogist',
+  PRAGMATIC: 'pragmatic',
+  BENEVOLENT: 'benevolent',
+  SYNTHETIC: 'synthetic'
 };
 
 // Durées estimées des cours
@@ -27,14 +38,6 @@ const DURATIONS = {
   SHORT: 'short',
   MEDIUM: 'medium',
   LONG: 'long'
-};
-
-// Intentions d'apprentissage
-const INTENTS = {
-  DISCOVER: 'discover',
-  LEARN: 'learn',
-  MASTER: 'master',
-  EXPERT: 'expert'
 };
 
 // Types de questions
@@ -113,6 +116,8 @@ const HTTP_STATUS = {
 module.exports = {
   DETAIL_LEVELS,
   VULGARIZATION_LEVELS,
+  LEGACY_VULGARIZATION_LEVELS,
+  TEACHER_TYPES,
   QUESTION_TYPES,
   LIMITS,
   RATE_LIMITS,
@@ -120,7 +125,5 @@ module.exports = {
   HTTP_STATUS,
   ERROR_CODES,
   AI_ERROR_MESSAGES,
-  STYLES,
-  DURATIONS,
-  INTENTS
+  DURATIONS
 };
