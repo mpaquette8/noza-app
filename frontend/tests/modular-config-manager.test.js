@@ -40,16 +40,18 @@ test('preset selection updates advanced controls', async () => {
 
   global.document = {
     querySelectorAll(selector) {
-      if (selector === '.quick-config [data-preset]') return [presetDefault, presetExpert];
-      if (selector === '.selector-group button') return allButtons;
-      const typeMatch = selector.match(/\.selector-group button\[data-type="([^\"]+)"\]/);
+      const sel = selector.replace(/^\.decryptage-controls\s*/, '');
+      if (sel === '.quick-config [data-preset]') return [presetDefault, presetExpert];
+      if (sel === '.selector-group button') return allButtons;
+      const typeMatch = sel.match(/\.selector-group button\[data-type="([^\"]+)"\]/);
       if (typeMatch) return allButtons.filter(b => b.dataset.type === typeMatch[1]);
       return [];
     },
     querySelector(selector) {
-      if (selector === '[data-type="style"][data-value="storytelling"]') return styleStory;
-      if (selector === '[data-type="duration"][data-value="long"]') return durationLong;
-      if (selector === '[data-type="intent"][data-value="master"]') return intentMaster;
+      const sel = selector.replace(/^\.decryptage-controls\s*/, '');
+      if (sel === '[data-type="style"][data-value="storytelling"]') return styleStory;
+      if (sel === '[data-type="duration"][data-value="long"]') return durationLong;
+      if (sel === '[data-type="intent"][data-value="master"]') return intentMaster;
       return null;
     },
     getElementById() {
