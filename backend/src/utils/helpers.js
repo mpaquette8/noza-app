@@ -1,5 +1,5 @@
 // backend/src/utils/helpers.js
-const { ERROR_MESSAGES, HTTP_STATUS, STYLES, DURATIONS, INTENTS } = require('./constants');
+const { ERROR_MESSAGES, HTTP_STATUS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS, LEGACY_VULGARIZATION_LEVELS } = require('./constants');
 const sanitizeHtml = require('sanitize-html');
 
 // Formatage de réponse standardisé
@@ -27,46 +27,51 @@ const createResponse = (success, data = null, error = null, statusCode = HTTP_ST
 };
 
 // Validation des paramètres
-const validateCourseParams = (subject, style, duration, intent) => {
+const validateCourseParams = (subject, teacherType, duration, vulgarizationLevel) => {
   const errors = [];
 
   if (!subject || typeof subject !== 'string' || subject.trim().length === 0) {
     errors.push('Le sujet est requis');
   }
 
-  if (!style || !Object.values(STYLES).includes(style)) {
-    errors.push('Style invalide');
+  if (!teacherType || !Object.values(TEACHER_TYPES).includes(teacherType)) {
+    errors.push("Type d'enseignant invalide");
   }
 
   if (!duration || !Object.values(DURATIONS).includes(duration)) {
     errors.push('Durée invalide');
   }
 
-  if (!intent || !Object.values(INTENTS).includes(intent)) {
-    errors.push('Intention invalide');
+  if (!vulgarizationLevel || !Object.values(VULGARIZATION_LEVELS).includes(vulgarizationLevel)) {
+    errors.push('Niveau de vulgarisation invalide');
   }
 
   return errors;
 };
 
 // Conversion des anciens paramètres vers les nouveaux
-const mapLegacyParams = ({ detailLevel, vulgarizationLevel, style, duration, intent }) => {
+const mapLegacyParams = ({ detailLevel, legacyVulgarizationLevel, teacherType, duration, vulgarizationLevel }) => {
   const durationMap = { 1: DURATIONS.SHORT, 2: DURATIONS.MEDIUM, 3: DURATIONS.LONG };
-  const intentMap = { 1: INTENTS.DISCOVER, 2: INTENTS.LEARN, 3: INTENTS.MASTER, 4: INTENTS.EXPERT };
+  const vulgarizationMap = {
+    [LEGACY_VULGARIZATION_LEVELS.GENERAL_PUBLIC]: VULGARIZATION_LEVELS.GENERAL_PUBLIC,
+    [LEGACY_VULGARIZATION_LEVELS.ENLIGHTENED]: VULGARIZATION_LEVELS.ENLIGHTENED,
+    [LEGACY_VULGARIZATION_LEVELS.KNOWLEDGEABLE]: VULGARIZATION_LEVELS.KNOWLEDGEABLE,
+    [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT
+  };
 
-  const finalStyle = style || STYLES.NEUTRAL;
+  const finalTeacherType = teacherType || TEACHER_TYPES.METHODICAL;
   const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
-  const finalIntent = intent || intentMap[vulgarizationLevel] || INTENTS.LEARN;
+  const finalVulgarization = vulgarizationLevel || vulgarizationMap[legacyVulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;
 
   const finalDetail = detailLevel || parseInt(Object.keys(durationMap).find(key => durationMap[key] === finalDuration));
-  const finalVulgarization = vulgarizationLevel || parseInt(Object.keys(intentMap).find(key => intentMap[key] === finalIntent));
+  const finalLegacyVulgarization = legacyVulgarizationLevel || parseInt(Object.keys(vulgarizationMap).find(key => vulgarizationMap[key] === finalVulgarization));
 
   return {
-    style: finalStyle,
+    teacherType: finalTeacherType,
     duration: finalDuration,
-    intent: finalIntent,
+    vulgarizationLevel: finalVulgarization,
     detailLevel: finalDetail,
-    vulgarizationLevel: finalVulgarization
+    legacyVulgarizationLevel: finalLegacyVulgarization
   };
 };
 

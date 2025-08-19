@@ -18,7 +18,7 @@ Module._load = (request, parent, isMain) => {
 
 const anthropicService = require('../../src/services/anthropicService');
 Module._load = originalLoad;
-const { STYLES, DURATIONS, INTENTS, ERROR_CODES } = require('../../src/utils/constants');
+const { TEACHER_TYPES, DURATIONS, VULGARIZATION_LEVELS, ERROR_CODES } = require('../../src/utils/constants');
 
 test('createPrompt includes duration word counts', () => {
   const mapping = {
@@ -27,18 +27,18 @@ test('createPrompt includes duration word counts', () => {
     [DURATIONS.LONG]: 4200
   };
   for (const [duration, count] of Object.entries(mapping)) {
-    const prompt = anthropicService.createPrompt('Sujet', STYLES.NEUTRAL, duration, INTENTS.LEARN);
+    const prompt = anthropicService.createPrompt('Sujet', TEACHER_TYPES.METHODICAL, duration, VULGARIZATION_LEVELS.ENLIGHTENED);
     assert.match(prompt, new RegExp(`${count} mots`));
   }
 });
 
-test('createPrompt includes distinct style instructions', () => {
-  const promptPedago = anthropicService.createPrompt('Sujet', STYLES.PEDAGOGICAL, DURATIONS.MEDIUM, INTENTS.LEARN);
-  const promptStory = anthropicService.createPrompt('Sujet', STYLES.STORYTELLING, DURATIONS.MEDIUM, INTENTS.LEARN);
+test('createPrompt includes distinct teacher type instructions', () => {
+  const promptMethod = anthropicService.createPrompt('Sujet', TEACHER_TYPES.METHODICAL, DURATIONS.MEDIUM, VULGARIZATION_LEVELS.ENLIGHTENED);
+  const promptPassion = anthropicService.createPrompt('Sujet', TEACHER_TYPES.PASSIONATE, DURATIONS.MEDIUM, VULGARIZATION_LEVELS.ENLIGHTENED);
 
-  assert.match(promptPedago, /ton pédagogique, clair et structuré/);
-  assert.match(promptStory, /récit engageant/);
-  assert.notStrictEqual(promptPedago, promptStory);
+  assert.match(promptMethod, /approche méthodique et structurée/);
+  assert.match(promptPassion, /passion et enthousiasme/);
+  assert.notStrictEqual(promptMethod, promptPassion);
 });
 
 test('sendWithTimeout retries on overload errors', async () => {
@@ -88,7 +88,7 @@ test('APIUserAbortError does not trigger offline mode', async () => {
   };
 
   try {
-    await anthropicService.generateCourse('Sujet', STYLES.NEUTRAL, DURATIONS.SHORT, INTENTS.LEARN);
+    await anthropicService.generateCourse('Sujet', TEACHER_TYPES.METHODICAL, DURATIONS.SHORT, VULGARIZATION_LEVELS.ENLIGHTENED);
     assert.fail('generateCourse should throw');
   } catch (err) {
     assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);

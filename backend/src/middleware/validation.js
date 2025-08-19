@@ -1,7 +1,7 @@
 // backend/src/middleware/validation.js
 const { body, validationResult } = require('express-validator');
 const { createResponse } = require('../utils/helpers');
-const { HTTP_STATUS, STYLES, DURATIONS, INTENTS } = require('../utils/constants');
+const { HTTP_STATUS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS } = require('../utils/constants');
 
 // Middleware pour gérer les erreurs de validation
 const handleValidationErrors = (req, res, next) => {
@@ -48,26 +48,26 @@ const courseValidation = [
     .trim()
     .isLength({ min: 1, max: 500 })
     .withMessage('Le sujet doit faire entre 1 et 500 caractères'),
-  body('style')
+  body('teacherType')
     .optional()
-    .isIn(Object.values(STYLES))
-    .withMessage('Style invalide'),
+    .isIn(Object.values(TEACHER_TYPES))
+    .withMessage("Type d'enseignant invalide"),
   body('duration')
     .optional()
     .isIn(Object.values(DURATIONS))
     .withMessage('Durée invalide'),
-  body('intent')
+  body('vulgarizationLevel')
     .optional()
-    .isIn(Object.values(INTENTS))
-    .withMessage('Intention invalide'),
+    .isIn(Object.values(VULGARIZATION_LEVELS))
+    .withMessage('Niveau de vulgarisation invalide'),
   body('detailLevel')
     .optional()
     .isInt({ min: 1, max: 3 })
     .withMessage('Niveau de détail invalide'),
-  body('vulgarizationLevel')
+  body('legacyVulgarizationLevel')
     .optional()
     .isInt({ min: 1, max: 4 })
-    .withMessage('Niveau de vulgarisation invalide'),
+    .withMessage('Niveau de vulgarisation legacy invalide'),
   handleValidationErrors
 ];
 
