@@ -34,58 +34,62 @@
             </div>
 
             <div class="tab-content" id="courseTab">
-                <div class="decryptage-controls">
-                    <div class="config-card primary-card">
-                        <div class="form-group">
-                            <label for="subject">Sujet à décrypter</label>
-                            <div class="subject-input-container">
-                                <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
-                                <button type="button" class="random-subject-btn" id="randomSubjectBtn">
-                                    <i data-lucide="sparkles" aria-hidden="true"></i>
-                                    Générer un sujet aléatoire
-                                    <i data-lucide="dice-6" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="advancedSettings" class="advanced-settings">
-                            <div class="new-selector-container">
-                                <div class="selector-group">
-                                    <div class="selector-title">🖋️ Style</div>
-                                    <div class="selector-buttons">
-                                        <button data-type="style" data-value="neutral" class="active">Neutre</button>
-                                        <button data-type="style" data-value="pedagogical">Pédagogique</button>
-                                        <button data-type="style" data-value="storytelling">Narratif</button>
-                                    </div>
-                                </div>
-                                <div class="selector-group">
-                                    <div class="selector-title">⏱️ Durée</div>
-                                    <div class="selector-buttons">
-                                        <button data-type="duration" data-value="short" class="active">Courte</button>
-                                        <button data-type="duration" data-value="medium">Moyenne</button>
-                                        <button data-type="duration" data-value="long">Longue</button>
-                                    </div>
-                                </div>
-                                <div class="selector-group">
-                                    <div class="selector-title">🎯 Intention</div>
-                                    <div class="selector-buttons">
-                                        <button data-type="intent" data-value="discover" class="active">Découvrir</button>
-                                        <button data-type="intent" data-value="learn">Apprendre</button>
-                                        <button data-type="intent" data-value="master">Maîtriser</button>
-                                        <button data-type="intent" data-value="expert">Expert</button>
-                                    </div>
+                <div class="config-card primary-card">
+                    <div class="decryptage-controls">
+                        <div class="decryptage-left">
+                            <div class="form-group">
+                                <label for="subject">Sujet à décrypter</label>
+                                <div class="subject-input-container">
+                                    <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
+                                    <button type="button" class="random-subject-btn" id="randomSubjectBtn">
+                                        <i data-lucide="sparkles" aria-hidden="true"></i>
+                                        Générer un sujet aléatoire
+                                        <i data-lucide="dice-6" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="action-buttons">
-                            <button class="generate-btn" id="generateBtn">
-                                <i data-lucide="sparkles" aria-hidden="true"></i>
-                                Décrypter le sujet
-                            </button>
-                            <button class="generate-quiz-btn" id="generateQuiz" disabled>
-                                <i data-lucide="help-circle" aria-hidden="true"></i>
-                                Quiz du cours
-                            </button>
+                        <div class="decryptage-right">
+                            <div id="advancedSettings" class="advanced-settings">
+                                <div class="new-selector-container">
+                                    <div class="selector-group">
+                                        <div class="selector-title">🖋️ Style</div>
+                                        <div class="selector-buttons">
+                                            <button data-type="style" data-value="neutral" class="active">Neutre</button>
+                                            <button data-type="style" data-value="pedagogical">Pédagogique</button>
+                                            <button data-type="style" data-value="storytelling">Narratif</button>
+                                        </div>
+                                    </div>
+                                    <div class="selector-group">
+                                        <div class="selector-title">⏱️ Durée</div>
+                                        <div class="selector-buttons">
+                                            <button data-type="duration" data-value="short" class="active">Courte</button>
+                                            <button data-type="duration" data-value="medium">Moyenne</button>
+                                            <button data-type="duration" data-value="long">Longue</button>
+                                        </div>
+                                    </div>
+                                    <div class="selector-group">
+                                        <div class="selector-title">🎯 Intention</div>
+                                        <div class="selector-buttons">
+                                            <button data-type="intent" data-value="discover" class="active">Découvrir</button>
+                                            <button data-type="intent" data-value="learn">Apprendre</button>
+                                            <button data-type="intent" data-value="master">Maîtriser</button>
+                                            <button data-type="intent" data-value="expert">Expert</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="generate-btn" id="generateBtn">
+                            <i data-lucide="sparkles" aria-hidden="true"></i>
+                            Décrypter le sujet
+                        </button>
+                        <button class="generate-quiz-btn" id="generateQuiz" disabled>
+                            <i data-lucide="help-circle" aria-hidden="true"></i>
+                            Quiz du cours
+                        </button>
                     </div>
                 </div>
                 <div class="course-content" id="courseContent" style="display: none;">
