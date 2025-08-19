@@ -41,11 +41,13 @@ function setupEventListeners() {
     const generateQuiz = document.getElementById('generateQuiz');
     const copyContent = document.getElementById('copyContent');
     const randomSubjectBtn = document.getElementById('randomSubjectBtn');
+    const randomQuizSubjectBtn = document.getElementById('randomQuizSubjectBtn');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
+    if (randomQuizSubjectBtn) randomQuizSubjectBtn.addEventListener('click', generateRandomQuizSubject);
     const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
     if (generateOnDemandQuiz) {
         generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
@@ -477,6 +479,64 @@ async function generateRandomSubject() {
         randomBtn.innerHTML = '<i data-lucide="sparkles"></i>Générer un sujet aléatoire <i data-lucide="dice-6"></i>';
         utils.initializeLucide();
     }
+}
+
+async function generateRandomQuizSubject() {
+    const randomBtn = document.getElementById('randomQuizSubjectBtn');
+    const subjectInput = document.getElementById('quizSubject');
+
+    if (!randomBtn || !subjectInput) return;
+
+    // Désactiver le bouton et ajouter l'animation
+    randomBtn.disabled = true;
+    randomBtn.classList.add('spinning');
+    randomBtn.innerHTML = '<i data-lucide="sparkles"></i>Génération... <i data-lucide="dice-6"></i>';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/ai/random-subject`, {
+            headers: authManager.getAuthHeaders()
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            typewriterEffectInput(subjectInput, data.subject, () => {
+                randomBtn.disabled = false;
+                randomBtn.classList.remove('spinning');
+                randomBtn.innerHTML = '<i data-lucide="sparkles"></i>Générer un sujet aléatoire <i data-lucide="dice-6"></i>';
+
+                utils.showNotification(`Sujet aléatoire généré (${data.category})`, 'success');
+                utils.initializeLucide();
+            });
+        } else {
+            throw new Error(data.error || 'Erreur lors de la génération');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        utils.handleAuthError('Erreur lors de la génération du sujet: ' + error.message, true);
+
+        randomBtn.disabled = false;
+        randomBtn.classList.remove('spinning');
+        randomBtn.innerHTML = '<i data-lucide="sparkles"></i>Générer un sujet aléatoire <i data-lucide="dice-6"></i>';
+        utils.initializeLucide();
+    }
+}
+
+function typewriterEffectInput(element, text, callback) {
+    element.value = '';
+    let i = 0;
+
+    function typeWriter() {
+        if (i < text.length) {
+            element.value += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 30); // Vitesse de frappe
+        } else if (callback) {
+            callback();
+        }
+    }
+
+    typeWriter();
 }
 
 function typewriterEffect(element, text, callback) {
