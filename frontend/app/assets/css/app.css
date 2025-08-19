@@ -2567,3 +2567,58 @@ body::before {
 
 
 
+/* ==========================================================================
+   Random Quiz Subject Input
+   ========================================================================= */
+.quiz-subject-input-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.random-quiz-subject-btn {
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.random-quiz-subject-btn:hover {
+    background: linear-gradient(135deg, #fbd38d, #ed8936);
+    transform: translateY(-2px);
+}
+
+.random-quiz-subject-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.random-quiz-subject-btn.spinning::after {
+    content: '';
+    margin-left: 8px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: subjectSpin 1s linear infinite;
+}
+
+@keyframes subjectSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .quiz-subject-input-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
