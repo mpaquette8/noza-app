@@ -149,7 +149,7 @@ const CONTENT_DETECTION_KEYWORDS = {
 // Consignes adaptatives pour chaque type de contenu
 const ADAPTIVE_FORMAT_INSTRUCTIONS = {
   MATHEMATICAL:
-    'Si des formules sont nécessaires, utilise uniquement des blocs <div class="formula"> et ajoute un bloc générique pour les interpréter.',
+    'Si des formules sont nécessaires, utilise uniquement des blocs <div class="math-block"> et ajoute un bloc générique pour les interpréter.',
   TECHNICAL:
     'Si du code est pertinent, insère-le uniquement dans des blocs <div class="code-block">.',
   SCIENTIFIC:
