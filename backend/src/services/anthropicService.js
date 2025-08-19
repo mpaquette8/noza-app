@@ -1,7 +1,15 @@
 // backend/src/services/anthropicService.js
 const Anthropic = require('@anthropic-ai/sdk');
 const { logger } = require('../utils/helpers');
-const { LIMITS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS, ERROR_CODES } = require('../utils/constants');
+const {
+  LIMITS,
+  DURATIONS,
+  TEACHER_TYPES,
+  VULGARIZATION_LEVELS,
+  ERROR_CODES,
+  CONTENT_DETECTION_KEYWORDS,
+  ADAPTIVE_FORMAT_INSTRUCTIONS
+} = require('../utils/constants');
 
 const OFFLINE_MESSAGE = 'Service IA indisponible';
 const REQUEST_TIMEOUT = 30 * 1000; // 30s timeout for IA requests
@@ -111,16 +119,12 @@ class AnthropicService {
 
   detectContentType(subject) {
     const lower = subject.toLowerCase();
-    if (/(code|programmation|algorithm(e)?|javascript|python)/.test(lower)) {
-      return 'code';
+    for (const [type, keywords] of Object.entries(CONTENT_DETECTION_KEYWORDS)) {
+      if (keywords.some(keyword => lower.includes(keyword.toLowerCase()))) {
+        return type;
+      }
     }
-    if (/(math(ématique)?|équation|formule|calcul|théorème)/.test(lower)) {
-      return 'math';
-    }
-    if (/(citation|définition|quote|proverbe)/.test(lower)) {
-      return 'quote';
-    }
-    return 'general';
+    return 'GENERAL';
   }
 
   getAdaptiveInstructions(contentType, teacherType, vulgarization, duration) {
@@ -131,23 +135,16 @@ class AnthropicService {
       VULGARIZATION_INSTRUCTIONS[vulgarization] || '';
     const durationConstraint = this.getDurationConstraint(duration);
 
-    let contentInstruction = '';
-    switch (contentType) {
-      case 'math':
-        contentInstruction =
-          'Si des formules sont nécessaires, utilise uniquement des blocs <div class="formula"> et ajoute un bloc générique pour les interpréter.';
-        break;
-      case 'code':
-        contentInstruction =
-          'Si du code est pertinent, insère-le uniquement dans des blocs <div class="code-block">.';
-        break;
-      case 'quote':
-        contentInstruction =
-          'Si une citation est utile, place-la dans un bloc <div class="quote-block">.';
-        break;
-    }
+    const contentInstruction =
+      ADAPTIVE_FORMAT_INSTRUCTIONS[contentType] ||
+      ADAPTIVE_FORMAT_INSTRUCTIONS.GENERAL;
 
-    return [teacherInstruction, vulgarizationInstruction, durationConstraint, contentInstruction]
+    return [
+      teacherInstruction,
+      vulgarizationInstruction,
+      durationConstraint,
+      contentInstruction
+    ]
       .filter(Boolean)
       .join('\n');
   }
@@ -197,19 +194,19 @@ class AnthropicService {
     ];
 
     const specializedBlocks = [];
-    if (contentType === 'math') {
+    if (contentType === 'MATHEMATICAL') {
       specializedBlocks.push(`FORMULE MATHÉMATIQUE :
 <div class="formula">
   <p>Formule ou équation…</p>
 </div>`);
     }
-    if (contentType === 'quote') {
+    if (contentType === 'LITERARY') {
       specializedBlocks.push(`CITATION :
 <div class="quote-block">
   <p>“Citation exacte…” — Auteur</p>
 </div>`);
     }
-    if (contentType === 'code') {
+    if (contentType === 'TECHNICAL') {
       specializedBlocks.push(`CODE :
 <div class="code-block">
   <pre><code>// Code ou pseudo-code
