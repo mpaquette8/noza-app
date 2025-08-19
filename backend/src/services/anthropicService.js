@@ -158,46 +158,48 @@ class AnthropicService {
       .join('\n');
 
     const baseBlocks = [
-      `1) BLOC GÉNÉRIQUE :
+`1) BLOC GÉNÉRIQUE :
 <div class="styled-block">
   <div class="block-title">Titre de la section</div>
   <p>Contenu substantiel…</p>
 </div>`,
-      `2) BLOC CONCEPT CLÉ :
+`2) BLOC CONCEPT CLÉ :
 <div class="styled-block concept-block">
   <div class="block-title">Concept Clé</div>
   <p>Explication claire…</p>
 </div>`,
-      `3) BLOC EXEMPLE PRATIQUE :
+`3) BLOC EXEMPLE PRATIQUE :
 <div class="styled-block example-block">
   <div class="block-title">Exemple Pratique</div>
   <p>Cas concret…</p>
 </div>`,
-      `4) BLOC CONSEILS PRATIQUES :
+`4) BLOC CONSEILS PRATIQUES :
 <div class="styled-block practical-tips-block">
   <div class="block-title">Conseils Pratiques</div>
   <ul>
     <li>Conseil 1…</li>
   </ul>
 </div>`,
-      `5) BLOC ANALOGIE :
+`5) BLOC ANALOGIE :
 <div class="styled-block analogy-block">
   <div class="block-title">Analogie</div>
   <p>Comparaison explicative…</p>
 </div>`,
-      `6) BLOC CONCLUSION (obligatoire) :
+`6) BLOC CONCLUSION (obligatoire) :
 <div class="styled-block conclusion-block">
   <div class="block-title">Conclusion</div>
   <p>Synthèse…</p>
-</div>`,
+</div>`
     ];
 
     const specializedBlocks = [];
+    const criticalFormats = [];
     if (contentType === 'MATHEMATICAL') {
       specializedBlocks.push(`FORMULE MATHÉMATIQUE :
-<div class="formula">
+<div class="math-block">
   <p>Formule ou équation…</p>
 </div>`);
+      criticalFormats.push('- Inclure obligatoirement au moins un bloc <div class="math-block"> pour les formules essentielles.');
     }
     if (contentType === 'LITERARY') {
       specializedBlocks.push(`CITATION :
@@ -211,6 +213,7 @@ class AnthropicService {
   <pre><code>// Code ou pseudo-code
 </code></pre>
 </div>`);
+      criticalFormats.push('- Inclure obligatoirement au moins un bloc <div class="code-block"> pour illustrer le code.');
     }
 
     const specializedText = specializedBlocks.length
@@ -219,24 +222,24 @@ class AnthropicService {
         '\n'
       : '';
 
+    const technicalSection = `FORMATS TECHNIQUES :\n- Utilise uniquement les blocs suivants pour structurer le contenu :\n${baseBlocks.join('\n\n')}${specializedText}${criticalFormats.length ? '\n' + criticalFormats.join('\n') : ''}`;
+
+    const freedomSection = `LIBERTÉ PÉDAGOGIQUE :\n- L'organisation, l'ordre et la combinaison des blocs peuvent varier selon le sujet.\n- Tu peux réordonner, fusionner ou répéter des blocs si cela améliore la compréhension.\n- Les blocs critiques listés ci-dessus restent obligatoires lorsqu'ils sont pertinents.`;
+
     return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
 
 ${adaptiveInstructionsText}
 
+${technicalSection}
+
+${freedomSection}
+
 OBJECTIF GÉNÉRAL :
 - Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre différents types de blocs.
 
-CONTRAINTES DE MISE EN FORME (HTML + CSS fournis) :
-- Le <h1> du titre principal est EN DEHORS de tout bloc.
-- Tout le reste du contenu est structuré UNIQUEMENT via les blocs ci-dessous.
-- Chaque bloc .styled-block DOIT contenir un <div class="block-title"> avec un intitulé clair.
-- Utilise une alternance de blocs pour le rythme visuel (générique → concept → exemple → conseils → analogie, etc.).
-
-BLOCS DISPONIBLES :
-${baseBlocks.join('\n\n')}${specializedText}
 RÈGLES IMPORTANTES :
 - TOUJOURS inclure un <div class="block-title"> dans chaque .styled-block.
-- NE JAMAIS mettre une formule dans un autre bloc que <div class="formula">.
+- NE JAMAIS mettre une formule dans un autre bloc que <div class="math-block">.
 - NE JAMAIS mettre du code hors <div class="code-block">.
 - Chaque bloc doit avoir un contenu substantiel (≥ 2–3 phrases).
 - Le cours doit démarrer par une INTRO dans un bloc générique et se terminer par un bloc conclusion-block.
