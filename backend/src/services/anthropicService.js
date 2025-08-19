@@ -128,25 +128,16 @@ class AnthropicService {
   }
 
   getAdaptiveInstructions(contentType, teacherType, vulgarization, duration) {
-    const teacherInstruction =
-      TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
-      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
-    const vulgarizationInstruction =
-      VULGARIZATION_INSTRUCTIONS[vulgarization] || '';
-    const durationConstraint = this.getDurationConstraint(duration);
-
-    const contentInstruction =
-      ADAPTIVE_FORMAT_INSTRUCTIONS[contentType] ||
-      ADAPTIVE_FORMAT_INSTRUCTIONS.GENERAL;
-
-    return [
-      teacherInstruction,
-      vulgarizationInstruction,
-      durationConstraint,
-      contentInstruction
-    ]
-      .filter(Boolean)
-      .join('\n');
+    return {
+      teacherStyle:
+        TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
+        TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL],
+      vulgarizationLevel: VULGARIZATION_INSTRUCTIONS[vulgarization] || '',
+      durationConstraint: this.getDurationConstraint(duration),
+      formatInstructions:
+        ADAPTIVE_FORMAT_INSTRUCTIONS[contentType] ||
+        ADAPTIVE_FORMAT_INSTRUCTIONS.GENERAL
+    };
   }
 
   createPrompt(subject, vulgarization, duration, teacherType) {
@@ -157,6 +148,14 @@ class AnthropicService {
       vulgarization,
       duration
     );
+    const adaptiveInstructionsText = [
+      adaptiveInstructions.teacherStyle,
+      adaptiveInstructions.vulgarizationLevel,
+      adaptiveInstructions.durationConstraint,
+      adaptiveInstructions.formatInstructions
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     const baseBlocks = [
       `1) BLOC GÉNÉRIQUE :
@@ -222,7 +221,7 @@ class AnthropicService {
 
     return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
 
-${adaptiveInstructions}
+${adaptiveInstructionsText}
 
 OBJECTIF GÉNÉRAL :
 - Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre différents types de blocs.
