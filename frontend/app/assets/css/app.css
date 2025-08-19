@@ -39,9 +39,9 @@ body::before {
    ========================================================================== */
 .container {
     width: 100%;
-    max-width: none;
+    max-width: 100%;
     margin: 0;
-    padding: 15px;
+    padding: 10px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -136,15 +136,17 @@ body::before {
 
 .main-content {
     display: grid;
-    grid-template-columns: minmax(300px, 40%) 1fr;
+    grid-template-columns: minmax(300px, 35%) 1fr;
     gap: 20px;
     flex: 1;
     overflow: hidden;
+    width: 100%;
 }
 
 .marketing-content {
-    padding: 40px 20px;
-    max-width: 800px;
+    padding: 40px 10px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
     text-align: center;
 }
@@ -626,8 +628,8 @@ body::before {
 .course-display {
     background: white;
     border-radius: 15px;
-    padding: 20px;
-    padding-bottom: 40px;
+    padding: 15px;
+    padding-bottom: 35px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     border: 2px solid #e2e8f0;
     min-height: calc(100vh - 120px);
@@ -635,6 +637,7 @@ body::before {
     position: relative;
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .course-display::before {
