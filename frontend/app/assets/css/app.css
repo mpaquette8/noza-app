@@ -135,11 +135,9 @@ body::before {
 
 
 .main-content {
-    display: grid;
-    grid-template-columns: minmax(300px, 35%) 1fr;
-    gap: 20px;
+    display: block;
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
 }
 
