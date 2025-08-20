@@ -11,7 +11,14 @@ class OnboardingController {
   getConfig(req, res) {
     try {
       const config = this.onboardingService.getQuestionConfig();
-      const { response } = createResponse(true, { config });
+      const questions = config.map((q) => ({
+        id: q.key,
+        question: q.question,
+        type: q.options?.length ? 'select' : 'text',
+        options: q.options || [],
+        label: q.question
+      }));
+      const { response } = createResponse(true, { questions });
       res.json(response);
     } catch (error) {
       logger.error('Erreur récupération configuration onboarding', error);
