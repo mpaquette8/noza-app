@@ -151,6 +151,11 @@ class OnboardingService {
     return keys.every((k) => profile[k]);
   }
 
+  needsOnboarding(profile) {
+    if (!profile) return true;
+    return !this.isProfileComplete(profile);
+  }
+
   calculateProfileConfidence(profile) {
     const keys = ['pedagogicalProfile', 'learningGoal', 'preferredStyle'];
     const answered = keys.filter((k) => profile[k]).length;
