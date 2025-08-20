@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding</title>
+  <link rel="stylesheet" href="app/assets/css/app.css">
+</head>
+<body>
+  <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <div class="container">
+    <form id="onboardingForm" class="onboarding-form" style="display:none;"></form>
+  </div>
+
+  <script src="app/assets/js/config.js"></script>
+  <script type="module" src="app/assets/js/utils/utils.js"></script>
+  <script type="module" src="app/assets/js/auth.js"></script>
+  <script type="module" src="app/assets/js/onboarding-manager.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const form = document.getElementById('onboardingForm');
+      utils.showLoading();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/onboarding/config`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authManager?.getAuthHeaders ? authManager.getAuthHeaders() : {})
+          }
+        });
+        const data = await response.json();
+        if (data.questions && Array.isArray(data.questions)) {
+          data.questions.forEach(q => {
+            const field = document.createElement('div');
+            const label = document.createElement('label');
+            label.textContent = q.label || q.question || q.id;
+            label.setAttribute('for', `q_${q.id}`);
+            field.appendChild(label);
+
+            let input;
+            if (q.type === 'textarea') {
+              input = document.createElement('textarea');
+            } else {
+              input = document.createElement('input');
+              input.type = q.type || 'text';
+            }
+            input.id = `q_${q.id}`;
+            input.name = q.id;
+            field.appendChild(input);
+
+            form.appendChild(field);
+          });
+
+          const submit = document.createElement('button');
+          submit.type = 'submit';
+          submit.id = 'submitBtn';
+          submit.textContent = 'Envoyer';
+          form.appendChild(submit);
+
+          form.style.display = 'block';
+        } else {
+          utils.handleAuthError('Configuration onboarding invalide');
+        }
+      } catch (err) {
+        console.error('Erreur chargement configuration onboarding', err);
+        if (typeof utils !== 'undefined') {
+          utils.handleAuthError('Erreur chargement questions');
+        }
+      } finally {
+        utils.hideLoading();
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        utils.showLoading(['submitBtn']);
+        const formData = new FormData(form);
+        const answers = Object.fromEntries(formData.entries());
+
+        try {
+          const resp = await fetch(`${API_BASE_URL}/onboarding/complete`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(authManager?.getAuthHeaders ? authManager.getAuthHeaders() : {})
+            },
+            body: JSON.stringify({ answers })
+          });
+          const result = await resp.json();
+          if (result.success) {
+            if (window.onboardingManager) {
+              await window.onboardingManager.checkOnboardingStatus(true);
+            }
+            window.location.href = '/app/';
+          } else {
+            utils.handleAuthError(result.error || 'Erreur lors de l\'envoi');
+          }
+        } catch (err) {
+          console.error('Erreur envoi onboarding', err);
+          utils.handleAuthError('Erreur envoi réponses');
+        } finally {
+          utils.hideLoading(['submitBtn']);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
