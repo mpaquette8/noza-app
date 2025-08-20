@@ -15,12 +15,44 @@ model User {
   avatar        String?
   googleId      String?       @unique
   provider      String        @default("email")
+  
+  // 🆕 NOUVEAUX CHAMPS - ONBOARDING
+  pedagogicalProfile     String?   // "methodical", "socratic", "adaptive", "direct"
+  learningGoal          String?   // "découvrir", "consolider", "approfondir"
+  preferredStyle        String?   // "analogies", "pratique", "questions", "exemples"
+  onboardingCompleted   Boolean   @default(false)
+  profileConfidence     Float?    @default(0.0)
+  lastProfileUpdate     DateTime?
+  
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  
+  // Relations existantes
   chatHistories ChatHistory[]
   courses       Course[]
   quizzes       Quiz[]
+  
+  // 🆕 NOUVELLE RELATION
+  userData      UserData[]
+  
   @@map("users")
+}
+
+// 🆕 NOUVEAU MODÈLE - Données flexibles
+model UserData {
+  id        String   @id @default(cuid())
+  userId    String
+  key       String   // "preferred_domains", "learning_pace", "difficulty_preference", etc.
+  value     Json     // Stockage flexible : string, array, object
+  category  String?  // "onboarding", "preferences", "analytics", "behavior"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, key]) // Un seul "preferred_domains" par user
+  @@index([userId, category])
+  @@map("user_data")
 }
 
 model Course {
