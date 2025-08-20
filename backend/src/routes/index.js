@@ -3,6 +3,7 @@ const express = require('express');
 const authRoutes = require('./auth');
 const coursesRoutes = require('./courses');
 const aiRoutes = require('./ai');
+const onboardingRoutes = require('./onboardingRoutes');
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ const router = express.Router();
 router.use('/auth', authRoutes);
 router.use('/courses', coursesRoutes);
 router.use('/ai', aiRoutes);
+router.use('/onboarding', onboardingRoutes);
 
 // Route de santé
 router.get('/health', (req, res) => {
