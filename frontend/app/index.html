@@ -179,30 +179,13 @@
         </div>
     </div>
 
+    <script src="assets/js/onboarding-manager.js"></script>
     <script src="assets/js/auth-check.js"></script>
-    <script src="assets/js/app-auth-check.js"></script>
+    <script type="module" src="assets/js/app-init.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script type="module" src="assets/js/utils/utils.js"></script>
     <script src="assets/js/googleAuth.js"></script>
     <script type="module" src="assets/js/auth.js"></script>
-    <script type="module">
-      import { ModularConfigManager } from './assets/js/modular-config-manager.js';
-      import { authManager } from './assets/js/auth.js';
-
-      document.addEventListener('DOMContentLoaded', () => {
-        window.configManager = new ModularConfigManager();
-        configManager.init();
-
-        if (!authManager.isAuthenticated()) {
-          window.location.href = '/auth.html';
-          return;
-        }
-
-        if (typeof window.initializeApp === 'function') {
-          window.initializeApp();
-        }
-      });
-    </script>
     <script type="module" src="assets/js/course-manager.js"></script>
     <script type="module" src="assets/js/main.js"></script>
 </body>
