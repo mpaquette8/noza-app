@@ -2,12 +2,18 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const { logger } = require('../utils/helpers');
 const {
-  LIMITS,
   DURATIONS,
   TEACHER_TYPES,
-  VULGARIZATION_LEVELS,
-  ERROR_CODES
+  VULGARIZATION_LEVELS
 } = require('../utils/constants');
+
+const MAX_COURSE_LENGTH = 6000;
+const ERROR_CODES = {
+  IA_TIMEOUT: 'IA_TIMEOUT',
+  QUOTA_EXCEEDED: 'QUOTA_EXCEEDED',
+  IA_ERROR: 'IA_ERROR',
+  IA_OVERLOADED: 'IA_OVERLOADED'
+};
 
 const OFFLINE_MESSAGE = 'Service IA indisponible';
 const REQUEST_TIMEOUT = 30 * 1000; // 30s timeout for IA requests
@@ -179,7 +185,7 @@ RENDU ATTENDU :
 
       const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',
-        max_tokens: LIMITS.MAX_COURSE_LENGTH,
+        max_tokens: MAX_COURSE_LENGTH,
         temperature: 0.2,
         messages: [{
           role: 'user',
