@@ -113,51 +113,6 @@ const HTTP_STATUS = {
   SERVICE_UNAVAILABLE: 503
 };
 
-// Mots-clés pour détecter le type de contenu
-const CONTENT_DETECTION_KEYWORDS = {
-  MATHEMATICAL: [
-    'math',
-    'mathématique',
-    'équation',
-    'formule',
-    'calcul',
-    'théorème'
-  ],
-  TECHNICAL: [
-    'code',
-    'programmation',
-    'algorithme',
-    'javascript',
-    'python'
-  ],
-  SCIENTIFIC: [
-    'science',
-    'expérience',
-    'biologie',
-    'chimie',
-    'physique'
-  ],
-  LITERARY: [
-    'citation',
-    'littérature',
-    'roman',
-    'poésie',
-    'auteur'
-  ]
-};
-
-// Consignes adaptatives pour chaque type de contenu
-const ADAPTIVE_FORMAT_INSTRUCTIONS = {
-  MATHEMATICAL:
-    'Si des formules sont nécessaires, utilise uniquement des blocs <div class="math-block"> et ajoute un bloc générique pour les interpréter.',
-  TECHNICAL:
-    'Si du code est pertinent, insère-le uniquement dans des blocs <div class="code-block">.',
-  SCIENTIFIC:
-    'Présente les informations scientifiques de manière structurée et cite les sources si nécessaire.',
-  LITERARY:
-    'Si une citation est utile, place-la dans un bloc <div class="quote-block">.',
-  GENERAL: ''
-};
 
 module.exports = {
   DETAIL_LEVELS,
@@ -171,7 +126,5 @@ module.exports = {
   HTTP_STATUS,
   ERROR_CODES,
   AI_ERROR_MESSAGES,
-  DURATIONS,
-  CONTENT_DETECTION_KEYWORDS,
-  ADAPTIVE_FORMAT_INSTRUCTIONS
+  DURATIONS
 };
