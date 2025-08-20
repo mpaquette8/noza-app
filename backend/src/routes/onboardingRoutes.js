@@ -10,10 +10,10 @@ const router = express.Router();
 router.use(authenticate);
 
 // Routes d'onboarding
-router.get('/config', asyncHandler(onboardingController.getConfig));
-router.post('/complete', asyncHandler(onboardingController.complete));
-router.get('/profile', asyncHandler(onboardingController.getProfile));
-router.get('/status', asyncHandler(onboardingController.getStatus));
-router.post('/preference', asyncHandler(onboardingController.addPreference));
+router.get('/config', asyncHandler(onboardingController.getConfig.bind(onboardingController)));
+router.post('/complete', asyncHandler(onboardingController.complete.bind(onboardingController)));
+router.get('/profile', asyncHandler(onboardingController.getProfile.bind(onboardingController)));
+router.get('/status', asyncHandler(onboardingController.getStatus.bind(onboardingController)));
+router.post('/preference', asyncHandler(onboardingController.addPreference.bind(onboardingController)));
 
 module.exports = router;
