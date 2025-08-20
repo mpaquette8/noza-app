@@ -85,137 +85,171 @@
   <script type="module" src="assets/js/utils/utils.js"></script>
   <script type="module" src="assets/js/auth.js"></script>
   <script type="module" src="assets/js/onboarding-manager.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const form = document.getElementById('onboardingForm');
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  // Vérifier l'authentification avant tout
+  if (!window.authManager) {
+    console.error('AuthManager non disponible');
+    window.location.href = '/auth.html';
+    return;
+  }
 
-      console.log('Onboarding globals', {
-        API_BASE_URL: window.API_BASE_URL,
-        authManager: window.authManager,
-        utils: window.utils
-      });
+  // Vérifier si l'utilisateur est authentifié
+  if (!window.authManager.isAuthenticated()) {
+    console.log('Utilisateur non authentifié, redirection...');
+    window.location.href = '/auth.html';
+    return;
+  }
 
-      // Verify required globals
-      if (!window.API_BASE_URL || !window.authManager || !window.utils) {
-        console.error('Missing required globals', {
-          API_BASE_URL: window.API_BASE_URL,
-          authManager: window.authManager,
-          utils: window.utils
-        });
-        return;
+  const form = document.getElementById('onboardingForm');
+
+  console.log('Onboarding globals', {
+    API_BASE_URL: window.API_BASE_URL,
+    authManager: window.authManager,
+    utils: window.utils,
+    isAuthenticated: window.authManager.isAuthenticated()
+  });
+
+  // Verify required globals
+  if (!window.API_BASE_URL || !window.authManager || !window.utils) {
+    console.error('Missing required globals');
+    window.utils?.showNotification?.('Erreur de configuration', 'error') || alert('Erreur de configuration');
+    return;
+  }
+
+  utils.showLoading();
+  const configUrl = `${API_BASE_URL}/onboarding/config`;
+
+  try {
+    console.log('Fetching onboarding config:', configUrl);
+    console.log('Auth headers:', window.authManager.getAuthHeaders());
+    
+    const response = await fetch(configUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authManager.getAuthHeaders()
       }
+    });
+    
+    console.log('Config response status:', response.status);
+    
+    if (response.status === 401) {
+      console.log('Token expiré, redirection vers auth');
+      window.authManager.logout();
+      window.location.href = '/auth.html';
+      return;
+    }
+    
+    const data = await response.json();
+    console.log('Config response data:', data);
 
-      utils.showLoading();
-      const configUrl = `${API_BASE_URL}/onboarding/config`;
+    if (!response.ok) {
+      throw new Error(data.error || `HTTP ${response.status}`);
+    }
 
+    if (!data.success || !Array.isArray(data.questions)) {
+      throw new Error('Configuration onboarding invalide');
+    }
+
+    // Construire le formulaire
+    const title = document.createElement('h2');
+    title.textContent = 'Finalisons votre profil';
+    title.style.cssText = 'text-align: center; margin-bottom: 30px; color: #2d3748;';
+    form.appendChild(title);
+
+    data.questions.forEach(q => {
+      const field = document.createElement('div');
+      field.className = 'question-field';
+      const label = document.createElement('label');
+      label.textContent = q.label || q.question || q.id;
+      label.setAttribute('for', `q_${q.id}`);
+      field.appendChild(label);
+
+      let input;
+      switch (q.type) {
+        case 'select':
+          input = document.createElement('select');
+          if (Array.isArray(q.options)) {
+            q.options.forEach(opt => {
+              const option = document.createElement('option');
+              if (typeof opt === 'object') {
+                option.value = opt.value ?? opt.id ?? '';
+                option.textContent = opt.label ?? opt.value ?? opt.id ?? '';
+              } else {
+                option.value = opt;
+                option.textContent = opt;
+              }
+              input.appendChild(option);
+            });
+          }
+          break;
+        default:
+          input = document.createElement('input');
+          input.type = 'text';
+      }
+      input.id = `q_${q.id}`;
+      input.name = q.id;
+      field.appendChild(input);
+      form.appendChild(field);
+    });
+
+    const submitBtn = document.createElement('button');
+    submitBtn.type = 'submit';
+    submitBtn.className = 'submit-btn';
+    submitBtn.textContent = 'Finaliser mon profil';
+    form.appendChild(submitBtn);
+
+    form.style.display = 'block';
+    utils.hideLoading();
+
+    // Gestionnaire de soumission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const answers = {};
+      for (const [key, value] of formData.entries()) {
+        answers[key] = value;
+      }
+      
+      console.log('Soumission réponses:', answers);
+      
       try {
-        console.log('Fetching onboarding config:', configUrl);
-        const response = await fetch(configUrl, {
+        utils.showLoading();
+        const response = await fetch(`${API_BASE_URL}/onboarding/complete`, {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             ...authManager.getAuthHeaders()
-          }
+          },
+          body: JSON.stringify(answers)
         });
-        console.log('Config response status:', response.status);
-        const data = await response.json();
-        console.log('Config response data:', data);
-
-        if (!data.success || !Array.isArray(data.questions)) {
-          throw new Error('Configuration onboarding invalide');
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          utils.showNotification('Profil complété avec succès !', 'success');
+          setTimeout(() => {
+            window.location.href = '/app/';
+          }, 1500);
+        } else {
+          throw new Error(result.error || 'Erreur lors de la sauvegarde');
         }
-
-        data.questions.forEach(q => {
-          const field = document.createElement('div');
-          field.className = 'question-field';
-          const label = document.createElement('label');
-          label.textContent = q.label || q.question || q.id;
-          label.setAttribute('for', `q_${q.id}`);
-          field.appendChild(label);
-
-          let input;
-          switch (q.type) {
-            case 'select':
-              input = document.createElement('select');
-              if (Array.isArray(q.options)) {
-                q.options.forEach(opt => {
-                  const option = document.createElement('option');
-                  if (typeof opt === 'object') {
-                    option.value = opt.value ?? opt.id ?? '';
-                    option.textContent = opt.label ?? opt.value ?? opt.id ?? '';
-                  } else {
-                    option.value = opt;
-                    option.textContent = opt;
-                  }
-                  input.appendChild(option);
-                });
-              }
-              break;
-            case 'textarea':
-              input = document.createElement('textarea');
-              break;
-            default:
-              input = document.createElement('input');
-              input.type = q.type || 'text';
-          }
-          input.id = `q_${q.id}`;
-          input.name = q.id;
-          field.appendChild(input);
-
-          form.appendChild(field);
-        });
-
-        const submit = document.createElement('button');
-        submit.type = 'submit';
-        submit.id = 'submitBtn';
-        submit.className = 'submit-btn';
-        submit.textContent = 'Envoyer';
-        form.appendChild(submit);
-
-        form.style.display = 'block';
-      } catch (err) {
-        console.error('Erreur chargement configuration onboarding', err);
-        utils.handleAuthError('Erreur chargement questions');
+      } catch (error) {
+        console.error('Erreur soumission onboarding:', error);
+        utils.showNotification('Erreur : ' + error.message, 'error');
       } finally {
         utils.hideLoading();
       }
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        utils.showLoading(['submitBtn']);
-        const formData = new FormData(form);
-        const answers = Object.fromEntries(formData.entries());
-
-        const submitUrl = `${API_BASE_URL}/onboarding/complete`;
-        try {
-          console.log('Submitting onboarding answers to:', submitUrl);
-          const resp = await fetch(submitUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...authManager.getAuthHeaders()
-            },
-            body: JSON.stringify({ answers })
-          });
-          console.log('Submit response status:', resp.status);
-          const result = await resp.json();
-          console.log('Submit response data:', result);
-
-          if (result.success) {
-            if (window.onboardingManager) {
-              await window.onboardingManager.checkOnboardingStatus(true);
-            }
-            window.location.href = '/app/';
-          } else {
-            utils.handleAuthError(result.error || 'Erreur lors de l\'envoi');
-          }
-        } catch (err) {
-          console.error('Erreur envoi onboarding', err);
-          utils.handleAuthError('Erreur envoi réponses');
-        } finally {
-          utils.hideLoading(['submitBtn']);
-        }
-      });
     });
-  </script>
+
+  } catch (error) {
+    console.error('Erreur chargement configuration onboarding:', error);
+    utils.hideLoading();
+    utils.showNotification('Erreur chargement configuration: ' + error.message, 'error');
+  }
+});
+</script>
 </body>
 </html>
