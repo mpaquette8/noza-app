@@ -89,6 +89,12 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const form = document.getElementById('onboardingForm');
 
+      console.log('Onboarding globals', {
+        API_BASE_URL: window.API_BASE_URL,
+        authManager: window.authManager,
+        utils: window.utils
+      });
+
       // Verify required globals
       if (!window.API_BASE_URL || !window.authManager || !window.utils) {
         console.error('Missing required globals', {
