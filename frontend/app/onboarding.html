@@ -120,11 +120,11 @@
         const data = await response.json();
         console.log('Config response data:', data);
 
-        if (!data.success || !Array.isArray(data.data?.questions)) {
+        if (!data.success || !Array.isArray(data.questions)) {
           throw new Error('Configuration onboarding invalide');
         }
 
-        data.data.questions.forEach(q => {
+        data.questions.forEach(q => {
           const field = document.createElement('div');
           field.className = 'question-field';
           const label = document.createElement('label');
