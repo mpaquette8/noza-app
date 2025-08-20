@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm install --prefix backend",
     "start": "npm start --prefix backend",
-    "test": "node --test frontend/tests/*.js"
+    "test": "node --test frontend/tests/*.js backend/tests/**/*.js"
   },
   "engines": {
     "node": ">=18"
