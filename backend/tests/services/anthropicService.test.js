@@ -20,38 +20,27 @@ const anthropicService = require('../../src/services/anthropicService');
 Module._load = originalLoad;
 const { TEACHER_TYPES, DURATIONS, VULGARIZATION_LEVELS, ERROR_CODES } = require('../../src/utils/constants');
 
-test('createPrompt includes duration word counts', () => {
-  const mapping = {
-    [DURATIONS.SHORT]: 750,
-    [DURATIONS.MEDIUM]: 2250,
-    [DURATIONS.LONG]: 4200
-  };
-  for (const [duration, count] of Object.entries(mapping)) {
-    const prompt = anthropicService.createPrompt('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, duration, TEACHER_TYPES.METHODICAL);
-    assert.match(prompt, new RegExp(`${count} mots`));
-  }
-});
-
-test('createPrompt includes teacher and vulgarization instructions', () => {
-  const promptMethod = anthropicService.createPrompt(
+test('createPrompt creates flexible educational content', () => {
+  const prompt = anthropicService.createPrompt(
     'Sujet',
     VULGARIZATION_LEVELS.GENERAL_PUBLIC,
     DURATIONS.MEDIUM,
     TEACHER_TYPES.METHODICAL
   );
-  const promptPassion = anthropicService.createPrompt(
+
+  assert.match(prompt, /PHILOSOPHIE PÉDAGOGIQUE/);
+  assert.match(prompt, /Pour aller plus loin/);
+});
+
+test('createPrompt allows pedagogical freedom', () => {
+  const prompt = anthropicService.createPrompt(
     'Sujet',
-    VULGARIZATION_LEVELS.KNOWLEDGEABLE,
+    VULGARIZATION_LEVELS.GENERAL_PUBLIC,
     DURATIONS.MEDIUM,
-    TEACHER_TYPES.PASSIONATE
+    TEACHER_TYPES.METHODICAL
   );
 
-  assert.match(promptMethod, /approche méthodique et structurée/);
-  assert.match(promptPassion, /passion et enthousiasme/);
-  assert.notStrictEqual(promptMethod, promptPassion);
-
-  assert.match(promptMethod, /grand public/);
-  assert.match(promptPassion, /bonnes connaissances de base/);
+  assert.doesNotMatch(prompt, /STRUCTURE REQUISE/);
 });
 
 test('sendWithTimeout retries on overload errors', async () => {
