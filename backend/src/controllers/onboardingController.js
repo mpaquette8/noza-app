@@ -11,6 +11,7 @@ class OnboardingController {
   getConfig(req, res) {
     try {
       const config = this.onboardingService.getQuestionConfig();
+      logger.info('Raw onboarding config', config);
       const questions = config.map((q) => ({
         id: q.key,
         question: q.question,
@@ -18,6 +19,7 @@ class OnboardingController {
         options: q.options || [],
         label: q.question
       }));
+      logger.info('Transformed onboarding questions', questions);
       const { response } = createResponse(true, { questions });
       res.json(response);
     } catch (error) {
