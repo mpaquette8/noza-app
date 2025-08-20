@@ -6,9 +6,7 @@ const {
   DURATIONS,
   TEACHER_TYPES,
   VULGARIZATION_LEVELS,
-  ERROR_CODES,
-  CONTENT_DETECTION_KEYWORDS,
-  ADAPTIVE_FORMAT_INSTRUCTIONS
+  ERROR_CODES
 } = require('../utils/constants');
 
 const OFFLINE_MESSAGE = 'Service IA indisponible';
@@ -117,142 +115,59 @@ class AnthropicService {
     return words ? `Le cours doit contenir environ ${words} mots.` : '';
   }
 
-  detectContentType(subject) {
-    const lower = subject.toLowerCase();
-    for (const [type, keywords] of Object.entries(CONTENT_DETECTION_KEYWORDS)) {
-      if (keywords.some(keyword => lower.includes(keyword.toLowerCase()))) {
-        return type;
-      }
-    }
-    return 'GENERAL';
-  }
-
-  getAdaptiveInstructions(contentType, teacherType, vulgarization, duration) {
+  getAdaptiveInstructions(teacherType, vulgarization, duration) {
     return {
       teacherStyle:
         TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
         TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL],
       vulgarizationLevel: VULGARIZATION_INSTRUCTIONS[vulgarization] || '',
-      durationConstraint: this.getDurationConstraint(duration),
-      formatInstructions:
-        ADAPTIVE_FORMAT_INSTRUCTIONS[contentType] ||
-        ADAPTIVE_FORMAT_INSTRUCTIONS.GENERAL
+      durationConstraint: this.getDurationConstraint(duration)
     };
   }
 
   createPrompt(subject, vulgarization, duration, teacherType) {
-    const contentType = this.detectContentType(subject);
-    const adaptiveInstructions = this.getAdaptiveInstructions(
-      contentType,
+    const adaptive = this.getAdaptiveInstructions(
       teacherType,
       vulgarization,
       duration
     );
-    const adaptiveInstructionsText = [
-      adaptiveInstructions.teacherStyle,
-      adaptiveInstructions.vulgarizationLevel,
-      adaptiveInstructions.durationConstraint,
-      adaptiveInstructions.formatInstructions
+    const adaptiveText = [
+      adaptive.teacherStyle,
+      adaptive.vulgarizationLevel,
+      adaptive.durationConstraint
     ]
       .filter(Boolean)
-      .join('\n');
+      .map(line => `- ${line}`)
+      .join('\\n');
 
-    const baseBlocks = [
-`1) BLOC GÉNÉRIQUE :
-<div class="styled-block">
-  <div class="block-title">Titre de la section</div>
-  <p>Contenu substantiel…</p>
-</div>`,
-`2) BLOC CONCEPT CLÉ :
-<div class="styled-block concept-block">
-  <div class="block-title">Concept Clé</div>
-  <p>Explication claire…</p>
-</div>`,
-`3) BLOC EXEMPLE PRATIQUE :
-<div class="styled-block example-block">
-  <div class="block-title">Exemple Pratique</div>
-  <p>Cas concret…</p>
-</div>`,
-`4) BLOC CONSEILS PRATIQUES :
-<div class="styled-block practical-tips-block">
-  <div class="block-title">Conseils Pratiques</div>
-  <ul>
-    <li>Conseil 1…</li>
-  </ul>
-</div>`,
-`5) BLOC ANALOGIE :
-<div class="styled-block analogy-block">
-  <div class="block-title">Analogie</div>
-  <p>Comparaison explicative…</p>
-</div>`,
-`6) BLOC CONCLUSION (obligatoire) :
-<div class="styled-block conclusion-block">
-  <div class="block-title">Conclusion</div>
-  <p>Synthèse…</p>
-</div>`
-    ];
+    return `<h1>Titre du Cours</h1>
 
-    const specializedBlocks = [];
-    const criticalFormats = [];
-    if (contentType === 'MATHEMATICAL') {
-      specializedBlocks.push(`FORMULE MATHÉMATIQUE :
-<div class="math-block">
-  <p>Formule ou équation…</p>
-</div>`);
-      criticalFormats.push('- Inclure obligatoirement au moins un bloc <div class="math-block"> pour les formules essentielles.');
-    }
-    if (contentType === 'LITERARY') {
-      specializedBlocks.push(`CITATION :
-<div class="quote-block">
-  <p>“Citation exacte…” — Auteur</p>
-</div>`);
-    }
-    if (contentType === 'TECHNICAL') {
-      specializedBlocks.push(`CODE :
-<div class="code-block">
-  <pre><code>// Code ou pseudo-code
-</code></pre>
-</div>`);
-      criticalFormats.push('- Inclure obligatoirement au moins un bloc <div class="code-block"> pour illustrer le code.');
-    }
+PHILOSOPHIE PÉDAGOGIQUE :
+${adaptiveText}
 
-    const specializedText = specializedBlocks.length
-      ? '\nBLOCS SPÉCIALISÉS (uniquement si nécessaire) :\n' +
-        specializedBlocks.join('\n\n') +
-        '\n'
-      : '';
+OUTILS DE MISE EN FORME DISPONIBLES :
+- Utilise librement les blocs HTML suivants :
+<div class='styled-block'>
+  <div class='block-title'>Titre de la section</div>
+  <p>Contenu…</p>
+</div>
+<div class='math-block'>Formule ou équation…</div>
+<div class='code-block'><pre><code>// Code ou pseudo-code</code></pre></div>
+<div class='quote-block'>“Citation exacte…” — Auteur</div>
+<div class='example-block'>Cas concret…</div>
+<div class='conclusion-block'>Conclusion…</div>
 
-    const technicalSection = `FORMATS TECHNIQUES :\n- Utilise uniquement les blocs suivants pour structurer le contenu :\n${baseBlocks.join('\n\n')}${specializedText}${criticalFormats.length ? '\n' + criticalFormats.join('\n') : ''}`;
+LIBERTÉ CRÉATIVE :
+- Organise et combine les blocs comme tu le souhaites pour optimiser la compréhension.
+- Commence par une introduction et termine par une conclusion.
+- Après la conclusion, ajoute un bloc générique 'Pour aller plus loin' avec 2–3 questions de réflexion et 2–3 pistes de cours ou lectures.
 
-    const freedomSection = `LIBERTÉ PÉDAGOGIQUE :\n- L'organisation, l'ordre et la combinaison des blocs peuvent varier selon le sujet.\n- Tu peux réordonner, fusionner ou répéter des blocs si cela améliore la compréhension.\n- Les blocs critiques listés ci-dessus restent obligatoires lorsqu'ils sont pertinents.`;
-
-    return `Tu es un expert pédagogue qui cherche avant tout à faire comprendre. Décrypte le sujet : "${subject}"
-
-${adaptiveInstructionsText}
-
-${technicalSection}
-
-${freedomSection}
-
-OBJECTIF GÉNÉRAL :
-- Le cours doit être informatif, bien structuré et engageant, avec une alternance visuelle entre différents types de blocs.
-
-RÈGLES IMPORTANTES :
-- TOUJOURS inclure un <div class="block-title"> dans chaque .styled-block.
-- NE JAMAIS mettre une formule dans un autre bloc que <div class="math-block">.
-- NE JAMAIS mettre du code hors <div class="code-block">.
-- Chaque bloc doit avoir un contenu substantiel (≥ 2–3 phrases).
-- Le cours doit démarrer par une INTRO dans un bloc générique et se terminer par un bloc conclusion-block.
-- Après la conclusion, AJOUTE OBLIGATOIREMENT un bloc “Pour aller plus loin” (générique) avec 2–3 questions de réflexion et 2–3 pistes de cours/lectures.
-
-STRUCTURE REQUISE (ordre conseillé) :
-<h1>Titre du Cours</h1>
-<div class="styled-block">...</div>
-<div class="styled-block conclusion-block">...</div>
+Sujet : '${subject}'
 
 RENDU ATTENDU :
 - Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).`;
   }
+
 
 // Générer un cours
   async generateCourse(subject, vulgarization, duration, teacherType) {
