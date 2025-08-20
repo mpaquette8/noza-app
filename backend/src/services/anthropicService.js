@@ -145,20 +145,7 @@ class AnthropicService {
 PHILOSOPHIE PÉDAGOGIQUE :
 ${adaptiveText}
 
-OUTILS DE MISE EN FORME DISPONIBLES :
-- Utilise librement les blocs HTML suivants :
-<div class='styled-block'>
-  <div class='block-title'>Titre de la section</div>
-  <p>Contenu…</p>
-</div>
-<div class='math-block'>Formule ou équation…</div>
-<div class='code-block'><pre><code>// Code ou pseudo-code</code></pre></div>
-<div class='quote-block'>“Citation exacte…” — Auteur</div>
-<div class='example-block'>Cas concret…</div>
-<div class='conclusion-block'>Conclusion…</div>
-
-LIBERTÉ CRÉATIVE :
-- Organise et combine les blocs comme tu le souhaites pour optimiser la compréhension.
+STRUCTURE :
 - Commence par une introduction et termine par une conclusion.
 - Après la conclusion, ajoute un bloc générique 'Pour aller plus loin' avec 2–3 questions de réflexion et 2–3 pistes de cours ou lectures.
 
