@@ -10,19 +10,50 @@ const { logger } = require('../utils/helpers');
 // Configuration des questions d'onboarding
 const QUESTION_CONFIG = [
   {
-    key: 'pedagogicalProfile',
-    question: 'Quel type de profil pédagogique te correspond le plus ?',
-    options: ['methodical', 'socratic', 'adaptive', 'direct']
+    id: 'teacherType',
+    label: "Quel type d'enseignant préfères-tu ?",
+    type: 'select',
+    options: [
+      { value: 'methodical', label: 'Méthodique' },
+      { value: 'passionate', label: 'Passionné' },
+      { value: 'analogist', label: 'Analogiste' },
+      { value: 'pragmatic', label: 'Pragmatique' },
+      { value: 'benevolent', label: 'Bienveillant' },
+      { value: 'synthetic', label: 'Synthétique' }
+    ]
   },
   {
-    key: 'learningGoal',
-    question: "Quel est ton objectif d'apprentissage ?",
-    options: ['decouvrir', 'consolider', 'approfondir']
+    id: 'vulgarization',
+    label: 'Quel niveau de vulgarisation souhaites-tu ?',
+    type: 'select',
+    options: [
+      { value: 'general_public', label: 'Grand public' },
+      { value: 'enlightened', label: 'Éclairé' },
+      { value: 'knowledgeable', label: 'Connaisseur' },
+      { value: 'expert', label: 'Expert' }
+    ]
   },
   {
-    key: 'preferredStyle',
-    question: "Quel style d'explication t'aide le plus ?",
-    options: ['analogies', 'pratique', 'questions', 'exemples']
+    id: 'duration',
+    label: 'Quelle durée de cours préfères-tu ?',
+    type: 'select',
+    options: [
+      { value: 'short', label: 'Courte' },
+      { value: 'medium', label: 'Moyenne' },
+      { value: 'long', label: 'Longue' }
+    ]
+  },
+  {
+    id: 'interests',
+    label: "Quels sont tes centres d'intérêt ?",
+    type: 'select',
+    multiple: true,
+    options: [
+      { value: 'science', label: 'Science' },
+      { value: 'history', label: 'Histoire' },
+      { value: 'technology', label: 'Technologie' },
+      { value: 'art', label: 'Art' }
+    ]
   }
 ];
 
@@ -39,14 +70,14 @@ class OnboardingService {
     if (!this.prisma) {
       throw new Error("Prisma client non initialisé");
     }
-    const profileKeys = ['pedagogicalProfile', 'learningGoal', 'preferredStyle'];
+    const profileKeys = ['teacherType', 'vulgarization', 'duration'];
 
     const existing = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
-        pedagogicalProfile: true,
-        learningGoal: true,
-        preferredStyle: true
+        teacherType: true,
+        vulgarization: true,
+        duration: true
       }
     });
 
@@ -111,9 +142,9 @@ class OnboardingService {
       where: { id: userId },
       select: {
         id: true,
-        pedagogicalProfile: true,
-        learningGoal: true,
-        preferredStyle: true,
+        teacherType: true,
+        vulgarization: true,
+        duration: true,
         onboardingCompleted: true,
         profileConfidence: true,
         lastProfileUpdate: true,
@@ -128,9 +159,10 @@ class OnboardingService {
 
   buildProfile(user) {
     const profile = {
-      pedagogicalProfile: user.pedagogicalProfile || null,
-      learningGoal: user.learningGoal || null,
-      preferredStyle: user.preferredStyle || null,
+      teacherType: user.teacherType || null,
+      vulgarization: user.vulgarization || null,
+      duration: user.duration || null,
+      interests: [],
       onboardingCompleted: user.onboardingCompleted || false,
       profileConfidence: user.profileConfidence ?? 0,
       lastProfileUpdate: user.lastProfileUpdate || null,
@@ -139,7 +171,11 @@ class OnboardingService {
 
     if (Array.isArray(user.userData)) {
       for (const item of user.userData) {
-        profile.extra[item.key] = item.value;
+        if (item.key === 'interests') {
+          profile.interests = item.value;
+        } else {
+          profile.extra[item.key] = item.value;
+        }
       }
     }
 
@@ -147,7 +183,7 @@ class OnboardingService {
   }
 
   isProfileComplete(profile) {
-    const keys = ['pedagogicalProfile', 'learningGoal', 'preferredStyle'];
+    const keys = ['teacherType', 'vulgarization', 'duration'];
     return keys.every((k) => profile[k]);
   }
 
@@ -157,7 +193,7 @@ class OnboardingService {
   }
 
   calculateProfileConfidence(profile) {
-    const keys = ['pedagogicalProfile', 'learningGoal', 'preferredStyle'];
+    const keys = ['teacherType', 'vulgarization', 'duration'];
     const answered = keys.filter((k) => profile[k]).length;
     return answered / keys.length;
   }
