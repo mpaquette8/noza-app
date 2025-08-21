@@ -169,28 +169,57 @@ document.addEventListener('DOMContentLoaded', async () => {
       let input;
       switch (q.type) {
         case 'select':
-          input = document.createElement('select');
-          if (Array.isArray(q.options)) {
-            q.options.forEach(opt => {
-              const option = document.createElement('option');
-              if (typeof opt === 'object') {
-                option.value = opt.value ?? opt.id ?? '';
-                option.textContent = opt.label ?? opt.value ?? opt.id ?? '';
-              } else {
-                option.value = opt;
-                option.textContent = opt;
-              }
-              input.appendChild(option);
-            });
+          if (q.multiple) {
+            input = document.createElement('div');
+            if (Array.isArray(q.options)) {
+              q.options.forEach((opt, idx) => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `q_${q.id}_${idx}`;
+                checkbox.name = `${q.id}[]`;
+                checkbox.value = typeof opt === 'object' ? (opt.value ?? opt.id ?? '') : opt;
+
+                const cbLabel = document.createElement('label');
+                cbLabel.textContent = typeof opt === 'object' ? (opt.label ?? opt.value ?? opt.id ?? '') : opt;
+                cbLabel.setAttribute('for', checkbox.id);
+
+                const wrapper = document.createElement('div');
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(cbLabel);
+
+                input.appendChild(wrapper);
+              });
+            }
+          } else {
+            input = document.createElement('select');
+            if (Array.isArray(q.options)) {
+              q.options.forEach(opt => {
+                const option = document.createElement('option');
+                if (typeof opt === 'object') {
+                  option.value = opt.value ?? opt.id ?? '';
+                  option.textContent = opt.label ?? opt.value ?? opt.id ?? '';
+                } else {
+                  option.value = opt;
+                  option.textContent = opt;
+                }
+                input.appendChild(option);
+              });
+            }
           }
           break;
         default:
           input = document.createElement('input');
           input.type = 'text';
       }
-      input.id = `q_${q.id}`;
-      input.name = q.id;
-      field.appendChild(input);
+
+      if (q.type === 'select' && q.multiple) {
+        field.appendChild(input);
+      } else {
+        input.id = `q_${q.id}`;
+        input.name = q.id;
+        field.appendChild(input);
+      }
+
       form.appendChild(field);
     });
 
@@ -210,7 +239,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       const formData = new FormData(form);
       const answers = {};
       for (const [key, value] of formData.entries()) {
-        answers[key] = value;
+        if (key.endsWith('[]')) {
+          const cleanKey = key.slice(0, -2);
+          if (!answers[cleanKey]) {
+            answers[cleanKey] = [];
+          }
+          answers[cleanKey].push(value);
+        } else {
+          answers[key] = value;
+        }
       }
       
       console.log('Soumission réponses:', answers);
