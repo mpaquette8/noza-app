@@ -2622,3 +2622,31 @@ body::before {
         align-items: stretch;
     }
 }
+
+/* ==========================================================================
+   Checkbox Group Styles
+   ========================================================================== */
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.checkbox-item:hover {
+    background-color: #ebf8ff;
+}
+
+.checkbox-item input[type="checkbox"] {
+    margin-right: 6px;
+}
