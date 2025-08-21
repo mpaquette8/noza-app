@@ -57,6 +57,9 @@ const QUESTION_CONFIG = [
   }
 ];
 
+const PROFILE_KEYS = ['vulgarization', 'teacherType', 'duration', 'interests', 'learningContext', 'usageFrequency'];
+const MANDATORY_KEYS = ['vulgarization', 'teacherType', 'duration'];
+
 class OnboardingService {
   constructor(prismaClient = defaultPrisma) {
     this.prisma = prismaClient;
@@ -70,14 +73,15 @@ class OnboardingService {
     if (!this.prisma) {
       throw new Error("Prisma client non initialisé");
     }
-    const profileKeys = ['teacherType', 'vulgarization', 'duration'];
-
     const existing = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
-        teacherType: true,
         vulgarization: true,
-        duration: true
+        teacherType: true,
+        duration: true,
+        interests: true,
+        learningContext: true,
+        usageFrequency: true
       }
     });
 
@@ -88,7 +92,7 @@ class OnboardingService {
     const userData = {};
     const extraData = {};
     for (const [key, value] of Object.entries(answers)) {
-      if (profileKeys.includes(key)) {
+      if (PROFILE_KEYS.includes(key)) {
         userData[key] = value;
       } else {
         extraData[key] = value;
@@ -96,6 +100,11 @@ class OnboardingService {
     }
 
     const mergedProfile = { ...existing, ...userData };
+
+    const missing = MANDATORY_KEYS.filter((k) => !mergedProfile[k]);
+    if (missing.length > 0) {
+      throw new Error(`Champs obligatoires manquants: ${missing.join(', ')}`);
+    }
 
     userData.profileConfidence = this.calculateProfileConfidence(mergedProfile);
     userData.onboardingCompleted = this.isProfileComplete(mergedProfile);
@@ -145,6 +154,9 @@ class OnboardingService {
         teacherType: true,
         vulgarization: true,
         duration: true,
+        interests: true,
+        learningContext: true,
+        usageFrequency: true,
         onboardingCompleted: true,
         profileConfidence: true,
         lastProfileUpdate: true,
@@ -162,7 +174,9 @@ class OnboardingService {
       teacherType: user.teacherType || null,
       vulgarization: user.vulgarization || null,
       duration: user.duration || null,
-      interests: [],
+      interests: user.interests || [],
+      learningContext: user.learningContext || null,
+      usageFrequency: user.usageFrequency || null,
       onboardingCompleted: user.onboardingCompleted || false,
       profileConfidence: user.profileConfidence ?? 0,
       lastProfileUpdate: user.lastProfileUpdate || null,
@@ -171,9 +185,7 @@ class OnboardingService {
 
     if (Array.isArray(user.userData)) {
       for (const item of user.userData) {
-        if (item.key === 'interests') {
-          profile.interests = item.value;
-        } else {
+        if (!PROFILE_KEYS.includes(item.key)) {
           profile.extra[item.key] = item.value;
         }
       }
@@ -183,8 +195,7 @@ class OnboardingService {
   }
 
   isProfileComplete(profile) {
-    const keys = ['teacherType', 'vulgarization', 'duration'];
-    return keys.every((k) => profile[k]);
+    return MANDATORY_KEYS.every((k) => profile[k]);
   }
 
   needsOnboarding(profile) {
@@ -193,9 +204,8 @@ class OnboardingService {
   }
 
   calculateProfileConfidence(profile) {
-    const keys = ['teacherType', 'vulgarization', 'duration'];
-    const answered = keys.filter((k) => profile[k]).length;
-    return answered / keys.length;
+    const answered = MANDATORY_KEYS.filter((k) => profile[k]).length;
+    return answered / MANDATORY_KEYS.length;
   }
 }
 
