@@ -49,6 +49,32 @@ function checkEnv() {
     process.exit(1);
   }
 
+  const malformed = [];
+  if (process.env.DATABASE_URL) {
+    try {
+      new URL(process.env.DATABASE_URL);
+    } catch {
+      malformed.push('DATABASE_URL');
+    }
+  }
+
+  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
+    malformed.push('JWT_SECRET (32 chars min)');
+  }
+
+  if (required.includes('TLS_CERT_PATH') && !fs.existsSync(process.env.TLS_CERT_PATH)) {
+    malformed.push('TLS_CERT_PATH (fichier introuvable)');
+  }
+
+  if (required.includes('TLS_KEY_PATH') && !fs.existsSync(process.env.TLS_KEY_PATH)) {
+    malformed.push('TLS_KEY_PATH (fichier introuvable)');
+  }
+
+  if (malformed.length) {
+    logger.error(`Variables d'environnement invalides: ${malformed.join(', ')}`);
+    process.exit(1);
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     logger.warn('ANTHROPIC_API_KEY non défini. Fonctionnalités IA désactivées.');
   }
