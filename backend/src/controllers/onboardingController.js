@@ -13,11 +13,12 @@ class OnboardingController {
       const config = this.onboardingService.getQuestionConfig();
       logger.info('Raw onboarding config', config);
       const questions = config.map((q) => ({
-        id: q.key,
-        question: q.question,
-        type: q.options?.length ? 'select' : 'text',
+        id: q.id,
+        question: q.label,
+        type: q.type || (q.options?.length ? 'select' : 'text'),
         options: q.options || [],
-        label: q.question
+        multiple: q.multiple || false,
+        label: q.label
       }));
       logger.info('Transformed onboarding questions', questions);
       const { response } = createResponse(true, { questions });
@@ -31,7 +32,13 @@ class OnboardingController {
 
   async complete(req, res) {
     try {
-      const answers = req.body || {};
+      const rawAnswers = req.body || {};
+      const answers = Object.fromEntries(
+        Object.entries(rawAnswers).map(([key, value]) => [
+          key.replace(/_([a-z])/g, (_, c) => c.toUpperCase()),
+          value
+        ])
+      );
       const profile = await this.onboardingService.saveAnswers(req.user.id, answers);
       const { response } = createResponse(true, { profile });
       res.json(response);
@@ -76,11 +83,12 @@ class OnboardingController {
   async addPreference(req, res) {
     try {
       const { key, value } = req.body || {};
-      if (!key) {
+      const camelKey = key?.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+      if (!camelKey) {
         const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.INVALID_PARAMETERS, HTTP_STATUS.BAD_REQUEST);
         return res.status(statusCode).json(response);
       }
-      const profile = await this.onboardingService.saveAnswers(req.user.id, { [key]: value });
+      const profile = await this.onboardingService.saveAnswers(req.user.id, { [camelKey]: value });
       const { response } = createResponse(true, { profile });
       res.json(response);
     } catch (error) {
