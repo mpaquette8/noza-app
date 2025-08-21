@@ -268,10 +268,12 @@ function setupAuthListeners() {
 
             // Relancer GoogleAuth lors du changement de vue si déjà prêt
             if (window.GoogleAuth) {
-                if (GoogleAuth.state === GoogleAuth.STATES.FAILED) {
+                if (GoogleAuth.state === GoogleAuth.STATES.FAILED &&
+                    typeof GoogleAuth.reset === 'function') {
                     GoogleAuth.reset();
                 }
-                if (GoogleAuth.state === GoogleAuth.STATES.READY) {
+                if (GoogleAuth.state === GoogleAuth.STATES.READY &&
+                    typeof GoogleAuth.promptLogin === 'function') {
                     GoogleAuth.promptLogin();
                 }
             }

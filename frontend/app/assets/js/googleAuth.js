@@ -214,6 +214,30 @@ const GoogleAuth = (() => {
         });
     }
 
+    function reset() {
+        isReady = false;
+        state = STATES.INIT;
+        initPromise = null;
+        widthCache.clear();
+        document.querySelectorAll('.google-auth-fallback').forEach(el => el.remove());
+        document.querySelectorAll('.google-auth-container').forEach(c => {
+            c.classList.remove('loading');
+            c.style.opacity = '';
+            const msg = c.querySelector('.google-auth-message');
+            if (msg) msg.remove();
+            const btn = c.querySelector('div[id]');
+            if (btn) btn.innerHTML = '';
+        });
+    }
+
+    function promptLogin() {
+        try {
+            google?.accounts?.id?.prompt();
+        } catch (err) {
+            console.error('GoogleAuth promptLogin error:', err);
+        }
+    }
+
     function init(callback = () => {}, timeout = 10000) {
         if (isReady) return Promise.resolve();
         if (initPromise) return initPromise;
@@ -279,6 +303,8 @@ const GoogleAuth = (() => {
 
     return {
         init,
+        reset,
+        promptLogin,
         showEmailFallback,
         get state() { return state; },
         STATES
