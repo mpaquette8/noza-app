@@ -18,7 +18,10 @@ export default function Profile() {
   useEffect(() => {
     fetch('/api/profile')
       .then((r) => r.json())
-      .then(setProfile)
+      .then((data) => {
+        setProfile(data.profile);
+        // éventuellement setStats(data.stats); setActivity(data.activity);
+      })
       .catch(() => {});
   }, []);
 
