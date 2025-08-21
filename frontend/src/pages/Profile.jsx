@@ -3,6 +3,7 @@ import ProfileHeader from '../components/profile/ProfileHeader';
 import PreferencesForm from '../components/profile/PreferencesForm';
 import ActivityStats from '../components/profile/ActivityStats';
 import ProfileSettings from '../components/profile/ProfileSettings';
+import ProfileDetails from '../components/profile/ProfileDetails';
 
 const tabs = [
   { id: 'profil', label: 'Mon profil' },
@@ -41,7 +42,7 @@ export default function Profile() {
           ))}
         </nav>
         <div className='mt-4'>
-          {activeTab === 'profil' && <div>Bienvenue sur votre profil.</div>}
+          {activeTab === 'profil' && <ProfileDetails profile={profile} />}
           {activeTab === 'preferences' && (
             <PreferencesForm profile={profile} onUpdate={setProfile} />
           )}
