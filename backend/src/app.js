@@ -1,6 +1,5 @@
 // backend/src/app.js
 const express = require('express');
-const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
@@ -75,11 +74,6 @@ app.use((_, res, next) => {
   next();
 });
 
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-
 // Rate limiting
 const limiter = rateLimit({
   windowMs: LIMITS.RATE_LIMIT_WINDOW,
@@ -116,6 +110,36 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Cross-origin headers and CORS handling
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    req.headers['access-control-request-headers'] ||
+      'Content-Type, Authorization'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
 // Servir les fichiers statiques pour l'application et le marketing
 app.use('/app', express.static(path.join(__dirname, '../../frontend/app')));
 app.use('/', express.static(path.join(__dirname, '../../frontend/marketing')));
@@ -130,6 +154,30 @@ app.get('/', (_, res) =>
 
 // Routes API
 app.use('/api', apiRoutes);
+
+// Client-side logs endpoint
+app.post('/api/logs', (req, res) => {
+  try {
+    const { level, message, data, timestamp } = req.body || {};
+    const payload = { message, data, timestamp };
+
+    switch (level) {
+      case 'error':
+        console.error(payload);
+        break;
+      case 'warn':
+        console.warn(payload);
+        break;
+      default:
+        console.log(payload);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Failed to log client message', err);
+    res.status(500).json({ success: false });
+  }
+});
 
 // Middleware de gestion des erreurs globales
 app.use((err, req, res, next) => {
