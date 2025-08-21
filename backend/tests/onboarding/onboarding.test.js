@@ -38,3 +38,31 @@ test('needsOnboarding returns true when profile is null', () => {
   const service = new OnboardingService();
   assert.strictEqual(service.needsOnboarding(null), true);
 });
+
+test('saveAnswers rejects when mandatory fields are missing', async () => {
+  const prismaMock = {
+    user: {
+      findUnique: async () => ({
+        vulgarization: null,
+        teacherType: null,
+        duration: null,
+        interests: null,
+        learningContext: null,
+        usageFrequency: null,
+      }),
+      update: async () => {
+        throw new Error('should not update');
+      },
+    },
+    userData: {
+      upsert: async () => {
+        throw new Error('should not upsert');
+      },
+    },
+  };
+  const service = new OnboardingService(prismaMock);
+  await assert.rejects(
+    service.saveAnswers('u1', { teacherType: 'methodical' }),
+    /Champs obligatoires manquants/
+  );
+});
