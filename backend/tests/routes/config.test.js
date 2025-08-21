@@ -1,6 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const request = require('supertest');
+process.env.JWT_SECRET = 'a'.repeat(32);
+process.env.DATABASE_URL = 'postgresql://user:pass@localhost:5432/test';
+process.env.GOOGLE_CLIENT_ID = 'dummy';
 const { app } = require('../../src/app');
 
 test('GET /api/config/google returns client ID when configured', async () => {

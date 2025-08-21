@@ -6,6 +6,41 @@ const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
 const googleAuthService = require('../services/googleAuthService');
 
 class AuthController {
+  handleError(res, error, context) {
+    logger.error(context, error.message);
+
+    if (error.code === 'P1013' || error.name === 'PrismaClientInitializationError') {
+      const { response, statusCode } = createResponse(
+        false,
+        null,
+        'DATABASE_URL invalide',
+        HTTP_STATUS.SERVER_ERROR
+      );
+      return res.status(statusCode).json(response);
+    }
+
+    if (
+      error.name === 'JsonWebTokenError' &&
+      error.message.includes('secret or private key must have a value')
+    ) {
+      const { response, statusCode } = createResponse(
+        false,
+        null,
+        'JWT_SECRET manquant',
+        HTTP_STATUS.SERVER_ERROR
+      );
+      return res.status(statusCode).json(response);
+    }
+
+    const { response, statusCode } = createResponse(
+      false,
+      null,
+      ERROR_MESSAGES.SERVER_ERROR,
+      HTTP_STATUS.SERVER_ERROR
+    );
+    return res.status(statusCode).json(response);
+  }
+
   // Inscription classique (existant)
   async register(req, res) {
     try {
@@ -60,9 +95,7 @@ class AuthController {
 
       res.status(statusCode).json(response);
     } catch (error) {
-      logger.error('Erreur inscription', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
-      res.status(statusCode).json(response);
+      return this.handleError(res, error, 'Erreur inscription');
     }
   }
 
@@ -108,9 +141,7 @@ class AuthController {
 
       res.json(response);
     } catch (error) {
-      logger.error('Erreur connexion', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
-      res.status(statusCode).json(response);
+      return this.handleError(res, error, 'Erreur connexion');
     }
   }
 
@@ -210,21 +241,29 @@ class AuthController {
 
       res.json(response);
     } catch (error) {
-      logger.error('Erreur authentification Google', error);
-      
-      // Gestion des erreurs spécifiques
       if (error.code === 'INVALID') {
-        const { response, statusCode } = createResponse(false, null, 'Token expiré', HTTP_STATUS.UNAUTHORIZED);
+        logger.error('Erreur authentification Google', error.message);
+        const { response, statusCode } = createResponse(
+          false,
+          null,
+          'Token expiré',
+          HTTP_STATUS.UNAUTHORIZED
+        );
         return res.status(statusCode).json(response);
       }
 
       if (error.code === 'TIMEOUT' || error.code === 'NETWORK') {
-        const { response, statusCode } = createResponse(false, null, 'Google indisponible', 503);
+        logger.error('Erreur authentification Google', error.message);
+        const { response, statusCode } = createResponse(
+          false,
+          null,
+          'Google indisponible',
+          503
+        );
         return res.status(statusCode).json(response);
       }
 
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
-      res.status(statusCode).json(response);
+      return this.handleError(res, error, 'Erreur authentification Google');
     }
   }
 
@@ -234,9 +273,7 @@ class AuthController {
       const { response } = createResponse(true, { user: req.user });
       res.json(response);
     } catch (error) {
-      logger.error('Erreur profil', error);
-      const { response, statusCode } = createResponse(false, null, ERROR_MESSAGES.SERVER_ERROR, HTTP_STATUS.SERVER_ERROR);
-      res.status(statusCode).json(response);
+      return this.handleError(res, error, 'Erreur profil');
     }
   }
 }

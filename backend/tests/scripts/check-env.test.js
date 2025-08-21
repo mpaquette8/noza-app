@@ -10,7 +10,7 @@ test('allows startup without TLS when ALLOW_HTTP is set', () => {
       ...process.env,
       NODE_ENV: 'production',
       DATABASE_URL: 'postgres://user:pass@localhost:5432/db',
-      JWT_SECRET: 'secret',
+      JWT_SECRET: 'a'.repeat(32),
       ALLOW_HTTP: 'true',
       NODE_PATH: path.join(__dirname, '../../node_modules')
     },
