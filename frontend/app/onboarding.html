@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         case 'select':
           if (q.multiple) {
             input = document.createElement('div');
+            input.className = 'checkbox-group';
             if (Array.isArray(q.options)) {
               q.options.forEach((opt, idx) => {
                 const checkbox = document.createElement('input');
@@ -184,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 cbLabel.setAttribute('for', checkbox.id);
 
                 const wrapper = document.createElement('div');
+                wrapper.className = 'checkbox-item';
                 wrapper.appendChild(checkbox);
                 wrapper.appendChild(cbLabel);
 
