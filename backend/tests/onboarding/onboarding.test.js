@@ -7,29 +7,29 @@ test('calculateProfileConfidence computes fraction of answered questions', () =>
   const emptyProfile = {};
   assert.strictEqual(service.calculateProfileConfidence(emptyProfile), 0);
 
-  const partialProfile = { pedagogicalProfile: 'methodical', learningGoal: 'decouvrir' };
+  const partialProfile = { teacherType: 'methodical', vulgarization: 'general_public' };
   assert.strictEqual(service.calculateProfileConfidence(partialProfile), 2 / 3);
 
   const fullProfile = {
-    pedagogicalProfile: 'methodical',
-    learningGoal: 'decouvrir',
-    preferredStyle: 'analogies'
+    teacherType: 'methodical',
+    vulgarization: 'general_public',
+    duration: 'short'
   };
   assert.strictEqual(service.calculateProfileConfidence(fullProfile), 1);
 });
 
 test('needsOnboarding returns true when profile is missing fields', () => {
   const service = new OnboardingService();
-  const incompleteProfile = { pedagogicalProfile: 'methodical' };
+  const incompleteProfile = { teacherType: 'methodical' };
   assert.strictEqual(service.needsOnboarding(incompleteProfile), true);
 });
 
 test('needsOnboarding returns false when profile is complete', () => {
   const service = new OnboardingService();
   const fullProfile = {
-    pedagogicalProfile: 'methodical',
-    learningGoal: 'decouvrir',
-    preferredStyle: 'analogies'
+    teacherType: 'methodical',
+    vulgarization: 'general_public',
+    duration: 'short'
   };
   assert.strictEqual(service.needsOnboarding(fullProfile), false);
 });
