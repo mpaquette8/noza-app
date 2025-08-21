@@ -16,13 +16,16 @@ model User {
   googleId      String?       @unique
   provider      String        @default("email")
   
-  // 🆕 NOUVEAUX CHAMPS - ONBOARDING
-  pedagogicalProfile     String?   // "methodical", "socratic", "adaptive", "direct"
-  learningGoal          String?   // "découvrir", "consolider", "approfondir"
-  preferredStyle        String?   // "analogies", "pratique", "questions", "exemples"
-  onboardingCompleted   Boolean   @default(false)
-  profileConfidence     Float?    @default(0.0)
-  lastProfileUpdate     DateTime?
+  // 🆕 CHAMPS ONBOARDING HARMONISÉS
+  vulgarization      String?
+  teacherType        String?
+  duration           String?
+  interests          Json?
+  learningContext    String?
+  usageFrequency     String?
+  onboardingCompleted Boolean   @default(false)
+  profileConfidence  Float?    @default(0.0)
+  lastProfileUpdate  DateTime?
   
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
