@@ -34,21 +34,25 @@ class AuthManager {
 
     // ⭐ NOUVELLE MÉTHODE : Authentification Google
     async handleGoogleLogin(googleResponse) {
-        try {
-            console.log('Traitement connexion Google...', googleResponse);
-            
-            if (!googleResponse.credential) {
-                throw new Error('Token Google manquant');
-            }
+        if (!googleResponse?.credential) {
+            utils.showNotification('Token Google manquant', 'error');
+            return { success: false, error: 'Token Google manquant' };
+        }
 
-            // Envoyer le token à notre API
-            const response = await fetch(`${API_BASE_URL}/auth/google`, {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    credential: googleResponse.credential 
-                })
+                body: JSON.stringify({ credential: googleResponse.credential })
             });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const message = errorData.error || 'Erreur de connexion';
+                utils.showNotification(message, 'error');
+                utils.handleAuthError(message, true);
+                return { success: false, error: message };
+            }
 
             const data = await response.json();
             console.log('Réponse auth Google:', data);
@@ -60,8 +64,7 @@ class AuthManager {
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.updateUI();
 
-                showNotification('Connexion Google réussie !', 'success');
-                
+                utils.showNotification('Connexion Google réussie !', 'success');
                 window.location.href = '/app/';
                 return { success: true };
             } else if (data.code === 'IA_TIMEOUT') {
@@ -69,12 +72,17 @@ class AuthManager {
             } else if (data.code === 'QUOTA_EXCEEDED') {
                 this.showAction(data.error || 'Quota dépassé', 'Sauvegarder', () => this.savePendingAuth({ credential: googleResponse.credential }));
             } else {
-                throw new Error(data.error || 'Erreur connexion Google');
+                const msg = data.error || 'Erreur connexion Google';
+                utils.showNotification(msg, 'error');
+                utils.handleAuthError(msg, true);
+                return { success: false, error: msg };
             }
         } catch (error) {
             console.error('Erreur connexion Google:', error);
-                utils.handleAuthError('Erreur connexion Google: ' + error.message, true);
-            return { success: false, error: error.message };
+            const friendly = error.message.includes('Failed to fetch') ? 'Impossible de contacter le serveur' : error.message;
+            utils.showNotification(friendly, 'error');
+            utils.handleAuthError('Erreur connexion Google: ' + friendly, true);
+            return { success: false, error: friendly };
         }
     }
 
