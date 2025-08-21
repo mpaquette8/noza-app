@@ -201,8 +201,16 @@ const GoogleAuth = (() => {
                 requestAnimationFrame(() => enforceButtonDimensions(container, width));
             };
             schedule();
-            new ResizeObserver(schedule).observe(container);
-            new MutationObserver(schedule).observe(container, { childList: true, subtree: true });
+            try {
+                if (typeof ResizeObserver === 'function') {
+                    new ResizeObserver(schedule).observe(container);
+                }
+                if (typeof MutationObserver === 'function') {
+                    new MutationObserver(schedule).observe(container, { childList: true, subtree: true });
+                }
+            } catch (err) {
+                console.error('GoogleAuth observeButtons error:', err);
+            }
         });
     }
 
