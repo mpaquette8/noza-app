@@ -67,7 +67,7 @@ const utils = {
   },
 
   // Gestion unifiée des erreurs d'authentification
-  handleAuthError(error, critical = false) {
+  handleAuthError(error) {
     let message = 'Une erreur est survenue';
     if (typeof error === 'string') {
       message = error;
@@ -82,17 +82,17 @@ const utils = {
     }
 
     console.error(error);
-    this.showNotification(message, 'error');
 
-    if (critical) {
-      try {
-        fetch(`${API_BASE_URL}/logs`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ level: 'error', message })
-        }).catch(err => console.error('Erreur lors de l\'envoi du log serveur', err));
-      } catch (err) {
-        console.error('Erreur lors de la préparation du log serveur', err);
+    try {
+      if (typeof this.showNotification === 'function') {
+        this.showNotification(message, 'error');
+      } else if (typeof alert === 'function') {
+        alert(message);
+      }
+    } catch (notifyErr) {
+      console.error('Notification failure', notifyErr);
+      if (typeof alert === 'function') {
+        alert(message);
       }
     }
   }
