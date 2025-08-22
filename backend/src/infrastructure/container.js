@@ -1,26 +1,50 @@
-const { createContainer, asFunction, asValue } = require('awilix');
-const { prisma } = require('./database');
+// Simple service container implementation
+
 const CourseRepository = require('./repositories/courseRepository');
+const { prisma } = require('./database');
 const anthropicService = require('../application/services/anthropicService');
 const OnboardingService = require('../application/services/onboardingService');
 const googleAuthService = require('../application/services/googleAuthService');
 const GenerateCourseUseCase = require('../domain/usecases/GenerateCourseUseCase');
 const CreateCourseUseCase = require('../domain/usecases/CreateCourseUseCase');
 
-const container = createContainer();
+const container = {
+  services: {},
+  register(name, factory) {
+    this.services[name] = factory;
+  },
+  resolve(name) {
+    if (!this.services[name]) {
+      throw new Error(`Service ${name} not found in container`);
+    }
+    return this.services[name];
+  }
+};
 
-container.register({
-  prisma: asValue(prisma),
-  courseRepository: asFunction(({ prisma }) => new CourseRepository(prisma)).singleton(),
-  anthropicService: asValue(anthropicService),
-  onboardingService: asFunction(({ prisma }) => new OnboardingService(prisma)).singleton(),
-  googleAuthService: asValue(googleAuthService),
-  generateCourseUseCase: asFunction(({ courseRepository, anthropicService }) =>
-    new GenerateCourseUseCase(courseRepository, anthropicService)
-  ).scoped(),
-  createCourseUseCase: asFunction(({ courseRepository, anthropicService }) =>
-    new CreateCourseUseCase(courseRepository, anthropicService)
-  ).scoped(),
-});
+// Register core services
+container.register('anthropicService', anthropicService);
+container.register('prisma', prisma);
+
+// Register application dependencies
+container.register('courseRepository', new CourseRepository(container.resolve('prisma')));
+container.register('onboardingService', new OnboardingService(container.resolve('prisma')));
+container.register('googleAuthService', googleAuthService);
+
+// Domain use cases
+container.register(
+  'generateCourseUseCase',
+  new GenerateCourseUseCase(
+    container.resolve('courseRepository'),
+    container.resolve('anthropicService')
+  )
+);
+container.register(
+  'createCourseUseCase',
+  new CreateCourseUseCase(
+    container.resolve('courseRepository'),
+    container.resolve('anthropicService')
+  )
+);
 
 module.exports = container;
+
