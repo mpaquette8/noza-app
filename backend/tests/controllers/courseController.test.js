@@ -1,12 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { mapLegacyParams } = require('../../src/utils/helpers');
+const { mapLegacyParams } = require('../../src/infrastructure/utils/helpers');
 const {
   DURATIONS,
   VULGARIZATION_LEVELS,
   LEGACY_VULGARIZATION_LEVELS,
   TEACHER_TYPES,
-} = require('../../src/utils/constants');
+} = require('../../src/infrastructure/utils/constants');
 
 test('detailLevel numeric values map to durations', () => {
   const mapping = {

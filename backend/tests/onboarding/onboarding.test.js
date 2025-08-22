@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const OnboardingService = require('../../src/services/onboardingService');
+const OnboardingService = require('../../src/application/services/onboardingService');
 
 test('calculateProfileConfidence computes fraction of answered questions', () => {
   const service = new OnboardingService();

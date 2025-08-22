@@ -1,12 +1,12 @@
-// backend/src/routes/auth.js
+// backend/src/presentation/routes/auth.js
 const express = require('express');
 const authController = require('../controllers/authController');
-const { authenticate } = require('../middleware/auth');
-const { registerValidation, loginValidation } = require('../middleware/validation');
-const { asyncHandler } = require('../utils/helpers');
+const { authenticate } = require('../../infrastructure/middleware/auth');
+const { registerValidation, loginValidation } = require('../../infrastructure/middleware/validation');
+const { asyncHandler } = require('../../infrastructure/utils/helpers');
 const rateLimit = require('express-rate-limit');
-const { RATE_LIMITS, ERROR_MESSAGES } = require('../utils/constants');
-const { checkBlacklist } = require('../middleware/blacklist');
+const { RATE_LIMITS, ERROR_MESSAGES } = require('../../infrastructure/utils/constants');
+const { checkBlacklist } = require('../../infrastructure/middleware/blacklist');
 
 const router = express.Router();
 

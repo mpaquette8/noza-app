@@ -1,4 +1,4 @@
-// backend/src/utils/constants.js
+// backend/src/infrastructure/utils/constants.js
 
 // Niveaux de détail
 const DETAIL_LEVELS = {

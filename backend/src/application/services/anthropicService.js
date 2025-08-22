@@ -1,11 +1,11 @@
-// backend/src/services/anthropicService.js
+// backend/src/application/services/anthropicService.js
 const Anthropic = require('@anthropic-ai/sdk');
-const { logger } = require('../utils/helpers');
+const { logger } = require('../../infrastructure/utils/helpers');
 const {
   DURATIONS,
   TEACHER_TYPES,
   VULGARIZATION_LEVELS
-} = require('../utils/constants');
+} = require('../../infrastructure/utils/constants');
 
 const MAX_COURSE_LENGTH = 6000;
 const ERROR_CODES = {

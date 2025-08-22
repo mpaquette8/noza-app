@@ -1,6 +1,6 @@
-// backend/src/middleware/auth.js
+// backend/src/infrastructure/middleware/auth.js
 const { verifyToken } = require('../utils/auth');
-const { prisma } = require('../config/database');
+const { prisma } = require('../database');
 const { createResponse, logger } = require('../utils/helpers');
 const { ERROR_MESSAGES, HTTP_STATUS } = require('../utils/constants');
 

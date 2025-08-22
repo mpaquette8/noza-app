@@ -1,12 +1,12 @@
-// backend/src/app.js
+// backend/src/presentation/app.js
 const express = require('express');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const { connectDatabase } = require('./config/database');
-const { logger } = require('./utils/helpers');
-const { LIMITS } = require('./utils/constants');
+const { connectDatabase } = require('../infrastructure/database');
+const { logger } = require('../infrastructure/utils/helpers');
+const { LIMITS } = require('../infrastructure/utils/constants');
 
 // Importer les routes
 const apiRoutes = require('./routes');
@@ -141,15 +141,15 @@ app.use((req, res, next) => {
 });
 
 // Servir les fichiers statiques pour l'application et le marketing
-app.use('/app', express.static(path.join(__dirname, '../../frontend/app')));
-app.use('/', express.static(path.join(__dirname, '../../frontend/marketing')));
+app.use('/app', express.static(path.join(__dirname, '../../../frontend/app')));
+app.use('/', express.static(path.join(__dirname, '../../../frontend/marketing')));
 
 // Routes pour les applications frontend
 app.get('/app*', (_, res) =>
-  res.sendFile(path.join(__dirname, '../../frontend/app/index.html'))
+  res.sendFile(path.join(__dirname, '../../../frontend/app/index.html'))
 );
 app.get('/', (_, res) =>
-  res.sendFile(path.join(__dirname, '../../frontend/marketing/index.html'))
+  res.sendFile(path.join(__dirname, '../../../frontend/marketing/index.html'))
 );
 
 // Routes API

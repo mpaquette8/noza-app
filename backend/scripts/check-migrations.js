@@ -1,5 +1,5 @@
 const { exec } = require('child_process');
-const { logger } = require('../src/utils/helpers');
+const { logger } = require('../src/infrastructure/utils/helpers');
 
 function run(command) {
   return new Promise((resolve) => {

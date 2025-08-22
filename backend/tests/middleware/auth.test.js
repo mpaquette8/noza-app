@@ -4,9 +4,9 @@ process.env.DATABASE_URL = 'postgresql://user:pass@localhost:5432/test';
 const test = require('node:test');
 const assert = require('node:assert');
 
-const { prisma } = require('../../src/config/database');
-const { generateToken } = require('../../src/utils/auth');
-const { authenticate } = require('../../src/middleware/auth');
+const { prisma } = require('../../src/infrastructure/database');
+const { generateToken } = require('../../src/infrastructure/utils/auth');
+const { authenticate } = require('../../src/infrastructure/middleware/auth');
 
 test('authenticate uses token from cookies when Authorization header missing', async () => {
   const fakeUser = { id: 1, email: 'user@example.com', name: 'Test User' };

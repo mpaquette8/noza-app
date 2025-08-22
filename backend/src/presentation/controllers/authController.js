@@ -1,9 +1,9 @@
-// backend/src/controllers/authController.js
-const { prisma } = require('../config/database');
-const { hashPassword, comparePassword, generateToken } = require('../utils/auth');
-const { createResponse, sanitizeInput, logger } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
-const googleAuthService = require('../services/googleAuthService');
+// backend/src/presentation/controllers/authController.js
+const { prisma } = require('../../infrastructure/database');
+const { hashPassword, comparePassword, generateToken } = require('../../infrastructure/utils/auth');
+const { createResponse, sanitizeInput, logger } = require('../../infrastructure/utils/helpers');
+const { HTTP_STATUS, ERROR_MESSAGES } = require('../../infrastructure/utils/constants');
+const googleAuthService = require('../../application/services/googleAuthService');
 
 class AuthController {
   handleError(res, error, context) {

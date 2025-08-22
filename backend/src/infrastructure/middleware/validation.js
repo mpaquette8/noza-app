@@ -1,4 +1,4 @@
-// backend/src/middleware/validation.js
+// backend/src/infrastructure/middleware/validation.js
 const { body, validationResult } = require('express-validator');
 const { createResponse } = require('../utils/helpers');
 const { HTTP_STATUS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS } = require('../utils/constants');

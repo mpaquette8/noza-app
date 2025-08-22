@@ -1,12 +1,12 @@
-// backend/src/routes/ai.js
+// backend/src/presentation/routes/ai.js
 const express = require('express');
 const aiController = require('../controllers/aiController');
-const { authenticate } = require('../middleware/auth');
-const { asyncHandler } = require('../utils/helpers');
-const { questionValidation } = require('../middleware/validation');
+const { authenticate } = require('../../infrastructure/middleware/auth');
+const { asyncHandler } = require('../../infrastructure/utils/helpers');
+const { questionValidation } = require('../../infrastructure/middleware/validation');
 const rateLimit = require('express-rate-limit');
-const { RATE_LIMITS, ERROR_MESSAGES } = require('../utils/constants');
-const { checkBlacklist } = require('../middleware/blacklist');
+const { RATE_LIMITS, ERROR_MESSAGES } = require('../../infrastructure/utils/constants');
+const { checkBlacklist } = require('../../infrastructure/middleware/blacklist');
 
 const router = express.Router();
 

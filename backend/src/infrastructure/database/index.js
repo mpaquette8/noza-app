@@ -1,4 +1,4 @@
-// backend/src/config/database.js
+// backend/src/infrastructure/database/index.js
 const { PrismaClient } = require('@prisma/client');
 const { logger } = require('../utils/helpers');
 

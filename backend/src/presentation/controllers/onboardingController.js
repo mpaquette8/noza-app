@@ -1,7 +1,7 @@
-// backend/src/controllers/onboardingController.js
-const { createResponse, logger } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES } = require('../utils/constants');
-const OnboardingService = require('../services/onboardingService');
+// backend/src/presentation/controllers/onboardingController.js
+const { createResponse, logger } = require('../../infrastructure/utils/helpers');
+const { HTTP_STATUS, ERROR_MESSAGES } = require('../../infrastructure/utils/constants');
+const OnboardingService = require('../../application/services/onboardingService');
 
 class OnboardingController {
   constructor() {

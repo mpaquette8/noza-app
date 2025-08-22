@@ -1,11 +1,11 @@
-// backend/src/services/onboardingService.js
+// backend/src/application/services/onboardingService.js
 let defaultPrisma = null;
 try {
-  ({ prisma: defaultPrisma } = require('../config/database'));
+  ({ prisma: defaultPrisma } = require('../../infrastructure/database'));
 } catch (err) {
   defaultPrisma = null;
 }
-const { logger } = require('../utils/helpers');
+const { logger } = require('../../infrastructure/utils/helpers');
 
 // Configuration des questions d'onboarding
 const QUESTION_CONFIG = [

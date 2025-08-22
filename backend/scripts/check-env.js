@@ -6,7 +6,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { logger } = require('../src/utils/helpers');
+const { logger } = require('../src/infrastructure/utils/helpers');
 
 // Vérifie si un fichier est suivi par git
 function isTracked(file, cwd) {

@@ -16,9 +16,9 @@ Module._load = (request, parent, isMain) => {
   return originalLoad(request, parent, isMain);
 };
 
-const anthropicService = require('../../src/services/anthropicService');
+const anthropicService = require('../../src/application/services/anthropicService');
 Module._load = originalLoad;
-const { TEACHER_TYPES, DURATIONS, VULGARIZATION_LEVELS, ERROR_CODES } = require('../../src/utils/constants');
+const { TEACHER_TYPES, DURATIONS, VULGARIZATION_LEVELS, ERROR_CODES } = require('../../src/infrastructure/utils/constants');
 
 test('createPrompt creates flexible educational content', () => {
   const prompt = anthropicService.createPrompt(
