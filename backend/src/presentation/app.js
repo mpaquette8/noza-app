@@ -6,6 +6,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const compression = require('../infrastructure/middleware/compression');
+const cacheControl = require('../infrastructure/middleware/cacheControl');
 const { connectDatabase } = require('../infrastructure/database');
 const { logger } = require('../infrastructure/utils/helpers');
 const { LIMITS } = require('../infrastructure/utils/constants');
@@ -143,6 +144,7 @@ app.use((_, res, next) => {
 
 // Compression
 app.use(compression);
+app.use(cacheControl);
 
 // Servir les fichiers statiques pour l'application et le marketing
 app.use('/app', express.static(path.join(__dirname, '../../../frontend/app')));
