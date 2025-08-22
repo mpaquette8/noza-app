@@ -16,7 +16,10 @@ const createRateLimiter = ({ WINDOW_MS, MAX }) => rateLimit({
   max: MAX,
   message: ERROR_MESSAGES.RATE_LIMIT,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  skipFailedRequests: false,
+  skipSuccessfulRequests: false,
+  validate: process.env.NODE_ENV === 'production'
 });
 
 // Limiteurs spécifiques aux routes d'authentification
