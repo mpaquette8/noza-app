@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "prebuild": "node frontend/scripts/generate-env.js",
     "build": "npm install --prefix backend",
     "start": "npm start --prefix backend",
     "test": "node --test frontend/tests/*.js backend/tests/**/*.js"

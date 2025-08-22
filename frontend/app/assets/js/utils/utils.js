@@ -3,7 +3,7 @@
 import { sanitizeInput, sanitizeHTML } from '../shared/sanitize.js'; // Shared sanitization logic
 
 // Configuration API
-const API_BASE_URL = window.location.origin + '/api';
+const API_BASE_URL = window.ENV?.API_URL || '/api';
 
 // Libellés conviviaux pour les codes d'erreur
 const ERROR_LABELS = {

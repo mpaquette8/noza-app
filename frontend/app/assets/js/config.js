@@ -13,31 +13,32 @@ window.APP_CONFIG = {
 };
 
 // Configuration de l'API
-window.API_BASE_URL = 'https://noza-app-staging.up.railway.app/api';
+const API_URL = window.ENV?.API_URL || '/api';
+window.API_BASE_URL = API_URL;
 
 // Configuration des endpoints
 window.ENDPOINTS = {
   auth: {
-    login: '/auth/login',
-    register: '/auth/register',
-    logout: '/auth/logout',
-    profile: '/auth/profile',
-    google: '/auth/google'
+    login: `${API_URL}/auth/login`,
+    register: `${API_URL}/auth/register`,
+    logout: `${API_URL}/auth/logout`,
+    profile: `${API_URL}/auth/profile`,
+    google: `${API_URL}/auth/google`
   },
   onboarding: {
-    config: '/onboarding/config',
-    complete: '/onboarding/complete',
-    status: '/onboarding/status',
-    profile: '/onboarding/profile'
+    config: `${API_URL}/onboarding/config`,
+    complete: `${API_URL}/onboarding/complete`,
+    status: `${API_URL}/onboarding/status`,
+    profile: `${API_URL}/onboarding/profile`
   },
   courses: {
-    create: '/courses',
-    list: '/courses',
-    details: '/courses'
+    create: `${API_URL}/courses`,
+    list: `${API_URL}/courses`,
+    details: `${API_URL}/courses`
   },
   ai: {
-    generate: '/ai/generate',
-    quiz: '/ai/quiz'
+    generate: `${API_URL}/ai/generate`,
+    quiz: `${API_URL}/ai/quiz`
   }
 };
 
