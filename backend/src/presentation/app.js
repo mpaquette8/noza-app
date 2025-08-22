@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const { connectDatabase } = require('../infrastructure/database');
 const { logger } = require('../infrastructure/utils/helpers');
 const { LIMITS } = require('../infrastructure/utils/constants');
@@ -116,33 +117,26 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Cross-origin headers and CORS handling
-app.use((req, res, next) => {
+// CORS configuration
+const corsOptionsDelegate = (req, callback) => {
+  const origin = req.header('Origin');
+  const allowed =
+    !origin ||
+    corsConfig.origins.includes('*') ||
+    corsConfig.origins.includes(origin);
+  callback(null, {
+    origin: allowed,
+    credentials: allowed && corsConfig.credentials,
+  });
+};
+app.use(cors(corsOptionsDelegate));
+app.options('*', cors(corsOptionsDelegate));
+
+// Cross-origin policies
+app.use((_, res, next) => {
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-
-  const origin = req.headers.origin;
-  if (origin && (corsConfig.origins.includes('*') || corsConfig.origins.includes(origin))) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-  }
-
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    req.headers['access-control-request-headers'] ||
-      'Content-Type, Authorization'
-  );
-
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-
   next();
 });
 
