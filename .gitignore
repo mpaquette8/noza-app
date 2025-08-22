@@ -2,5 +2,9 @@ backend/.env
 .env
 *.env.*
 node_modules/
+!backend/node_modules/
+backend/node_modules/*
+!backend/node_modules/awilix/
+!backend/node_modules/awilix/**
 .DS_Store
 *.log

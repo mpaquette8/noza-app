@@ -1,8 +1,10 @@
-const { prisma } = require('../database');
-
 class CourseRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
   async create(data) {
-    return prisma.course.create({ data });
+    return this.prisma.course.create({ data });
   }
 }
 

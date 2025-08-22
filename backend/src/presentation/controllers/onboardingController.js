@@ -1,11 +1,11 @@
 // backend/src/presentation/controllers/onboardingController.js
 const { createResponse, logger } = require('../../infrastructure/utils/helpers');
 const { HTTP_STATUS, ERROR_MESSAGES } = require('../../infrastructure/utils/constants');
-const OnboardingService = require('../../application/services/onboardingService');
+const container = require('../../infrastructure/container');
 
 class OnboardingController {
   constructor() {
-    this.onboardingService = new OnboardingService();
+    this.onboardingService = container.resolve('onboardingService');
   }
 
   getConfig(req, res) {
