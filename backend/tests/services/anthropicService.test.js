@@ -17,6 +17,8 @@ Module._load = (request, parent, isMain) => {
 };
 
 const anthropicService = require('../../src/application/services/anthropicService');
+const AnthropicService = require('../../src/infrastructure/external/AnthropicService');
+const AnthropicAIService = require('../../src/domain/services/AnthropicAIService');
 Module._load = originalLoad;
 const { TEACHER_TYPES, DURATIONS, VULGARIZATION_LEVELS, ERROR_CODES } = require('../../src/infrastructure/utils/constants');
 
@@ -44,9 +46,9 @@ test('createPrompt allows pedagogical freedom', () => {
 });
 
 test('sendWithTimeout retries on overload errors', async () => {
-  const originalClient = anthropicService.client;
+  const api = new AnthropicService();
   let callCount = 0;
-  anthropicService.client = {
+  api.client = {
     messages: {
       create: async () => {
         callCount++;
@@ -60,42 +62,44 @@ test('sendWithTimeout retries on overload errors', async () => {
     }
   };
 
-  const result = await anthropicService.sendWithTimeout({}, 100, [1, 2]);
+  const result = await api.sendWithTimeout({}, 100, [1, 2]);
   assert.strictEqual(callCount, 3);
   assert.deepStrictEqual(result, { content: [{ text: 'ok' }] });
-
-  anthropicService.client = originalClient;
 });
 
 test('categorizeError returns IA_OVERLOADED for 529', () => {
+  const api = new AnthropicService();
   const error = { response: { status: 529 } };
-  const code = anthropicService.categorizeError(error);
+  const code = api.categorizeError(error);
   assert.strictEqual(code, ERROR_CODES.IA_OVERLOADED);
 });
 
 test('categorizeError detects APIUserAbortError as IA_TIMEOUT', () => {
+  const api = new AnthropicService();
   const err = new Error('APIUserAbortError: aborted by user');
   err.name = 'APIUserAbortError';
-  const code = anthropicService.categorizeError(err);
+  const code = api.categorizeError(err);
   assert.strictEqual(code, ERROR_CODES.IA_TIMEOUT);
 });
 
 test('APIUserAbortError does not trigger offline mode', async () => {
-  const originalSend = anthropicService.sendWithTimeout;
-  anthropicService.offline = false;
-  anthropicService.sendWithTimeout = async () => {
+  const api = new AnthropicService();
+  const orchestrator = new AnthropicAIService(api);
+  const originalSend = api.sendWithTimeout;
+  api.setOffline(false);
+  api.sendWithTimeout = async () => {
     const err = new Error('Request aborted by the user');
     err.name = 'APIUserAbortError';
     throw err;
   };
 
   try {
-    await anthropicService.generateCourse('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.SHORT, TEACHER_TYPES.METHODICAL);
+    await orchestrator.generateCourse('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.SHORT, TEACHER_TYPES.METHODICAL);
     assert.fail('generateCourse should throw');
   } catch (err) {
     assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);
-    assert.strictEqual(anthropicService.isOffline(), false);
+    assert.strictEqual(api.isOffline(), false);
   } finally {
-    anthropicService.sendWithTimeout = originalSend;
+    api.sendWithTimeout = originalSend;
   }
 });
