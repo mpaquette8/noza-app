@@ -29,8 +29,12 @@ const jwt = {
   expiresIn: requireEnv('JWT_EXPIRES_IN'),
 };
 
+const devOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const prodOrigins = ['https://app.noza.dev', 'https://api.noza.dev'];
+
 const cors = {
-  origins: requireEnv('CORS_ORIGINS').split(',').map((o) => o.trim()),
+  origins: nodeEnv === 'development' ? devOrigins : [...devOrigins, ...prodOrigins],
+  credentials: true,
 };
 
 const api = {
