@@ -8,6 +8,7 @@ function toDomain(persistenceCourse) {
     content: persistenceCourse.content,
     userId: persistenceCourse.userId,
     createdAt: persistenceCourse.createdAt,
+    deletedAt: persistenceCourse.deletedAt,
   });
 }
 
@@ -26,6 +27,7 @@ function toPersistence(domainCourse) {
     vulgarization: domainCourse.vulgarization,
     teacherType: domainCourse.teacherType,
     createdAt: domainCourse.createdAt,
+    deletedAt: domainCourse.deletedAt,
   };
   Object.keys(persistence).forEach(
     (key) => persistence[key] === undefined && delete persistence[key]

@@ -1,16 +1,23 @@
 // backend/src/infrastructure/database/index.js
 const { PrismaClient } = require('@prisma/client');
 const { logger } = require('../utils/helpers');
+const { attachQueryOptimizers } = require('./queryOptimizer');
 const { app: appConfig, database: dbConfig } = require('../../config');
+
+const dbUrl = new URL(dbConfig.url);
+dbUrl.searchParams.set('connection_limit', dbUrl.searchParams.get('connection_limit') || '10');
+dbUrl.searchParams.set('pool_timeout', dbUrl.searchParams.get('pool_timeout') || '30');
 
 const prisma = new PrismaClient({
   log: appConfig.env === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
   datasources: {
     db: {
-      url: dbConfig.url,
+      url: dbUrl.toString(),
     },
   },
 });
+
+attachQueryOptimizers(prisma);
 
 // Test de connexion au démarrage
 async function connectDatabase() {

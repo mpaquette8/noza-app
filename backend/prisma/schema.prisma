@@ -75,14 +75,15 @@ model Course {
   
   duration           String
   createdAt          DateTime @default(now())
-  
+  deletedAt          DateTime?
+
   userId             String
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   chatHistories      ChatHistory[]
   quizzes           Quiz[]
   @@map("courses")
-  @@index([userId, createdAt])
+  @@index([userId, createdAt, deletedAt])
 }
 
 model ChatHistory {
