@@ -4,6 +4,7 @@ const authRoutes = require('./auth');
 const coursesRoutes = require('./courses');
 const aiRoutes = require('./ai');
 const onboardingRoutes = require('./onboardingRoutes');
+const { api: apiConfig, jwt: jwtConfig, database: dbConfig } = require('../../config');
 
 const router = express.Router();
 
@@ -18,9 +19,9 @@ router.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
-    hasJwtSecret: !!process.env.JWT_SECRET,
-    hasDatabaseUrl: !!process.env.DATABASE_URL
+    hasAnthropicKey: !!apiConfig.anthropicApiKey,
+    hasJwtSecret: !!jwtConfig.secret,
+    hasDatabaseUrl: !!dbConfig.url
   });
 });
 

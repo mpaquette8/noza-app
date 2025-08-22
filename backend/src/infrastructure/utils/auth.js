@@ -1,19 +1,20 @@
 // backend/src/infrastructure/utils/auth.js (copier depuis backend/utils-old/auth.js)
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { jwt: jwtConfig } = require('../../config');
 
 // Générer un token JWT (ticket de connexion)
 const generateToken = (userId) => {
   return jwt.sign(
-    { userId }, 
-    process.env.JWT_SECRET, 
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    { userId },
+    jwtConfig.secret,
+    { expiresIn: jwtConfig.expiresIn || '7d' }
   );
 };
 
 // Vérifier un token JWT
 const verifyToken = (token) => {
-  return jwt.verify(token, process.env.JWT_SECRET);
+  return jwt.verify(token, jwtConfig.secret);
 };
 
 // Crypter un mot de passe

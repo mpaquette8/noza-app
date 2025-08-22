@@ -2,6 +2,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const IAIService = require('../../domain/services/IAIService');
 const { logger } = require('../utils/helpers');
 const { ERROR_CODES } = require('../utils/constants');
+const { api: apiConfig } = require('../../config');
 
 const OFFLINE_MESSAGE = 'Service IA indisponible';
 const REQUEST_TIMEOUT = 30 * 1000; // 30s timeout for IA requests
@@ -10,13 +11,13 @@ class AnthropicService extends IAIService {
   constructor() {
     super();
     this.offline = false;
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!apiConfig.anthropicApiKey) {
       logger.warn('ANTHROPIC_API_KEY manquante, mode offline activé');
       this.offline = true;
       return;
     }
     try {
-      this.client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      this.client = new Anthropic({ apiKey: apiConfig.anthropicApiKey });
     } catch (error) {
       logger.error('Échec de connexion au service Anthropic', error);
       this.offline = true;
