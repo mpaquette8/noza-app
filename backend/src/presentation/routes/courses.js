@@ -20,9 +20,12 @@ router.get(
     query('limit').optional().isInt({ min: 1, max: LIMITS.MAX_HISTORY_ITEMS }).toInt(),
     handleValidationErrors
   ],
-  asyncHandler(courseController.getAllCourses)
+  asyncHandler(courseController.getAllCourses?.bind(courseController))
 );
-router.get('/:id', asyncHandler(courseController.getCourse));
+router.get(
+  '/:id',
+  asyncHandler(courseController.getCourse?.bind(courseController))
+);
 router.post(
   '/',
   courseValidation,
@@ -33,8 +36,11 @@ router.post(
     }
     next();
   },
-  asyncHandler(courseController.generateCourse)
+  asyncHandler(courseController.generateCourse.bind(courseController))
 );
-router.delete('/:id', asyncHandler(courseController.deleteCourse));
+router.delete(
+  '/:id',
+  asyncHandler(courseController.deleteCourse?.bind(courseController))
+);
 
 module.exports = router;

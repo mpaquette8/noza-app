@@ -37,12 +37,41 @@ router.use(authenticate);
 router.use(checkBlacklist);
 
 // Routes IA
-router.post('/ask-question', askQuestionLimiter, questionValidation, asyncHandler(aiController.askQuestion));
-router.post('/generate-quiz', generateQuizLimiter, asyncHandler(aiController.generateQuiz));
-router.post('/suggest-questions', suggestQuestionsLimiter, asyncHandler(aiController.suggestQuestions));
-router.get('/random-subject', randomSubjectLimiter, asyncHandler(aiController.getRandomSubject));
-router.get('/subject-categories', subjectCategoriesLimiter, asyncHandler(aiController.getSubjectCategories));
-router.post('/generate-ondemand-quiz', generateOnDemandQuizLimiter, asyncHandler(aiController.generateOnDemandQuiz));
-router.get('/quiz-history', quizHistoryLimiter, asyncHandler(aiController.getQuizHistory));
+router.post(
+  '/ask-question',
+  askQuestionLimiter,
+  questionValidation,
+  asyncHandler(aiController.askQuestion.bind(aiController))
+);
+router.post(
+  '/generate-quiz',
+  generateQuizLimiter,
+  asyncHandler(aiController.generateQuiz.bind(aiController))
+);
+router.post(
+  '/suggest-questions',
+  suggestQuestionsLimiter,
+  asyncHandler(aiController.suggestQuestions.bind(aiController))
+);
+router.get(
+  '/random-subject',
+  randomSubjectLimiter,
+  asyncHandler(aiController.getRandomSubject.bind(aiController))
+);
+router.get(
+  '/subject-categories',
+  subjectCategoriesLimiter,
+  asyncHandler(aiController.getSubjectCategories.bind(aiController))
+);
+router.post(
+  '/generate-ondemand-quiz',
+  generateOnDemandQuizLimiter,
+  asyncHandler(aiController.generateOnDemandQuiz.bind(aiController))
+);
+router.get(
+  '/quiz-history',
+  quizHistoryLimiter,
+  asyncHandler(aiController.getQuizHistory.bind(aiController))
+);
 
 module.exports = router;

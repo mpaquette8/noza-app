@@ -30,13 +30,30 @@ const googleLimiter = createRateLimiter(RATE_LIMITS.AUTH.GOOGLE);
 router.use(checkBlacklist);
 
 // Routes publiques existantes
-router.post('/register', registerValidation, asyncHandler(authController.register));
-router.post('/login', loginLimiter, loginValidation, asyncHandler(authController.login));
+router.post(
+  '/register',
+  registerValidation,
+  asyncHandler(authController.register.bind(authController))
+);
+router.post(
+  '/login',
+  loginLimiter,
+  loginValidation,
+  asyncHandler(authController.login.bind(authController))
+);
 
 // NOUVELLE ROUTE : Authentification Google
-router.post('/google', googleLimiter, asyncHandler(authController.googleAuth));
+router.post(
+  '/google',
+  googleLimiter,
+  asyncHandler(authController.googleAuth.bind(authController))
+);
 
 // Routes protégées existantes
-router.get('/profile', authenticate, asyncHandler(authController.getProfile));
+router.get(
+  '/profile',
+  authenticate,
+  asyncHandler(authController.getProfile.bind(authController))
+);
 
 module.exports = router;
