@@ -15,7 +15,11 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // Permet de faire confiance aux en-têtes du proxy (utile pour HTTPS derrière un proxy)
-app.enable('trust proxy');
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1); // trust first proxy only
+} else {
+  app.set('trust proxy', false); // disable trust proxy in dev
+}
 
 // Redirection HTTP -> HTTPS en production
 app.use((req, res, next) => {
