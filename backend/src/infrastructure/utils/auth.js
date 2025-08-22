@@ -1,4 +1,4 @@
-// backend/src/utils/auth.js (copier depuis backend/utils-old/auth.js)
+// backend/src/infrastructure/utils/auth.js (copier depuis backend/utils-old/auth.js)
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 

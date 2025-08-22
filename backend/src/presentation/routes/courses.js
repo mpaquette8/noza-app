@@ -1,11 +1,11 @@
-// backend/src/routes/courses.js
+// backend/src/presentation/routes/courses.js
 const express = require('express');
 const courseController = require('../controllers/courseController');
-const { authenticate } = require('../middleware/auth');
-const { courseValidation, handleValidationErrors } = require('../middleware/validation');
-const { asyncHandler } = require('../utils/helpers');
+const { authenticate } = require('../../infrastructure/middleware/auth');
+const { courseValidation, handleValidationErrors } = require('../../infrastructure/middleware/validation');
+const { asyncHandler } = require('../../infrastructure/utils/helpers');
 const { query } = require('express-validator');
-const { LIMITS } = require('../utils/constants');
+const { LIMITS } = require('../../infrastructure/utils/constants');
 
 const router = express.Router();
 

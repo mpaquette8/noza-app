@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { sanitizeInput } = require('../../src/utils/helpers');
+const { sanitizeInput } = require('../../src/infrastructure/utils/helpers');
 
 test('sanitizeInput preserves accented letters', () => {
   const input = 'Café élève déjà naïve';

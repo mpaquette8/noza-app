@@ -1,8 +1,8 @@
-// backend/src/controllers/aiController.js
-const { createResponse, sanitizeInput, logger } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES, AI_ERROR_MESSAGES, LIMITS } = require('../utils/constants');
-const { prisma } = require('../config/database');
-const anthropicService = require('../services/anthropicService');
+// backend/src/presentation/controllers/aiController.js
+const { createResponse, sanitizeInput, logger } = require('../../infrastructure/utils/helpers');
+const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES, AI_ERROR_MESSAGES, LIMITS } = require('../../infrastructure/utils/constants');
+const { prisma } = require('../../infrastructure/database');
+const anthropicService = require('../../application/services/anthropicService');
 
 class AiController {
   // Répondre à une question

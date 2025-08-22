@@ -1,8 +1,8 @@
-// backend/src/routes/onboardingRoutes.js
+// backend/src/presentation/routes/onboardingRoutes.js
 const express = require('express');
 const onboardingController = require('../controllers/onboardingController');
-const { authenticate } = require('../middleware/auth');
-const { asyncHandler } = require('../utils/helpers');
+const { authenticate } = require('../../infrastructure/middleware/auth');
+const { asyncHandler } = require('../../infrastructure/utils/helpers');
 
 const router = express.Router();
 

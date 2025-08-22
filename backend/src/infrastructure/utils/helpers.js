@@ -1,4 +1,4 @@
-// backend/src/utils/helpers.js
+// backend/src/infrastructure/utils/helpers.js
 const {
   ERROR_MESSAGES,
   HTTP_STATUS,

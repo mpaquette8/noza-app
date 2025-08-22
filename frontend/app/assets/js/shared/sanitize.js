@@ -1,6 +1,6 @@
 /**
  * Sanitize user-provided input while preserving Unicode letters and punctuation.
- * This logic is mirrored in backend/src/utils/helpers.js; update both places when
+ * This logic is mirrored in backend/src/infrastructure/utils/helpers.js; update both places when
  * changing the allowed character set or behavior.
  *
  * @param {string} input - The raw input string to clean.

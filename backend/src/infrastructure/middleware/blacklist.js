@@ -1,4 +1,4 @@
-// backend/src/middleware/blacklist.js
+// backend/src/infrastructure/middleware/blacklist.js
 const { createResponse } = require('../utils/helpers');
 const { ERROR_MESSAGES, HTTP_STATUS } = require('../utils/constants');
 

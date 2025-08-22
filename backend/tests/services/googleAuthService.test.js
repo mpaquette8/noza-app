@@ -3,7 +3,7 @@ process.env.GOOGLE_CLIENT_ID = 'test-client-id';
 const test = require('node:test');
 const assert = require('node:assert');
 const { OAuth2Client } = require('google-auth-library');
-const googleAuthService = require('../../src/services/googleAuthService');
+const googleAuthService = require('../../src/application/services/googleAuthService');
 const { mock } = test;
 
 test.afterEach(() => {

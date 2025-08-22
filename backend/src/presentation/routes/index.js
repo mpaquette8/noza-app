@@ -1,4 +1,4 @@
-// backend/src/routes/index.js
+// backend/src/presentation/routes/index.js
 const express = require('express');
 const authRoutes = require('./auth');
 const coursesRoutes = require('./courses');

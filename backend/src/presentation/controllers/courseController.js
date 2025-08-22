@@ -1,8 +1,8 @@
-// backend/src/controllers/courseController.js
-const { prisma } = require('../config/database');
-const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES } = require('../utils/constants');
-const anthropicService = require('../services/anthropicService');
+// backend/src/presentation/controllers/courseController.js
+const { prisma } = require('../../infrastructure/database');
+const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../../infrastructure/utils/helpers');
+const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES } = require('../../infrastructure/utils/constants');
+const anthropicService = require('../../application/services/anthropicService');
 const crypto = require('crypto');
 
 class CourseController {

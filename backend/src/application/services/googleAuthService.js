@@ -1,6 +1,6 @@
-// backend/src/services/googleAuthService.js
+// backend/src/application/services/googleAuthService.js
 const { OAuth2Client } = require('google-auth-library');
-const { logger } = require('../utils/helpers');
+const { logger } = require('../../infrastructure/utils/helpers');
 
 class GoogleAuthService {
   constructor() {

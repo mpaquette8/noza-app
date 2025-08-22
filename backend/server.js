@@ -3,9 +3,9 @@ require('dotenv').config();
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
-const { app, initializeApp } = require('./src/app');
-const { logger } = require('./src/utils/helpers');
-const { disconnectDatabase } = require('./src/config/database');
+const { app, initializeApp } = require('./src/presentation/app');
+const { logger } = require('./src/infrastructure/utils/helpers');
+const { disconnectDatabase } = require('./src/infrastructure/database');
 const { checkEnv } = require('./scripts/check-env');
 // const { ensureMigrations } = require('./scripts/check-migrations');
 
