@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const compression = require('../infrastructure/middleware/compression');
 const { connectDatabase } = require('../infrastructure/database');
 const { logger } = require('../infrastructure/utils/helpers');
 const { LIMITS } = require('../infrastructure/utils/constants');
@@ -139,6 +140,9 @@ app.use((_, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
 });
+
+// Compression
+app.use(compression);
 
 // Servir les fichiers statiques pour l'application et le marketing
 app.use('/app', express.static(path.join(__dirname, '../../../frontend/app')));

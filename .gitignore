@@ -6,5 +6,7 @@ node_modules/
 backend/node_modules/*
 !backend/node_modules/awilix/
 !backend/node_modules/awilix/**
+!backend/node_modules/compression/
+!backend/node_modules/compression/**
 .DS_Store
 *.log
