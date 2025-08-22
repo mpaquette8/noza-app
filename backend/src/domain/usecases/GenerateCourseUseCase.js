@@ -1,3 +1,5 @@
+const { ValidationError } = require('../errors');
+
 class GenerateCourseUseCase {
   constructor(courseRepository, courseGenerationService) {
     this.courseRepository = courseRepository;
@@ -5,6 +7,12 @@ class GenerateCourseUseCase {
   }
 
   async execute({ userId, subject, teacherType, duration, vulgarization }) {
+    if (!userId) {
+      throw new ValidationError('userId est requis');
+    }
+    if (!subject) {
+      throw new ValidationError('Le sujet est requis');
+    }
     const content = await this.courseGenerationService.generateCourse(
       subject,
       vulgarization,

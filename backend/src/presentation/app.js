@@ -10,6 +10,7 @@ const { LIMITS } = require('../infrastructure/utils/constants');
 
 // Importer les routes
 const apiRoutes = require('./routes');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -180,14 +181,7 @@ app.post('/api/logs', (req, res) => {
 });
 
 // Middleware de gestion des erreurs globales
-app.use((err, req, res, next) => {
-  logger.error('Erreur serveur non gérée', err);
-  
-  res.status(500).json({
-    success: false,
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Erreur serveur interne'
-  });
-});
+app.use(errorHandler);
 
 // Middleware pour les routes non trouvées
 app.use('*', (req, res) => {

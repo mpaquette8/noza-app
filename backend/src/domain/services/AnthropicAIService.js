@@ -7,6 +7,11 @@ const {
   LIMITS,
   ERROR_CODES
 } = require('../../infrastructure/utils/constants');
+const {
+  DomainError,
+  ValidationError,
+  BusinessRuleError
+} = require('../errors');
 
 const MAX_COURSE_LENGTH = LIMITS.MAX_COURSE_LENGTH;
 
@@ -140,12 +145,12 @@ RENDU ATTENDU :
       logger.error('Erreur génération cours', { code, error });
       if (code === ERROR_CODES.IA_ERROR) {
         this.aiService.setOffline(true);
-        const err = new Error(this.getOfflineMessage());
+        const err = new DomainError(this.getOfflineMessage());
         err.code = code;
         err.offline = true;
         throw err;
       }
-      const err = new Error('Erreur lors de la génération du cours');
+      const err = new DomainError('Erreur lors de la génération du cours');
       err.code = code;
       throw err;
     }
@@ -226,12 +231,12 @@ Réponse :`;
       logger.error('Erreur réponse question', { code, error });
       if (code === ERROR_CODES.IA_ERROR) {
         this.aiService.setOffline(true);
-        const err = new Error(this.getOfflineMessage());
+        const err = new DomainError(this.getOfflineMessage());
         err.code = code;
         err.offline = true;
         throw err;
       }
-      const err = new Error('Erreur lors de la génération de la réponse');
+      const err = new DomainError('Erreur lors de la génération de la réponse');
       err.code = code;
       throw err;
     }
@@ -343,19 +348,19 @@ Assure-toi que les questions couvrent les points clés du cours et que les répo
         const quizData = JSON.parse(jsonMatch[0]);
         return quizData;
       } else {
-        throw new Error('Format de réponse invalide');
+        throw new ValidationError('Format de réponse invalide');
       }
     } catch (error) {
       const code = this.aiService.categorizeError(error);
       logger.error('Erreur génération quiz', { code, error });
       if (code === ERROR_CODES.IA_ERROR) {
         this.aiService.setOffline(true);
-        const err = new Error(this.getOfflineMessage());
+        const err = new DomainError(this.getOfflineMessage());
         err.code = code;
         err.offline = true;
         throw err;
       }
-      const err = new Error('Erreur lors de la génération du quiz');
+      const err = new DomainError('Erreur lors de la génération du quiz');
       err.code = code;
       throw err;
     }
@@ -410,19 +415,19 @@ Assure-toi que les questions couvrent les points clés du sujet et que les répo
         const quizData = JSON.parse(jsonMatch[0]);
         return quizData.questions;
       } else {
-        throw new Error('Format de réponse invalide');
+        throw new ValidationError('Format de réponse invalide');
       }
     } catch (error) {
       const code = this.aiService.categorizeError(error);
       logger.error('Erreur génération quiz à la demande', { code, error });
       if (code === ERROR_CODES.IA_ERROR) {
         this.aiService.setOffline(true);
-        const err = new Error(this.getOfflineMessage());
+        const err = new DomainError(this.getOfflineMessage());
         err.code = code;
         err.offline = true;
         throw err;
       }
-      const err = new Error('Erreur lors de la génération du quiz à la demande');
+      const err = new DomainError('Erreur lors de la génération du quiz à la demande');
       err.code = code;
       throw err;
     }
@@ -467,7 +472,7 @@ Format JSON :
         const suggestionsData = JSON.parse(jsonMatch[0]);
         return suggestionsData.questions;
       } else {
-        throw new Error('Format de réponse invalide');
+        throw new ValidationError('Format de réponse invalide');
       }
 
     } catch (error) {
@@ -475,12 +480,12 @@ Format JSON :
       logger.error('Erreur suggestions questions', { code, error });
       if (code === ERROR_CODES.IA_ERROR) {
         this.aiService.setOffline(true);
-        const err = new Error(this.getOfflineMessage());
+        const err = new DomainError(this.getOfflineMessage());
         err.code = code;
         err.offline = true;
         throw err;
       }
-      const err = new Error('Erreur lors de la génération des suggestions');
+      const err = new DomainError('Erreur lors de la génération des suggestions');
       err.code = code;
       throw err;
     }
@@ -551,7 +556,7 @@ Format JSON :
 
     } catch (error) {
       logger.error('Erreur génération sujet aléatoire', error);
-      throw new Error('Erreur lors de la génération du sujet aléatoire');
+      throw new BusinessRuleError('Erreur lors de la génération du sujet aléatoire');
     }
   }
 
@@ -573,7 +578,7 @@ Format JSON :
 
     } catch (error) {
       logger.error('Erreur récupération catégories', error);
-      throw new Error('Erreur lors de la récupération des catégories');
+      throw new BusinessRuleError('Erreur lors de la récupération des catégories');
     }
   }
 

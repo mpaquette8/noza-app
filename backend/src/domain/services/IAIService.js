@@ -1,26 +1,28 @@
+const { DomainError } = require('../errors');
+
 class IAIService {
   async sendWithTimeout(options, timeoutMs, retryDelays) {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 
   isOffline() {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 
   getOfflineMessage() {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 
   async recoverIfOffline() {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 
   categorizeError(error) {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 
   setOffline(value) {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 }
 

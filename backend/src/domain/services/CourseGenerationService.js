@@ -1,6 +1,8 @@
+const { DomainError } = require('../errors');
+
 class CourseGenerationService {
   async generateCourse(subject, options) {
-    throw new Error('Method not implemented');
+    throw new DomainError('Method not implemented');
   }
 }
 
