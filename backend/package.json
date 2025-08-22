@@ -24,7 +24,8 @@
     "google-auth-library": "^10.2.1",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.2",
-    "sanitize-html": "^2.10.0"
+    "sanitize-html": "^2.10.0",
+    "awilix": "^8.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

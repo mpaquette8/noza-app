@@ -1,11 +1,15 @@
 // backend/src/presentation/controllers/authController.js
-const { prisma } = require('../../infrastructure/database');
 const { hashPassword, comparePassword, generateToken } = require('../../infrastructure/utils/auth');
 const { createResponse, sanitizeInput, logger } = require('../../infrastructure/utils/helpers');
 const { HTTP_STATUS, ERROR_MESSAGES } = require('../../infrastructure/utils/constants');
-const googleAuthService = require('../../application/services/googleAuthService');
+const container = require('../../infrastructure/container');
 
 class AuthController {
+  constructor() {
+    this.prisma = container.resolve('prisma');
+    this.googleAuthService = container.resolve('googleAuthService');
+  }
+
   handleError(res, error, context) {
     logger.error(context, error.message);
 
@@ -49,7 +53,7 @@ class AuthController {
       const sanitizedEmail = sanitizeInput(email);
       const sanitizedName = sanitizeInput(name);
 
-      const existingUser = await prisma.user.findUnique({
+      const existingUser = await this.prisma.user.findUnique({
         where: { email: sanitizedEmail }
       });
 
@@ -59,7 +63,7 @@ class AuthController {
       }
 
       const hashedPassword = await hashPassword(password);
-      const user = await prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           email: sanitizedEmail,
           name: sanitizedName,
@@ -106,7 +110,7 @@ class AuthController {
 
       const sanitizedEmail = sanitizeInput(email);
 
-      const user = await prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: { email: sanitizedEmail }
       });
 
@@ -156,16 +160,16 @@ class AuthController {
       }
 
       // Vérifier le token auprès de Google
-      const googleUserInfo = await googleAuthService.verifyGoogleToken(credential);
+      const googleUserInfo = await this.googleAuthService.verifyGoogleToken(credential);
 
       // Vérifier que l'email est vérifié chez Google
-      if (!googleAuthService.isEmailVerified(googleUserInfo)) {
+      if (!this.googleAuthService.isEmailVerified(googleUserInfo)) {
         const { response, statusCode } = createResponse(false, null, 'Email non vérifié chez Google', HTTP_STATUS.BAD_REQUEST);
         return res.status(statusCode).json(response);
       }
 
       // Chercher un utilisateur existant
-      let user = await prisma.user.findUnique({
+      let user = await this.prisma.user.findUnique({
         where: { email: googleUserInfo.email }
       });
 
@@ -173,7 +177,7 @@ class AuthController {
         // Utilisateur existant
         if (user.provider === 'email' && !user.googleId) {
           // Cas 1: Compte email existant → Lier le compte Google
-          user = await prisma.user.update({
+          user = await this.prisma.user.update({
             where: { id: user.id },
             data: {
               googleId: googleUserInfo.googleId,
@@ -201,7 +205,7 @@ class AuthController {
         }
       } else {
         // Nouvel utilisateur → Créer le compte
-        user = await prisma.user.create({
+        user = await this.prisma.user.create({
           data: {
             email: googleUserInfo.email,
             name: googleUserInfo.name,

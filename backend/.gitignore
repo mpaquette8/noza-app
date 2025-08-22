@@ -1,4 +1,6 @@
-node_modules
+node_modules/*
+!node_modules/awilix/
+!node_modules/awilix/**
 # Keep environment variables out of version control
 .env
 

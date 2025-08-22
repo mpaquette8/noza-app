@@ -1,13 +1,17 @@
 // backend/src/presentation/controllers/aiController.js
 const { createResponse, sanitizeInput, logger } = require('../../infrastructure/utils/helpers');
 const { HTTP_STATUS, ERROR_MESSAGES, ERROR_CODES, AI_ERROR_MESSAGES, LIMITS } = require('../../infrastructure/utils/constants');
-const { prisma } = require('../../infrastructure/database');
-const anthropicService = require('../../application/services/anthropicService');
+const container = require('../../infrastructure/container');
 
 class AiController {
+  constructor() {
+    this.anthropicService = container.resolve('anthropicService');
+    this.prisma = container.resolve('prisma');
+  }
+
   // Répondre à une question
   async askQuestion(req, res) {
-    if (anthropicService.isOffline()) {
+    if (this.anthropicService.isOffline()) {
       const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
       return res.status(statusCode).json(response);
     }
@@ -23,7 +27,7 @@ class AiController {
       const sanitizedQuestion = sanitizeInput(question, 2000);
 
       // Générer la réponse
-      const result = await anthropicService.answerQuestion(
+      const result = await this.anthropicService.answerQuestion(
         sanitizedQuestion,
         courseContent,
         level
@@ -62,7 +66,7 @@ class AiController {
 
   // Générer un quiz
   async generateQuiz(req, res) {
-    if (anthropicService.isOffline()) {
+    if (this.anthropicService.isOffline()) {
       const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
       return res.status(statusCode).json(response);
     }
@@ -75,7 +79,7 @@ class AiController {
       }
 
       // Générer le quiz
-      const quiz = await anthropicService.generateQuiz(courseContent);
+      const quiz = await this.anthropicService.generateQuiz(courseContent);
 
       logger.info('Quiz généré', { 
         userId: req.user.id, 
@@ -104,7 +108,7 @@ class AiController {
 
   // Générer un quiz à la demande
   async generateOnDemandQuiz(req, res) {
-    if (anthropicService.isOffline()) {
+    if (this.anthropicService.isOffline()) {
       const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
       return res.status(statusCode).json(response);
     }
@@ -129,9 +133,9 @@ class AiController {
       }
 
       const sanitizedSubject = sanitizeInput(subject, 200);
-      const questions = await anthropicService.generateOnDemandQuiz(sanitizedSubject, level, count);
+      const questions = await this.anthropicService.generateOnDemandQuiz(sanitizedSubject, level, count);
 
-      await prisma.quiz.create({
+      await this.prisma.quiz.create({
         data: {
           subject: sanitizedSubject,
           level,
@@ -181,8 +185,8 @@ class AiController {
         where.type = type;
       }
 
-      const [quizzes, total] = await prisma.$transaction([
-        prisma.quiz.findMany({
+      const [quizzes, total] = await this.prisma.$transaction([
+        this.prisma.quiz.findMany({
           where,
           orderBy: { createdAt: 'desc' },
           skip,
@@ -196,7 +200,7 @@ class AiController {
             createdAt: true
           }
         }),
-        prisma.quiz.count({ where })
+        this.prisma.quiz.count({ where })
       ]);
 
       const formatted = quizzes.map((q) => ({
@@ -230,7 +234,7 @@ class AiController {
 
   // Suggérer des questions
   async suggestQuestions(req, res) {
-    if (anthropicService.isOffline()) {
+    if (this.anthropicService.isOffline()) {
       const { response, statusCode } = createResponse(false, null, 'Service IA indisponible, réessayez plus tard', HTTP_STATUS.SERVICE_UNAVAILABLE);
       return res.status(statusCode).json(response);
     }
@@ -243,7 +247,7 @@ class AiController {
       }
 
       // Générer les suggestions
-      const suggestions = await anthropicService.suggestQuestions(courseContent, level);
+      const suggestions = await this.anthropicService.suggestQuestions(courseContent, level);
 
       logger.info('Suggestions générées', { 
         userId: req.user.id, 
@@ -275,7 +279,7 @@ class AiController {
     try {
       const { category } = req.query;
       
-      const result = anthropicService.getRandomSubject(category);
+      const result = this.anthropicService.getRandomSubject(category);
 
       logger.info('Sujet aléatoire généré', { 
         userId: req.user.id, 
@@ -299,7 +303,7 @@ class AiController {
   // Obtenir toutes les catégories disponibles
   async getSubjectCategories(req, res) {
     try {
-      const result = anthropicService.getSubjectCategories();
+      const result = this.anthropicService.getSubjectCategories();
 
       const { response } = createResponse(true, {
         categories: result.categories,
@@ -319,8 +323,8 @@ const aiController = new AiController();
 // Vérifie périodiquement si le service Anthropic est de nouveau disponible
 const RECOVERY_INTERVAL = 60 * 1000; // 1 minute
 setInterval(() => {
-  if (anthropicService.isOffline()) {
-    anthropicService.recoverIfOffline();
+  if (aiController.anthropicService.isOffline()) {
+    aiController.anthropicService.recoverIfOffline();
   }
 }, RECOVERY_INTERVAL);
 
