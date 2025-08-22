@@ -1,14 +1,15 @@
 // backend/src/application/services/googleAuthService.js
 const { OAuth2Client } = require('google-auth-library');
 const { logger } = require('../../infrastructure/utils/helpers');
+const { api: apiConfig } = require('../../config');
 
 class GoogleAuthService {
   constructor() {
-    if (!process.env.GOOGLE_CLIENT_ID) {
+    if (!apiConfig.googleClientId) {
       throw new Error('GOOGLE_CLIENT_ID manquant dans les variables d\'environnement');
     }
-    
-    this.client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    this.client = new OAuth2Client(apiConfig.googleClientId);
   }
 
   /**
@@ -25,7 +26,7 @@ class GoogleAuthService {
 
       const verifyPromise = this.client.verifyIdToken({
         idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
+        audience: apiConfig.googleClientId,
       });
 
       const timeoutPromise = new Promise((_, reject) => {

@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const { connectDatabase } = require('../infrastructure/database');
 const { logger } = require('../infrastructure/utils/helpers');
 const { LIMITS } = require('../infrastructure/utils/constants');
+const { app: appConfig, api: apiConfig, cors: corsConfig } = require('../config');
 
 // Importer les routes
 const apiRoutes = require('./routes');
@@ -15,7 +16,7 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // Permet de faire confiance aux en-têtes du proxy (utile pour HTTPS derrière un proxy)
-if (process.env.NODE_ENV === 'production') {
+if (appConfig.env === 'production') {
   app.set('trust proxy', 1); // trust first proxy only
 } else {
   app.set('trust proxy', false); // disable trust proxy in dev
@@ -23,7 +24,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Redirection HTTP -> HTTPS en production
 app.use((req, res, next) => {
-  if (process.env.NODE_ENV === 'production' && !req.secure) {
+  if (appConfig.env === 'production' && !appConfig.allowHttp && !req.secure) {
     return res.redirect(`https://${req.headers.host}${req.url}`);
   }
   next();
@@ -92,7 +93,7 @@ const limiter = rateLimit({
 // Exposer la config Google au front
 app.get('/api/config/google', (req, res) => {
   try {
-    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientId = apiConfig.googleClientId;
 
     if (!clientId) {
       return res.status(500).json({
@@ -122,7 +123,7 @@ app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
   const origin = req.headers.origin;
-  if (origin) {
+  if (origin && (corsConfig.origins.includes('*') || corsConfig.origins.includes(origin))) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
   }

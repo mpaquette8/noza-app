@@ -1,5 +1,4 @@
 // backend/server.js
-require('dotenv').config();
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -7,13 +6,14 @@ const { app, initializeApp } = require('./src/presentation/app');
 const { logger } = require('./src/infrastructure/utils/helpers');
 const { disconnectDatabase } = require('./src/infrastructure/database');
 const { checkEnv } = require('./scripts/check-env');
+const { app: appConfig } = require('./src/config');
 // const { ensureMigrations } = require('./scripts/check-migrations');
 
-const HTTP_PORT = process.env.PORT || 3000;
-const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
+const HTTP_PORT = appConfig.port;
+const HTTPS_PORT = appConfig.httpsPort;
 let server;
 let httpRedirectServer;
-const allowHttp = process.env.ALLOW_HTTP === 'true';
+const allowHttp = appConfig.allowHttp;
 
 // Gestion propre de l'arrêt
 const gracefulShutdown = async (signal) => {
@@ -53,9 +53,9 @@ const startServer = async () => {
     // Initialiser l'application (DB, etc.)
     await initializeApp();
 
-    if (process.env.NODE_ENV === 'production' && !allowHttp) {
-      const certPath = process.env.TLS_CERT_PATH;
-      const keyPath = process.env.TLS_KEY_PATH;
+    if (appConfig.env === 'production' && !allowHttp) {
+      const certPath = appConfig.tlsCertPath;
+      const keyPath = appConfig.tlsKeyPath;
 
       const credentials = {
         cert: fs.readFileSync(certPath),
@@ -75,7 +75,7 @@ const startServer = async () => {
           logger.info(`Redirection HTTP active sur le port ${HTTP_PORT}`);
         });
     } else {
-      if (process.env.NODE_ENV === 'production' && allowHttp) {
+      if (appConfig.env === 'production' && allowHttp) {
         logger.warn('ALLOW_HTTP activé: serveur démarré en HTTP sans TLS.');
       }
       server = app.listen(HTTP_PORT, '0.0.0.0', () => {
