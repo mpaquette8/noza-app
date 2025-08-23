@@ -93,7 +93,9 @@ app.use(
       }
     },
     crossOriginEmbedderPolicy: false,
-    crossOriginOpenerPolicy: false
+    crossOriginOpenerPolicy: false,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    xContentTypeOptions: true
   })
 );
 
