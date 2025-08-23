@@ -13,13 +13,24 @@ function createServer(handler) {
   });
 }
 
-async function request(path) {
+async function request(path, accept = 'text/plain') {
   return new Promise((resolve) => {
     const server = createServer((req, res) => {
       if (req.path === '/small') {
+        res.setHeader('Content-Type', 'text/plain');
         res.end('hello');
-      } else if (req.path === '/image.png' || req.path === '/large') {
+      } else if (req.path === '/image.png') {
+        res.setHeader('Content-Type', 'image/png');
         res.end('a'.repeat(2000));
+      } else if (req.path === '/large') {
+        res.setHeader('Content-Type', 'text/plain');
+        res.end('a'.repeat(2000));
+      } else if (req.path === '/html') {
+        res.setHeader('Content-Type', 'text/html');
+        res.end('<html>' + 'a'.repeat(2000) + '</html>');
+      } else if (req.path === '/json') {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ data: 'a'.repeat(200) }));
       }
     });
     server.listen(0, () => {
@@ -28,7 +39,7 @@ async function request(path) {
         hostname: 'localhost',
         port,
         path,
-        headers: { 'Accept-Encoding': 'gzip' }
+        headers: { 'Accept-Encoding': 'gzip', Accept: accept }
       };
       http.get(options, (res) => {
         const chunks = [];
@@ -42,17 +53,27 @@ async function request(path) {
   });
 }
 
-test('responses smaller than 1kb remain uncompressed', async () => {
+test('responses smaller than 100 bytes remain uncompressed', async () => {
   const res = await request('/small');
   assert.strictEqual(res.headers['content-encoding'], undefined);
 });
 
 test('images are excluded from compression', async () => {
-  const res = await request('/image.png');
+  const res = await request('/image.png', 'image/png');
   assert.strictEqual(res.headers['content-encoding'], undefined);
 });
 
-test('responses larger than 1kb are compressed', async () => {
+test('responses larger than 100 bytes are compressed', async () => {
   const res = await request('/large');
+  assert.strictEqual(res.headers['content-encoding'], 'gzip');
+});
+
+test('text/html responses are compressed', async () => {
+  const res = await request('/html', 'text/html');
+  assert.strictEqual(res.headers['content-encoding'], 'gzip');
+});
+
+test('application/json responses are compressed', async () => {
+  const res = await request('/json', 'application/json');
   assert.strictEqual(res.headers['content-encoding'], 'gzip');
 });
