@@ -11,6 +11,9 @@ const { logger } = require('../src/infrastructure/utils/helpers');
 
 const execAsync = util.promisify(exec);
 
+const MIN_JWT_LENGTH = 32;
+const CHECK_INTERVAL = 60 * 1000;
+
 // Vérifie si un fichier est suivi par git
 async function isTracked(file, cwd) {
   try {
@@ -63,12 +66,12 @@ async function checkEnv() {
 
   if (process.env.JWT_SECRET) {
     const secret = process.env.JWT_SECRET;
-    const hasMinLength = secret.length >= 32;
+    const hasMinLength = secret.length >= MIN_JWT_LENGTH;
     const hasMixedCase = /[a-z]/.test(secret) && /[A-Z]/.test(secret);
     const hasDigit = /\d/.test(secret);
     const uniqueChars = new Set(secret).size;
     if (!hasMinLength || !hasMixedCase || !hasDigit || uniqueChars < 5) {
-      malformed.push('JWT_SECRET (32+ chars, mixed case, digits, entropy)');
+      malformed.push(`JWT_SECRET (${MIN_JWT_LENGTH}+ chars, mixed case, digits, entropy)`);
     }
   }
 
@@ -99,5 +102,5 @@ if (require.main === module) {
   });
 }
 
-module.exports = { checkEnv };
+module.exports = { checkEnv, MIN_JWT_LENGTH, CHECK_INTERVAL };
 
