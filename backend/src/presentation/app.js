@@ -60,16 +60,16 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
-          "'unsafe-inline'", // Pour les scripts inline (temporaire)
           "https://unpkg.com", // Pour Lucide icons
           "https://accounts.google.com", // Pour Google Auth
-          "https://apis.google.com" // Pour Google APIs
+          "https://apis.google.com", // Pour Google APIs
+          // Ajoutez ici les hachages (sha256, sha384, etc.) des scripts inline si nécessaires
         ],
         styleSrc: [
           "'self'",
-          "'unsafe-inline'", // Pour les styles inline
           "https://fonts.googleapis.com", // Pour Google Fonts
-          "https://accounts.google.com" // Pour les styles Google Auth
+          "https://accounts.google.com", // Pour les styles Google Auth
+          // Ajoutez ici les hachages (sha256, sha384, etc.) des styles inline si nécessaires
         ],
         fontSrc: [
           "'self'",
