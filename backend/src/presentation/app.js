@@ -18,6 +18,25 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+app.set('etag', 'strong');
+
+const HASHED_ASSET_REGEX = /\.[a-f0-9]{8,}\.(?:js|css|woff2?|ttf)$/i;
+
+const setStaticHeaders = (res, filePath) => {
+  res.set('Vary', 'Accept-Encoding');
+  if (HASHED_ASSET_REGEX.test(filePath)) {
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (filePath.endsWith('.html')) {
+    res.set('Cache-Control', 'public, max-age=3600');
+  }
+};
+
+const setHtmlCache = (req, res, next) => {
+  res.set('Vary', 'Accept-Encoding');
+  res.set('Cache-Control', 'public, max-age=3600');
+  next();
+};
+
 // Permet de faire confiance aux en-têtes du proxy (utile pour HTTPS derrière un proxy)
 if (appConfig.env === 'production') {
   app.set('trust proxy', 1); // trust first proxy only
@@ -147,15 +166,37 @@ app.use(compression);
 app.use(cacheControl);
 
 // Servir les fichiers statiques pour l'application et le marketing
-app.use('/app', express.static(path.join(__dirname, '../../../frontend/app')));
-app.use('/', express.static(path.join(__dirname, '../../../frontend/marketing')));
+app.use(
+  '/app',
+  express.static(path.join(__dirname, '../../../frontend/app'), {
+    setHeaders: setStaticHeaders
+  })
+);
+app.use(
+  '/',
+  express.static(path.join(__dirname, '../../../frontend/marketing'), {
+    setHeaders: setStaticHeaders
+  })
+);
 
 // Routes pour les applications frontend
-app.get('/app*', (_, res) =>
-  res.sendFile(path.join(__dirname, '../../../frontend/app/index.html'))
+app.get(
+  '/app*',
+  setHtmlCache,
+  (_, res) =>
+    res.sendFile(
+      path.join(__dirname, '../../../frontend/app/index.html'),
+      { cacheControl: false }
+    )
 );
-app.get('/', (_, res) =>
-  res.sendFile(path.join(__dirname, '../../../frontend/marketing/index.html'))
+app.get(
+  '/',
+  setHtmlCache,
+  (_, res) =>
+    res.sendFile(
+      path.join(__dirname, '../../../frontend/marketing/index.html'),
+      { cacheControl: false }
+    )
 );
 
 // Routes API
