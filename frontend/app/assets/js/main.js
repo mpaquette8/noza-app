@@ -2,7 +2,16 @@
 
 import { utils, API_BASE_URL } from './utils/utils.js';
 import { authManager } from './auth.js';
-import { courseManager, VULGARIZATION_LABELS, DURATION_LABELS, TEACHER_TYPE_LABELS } from './course-manager.js';
+
+let courseManager;
+let VULGARIZATION_LABELS, DURATION_LABELS, TEACHER_TYPE_LABELS;
+async function loadCourseModule() {
+    if (!courseManager) {
+        const module = await import('./course-manager.js');
+        courseManager = module.courseManager;
+        ({ VULGARIZATION_LABELS, DURATION_LABELS, TEACHER_TYPE_LABELS } = module);
+    }
+}
 
 // État global de l'application
 let currentCourse = null;
@@ -18,14 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // L'initialisation de l'interface est désormais gérée dans index.html
     // pour permettre la vérification d'authentification avant chargement.
     setupEventListeners();
-    
-    // Charger l'historique selon l'authentification
-    if (authManager && authManager.isAuthenticated()) {
-        courseManager.loadUserCourses();
-    } else if (courseManager) {
-        courseManager.updateHistoryDisplay();
-    }
-    
+
     utils.initializeLucide();
     console.log('✅ App initialisée');
 });
@@ -45,7 +47,10 @@ function setupEventListeners() {
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
-    if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
+    if (copyContent) copyContent.addEventListener('click', async () => {
+        await loadCourseModule();
+        courseManager && courseManager.copyContent();
+    });
     if (randomSubjectBtn) randomSubjectBtn.addEventListener('click', generateRandomSubject);
     if (randomQuizSubjectBtn) randomQuizSubjectBtn.addEventListener('click', generateRandomQuizSubject);
     const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
@@ -60,6 +65,7 @@ function setupEventListeners() {
 
 // Gestionnaires d'événements principaux
 async function handleGenerateCourse() {
+    await loadCourseModule();
     const subject = document.getElementById('subject').value.trim();
     const subjectLength = subject.length;
     const cfg = (typeof configManager !== 'undefined' && configManager) ?
@@ -332,6 +338,7 @@ function switchTab(tabName) {
 
 // Générer et afficher un quiz
 async function handleGenerateQuiz() {
+    await loadCourseModule();
     if (!courseManager || !courseManager.currentCourse) {
         utils.handleAuthError("Veuillez d'abord générer un cours");
         return;

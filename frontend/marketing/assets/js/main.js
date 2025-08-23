@@ -1,10 +1,13 @@
 // frontend/assets/js/main.js - Point d'entrée principal
 
-import { utils } from './utils.js';
+let utils;
 
 // Initialisation de l'application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Initialisation Hermès App');
+
+    const module = await import('./utils.js');
+    utils = module.utils;
 
     initializeApp();
     setupEventListeners();
