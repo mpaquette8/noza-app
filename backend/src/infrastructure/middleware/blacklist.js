@@ -2,9 +2,46 @@
 const { createResponse } = require('../utils/helpers');
 const { ERROR_MESSAGES, HTTP_STATUS } = require('../utils/constants');
 
-// Ensembles pour stocker les IPs et utilisateurs blacklistés
-const blacklistedIPs = new Set();
-const blacklistedUserIds = new Set();
+// Maps pour stocker les IPs et utilisateurs blacklistés avec un timestamp
+const blacklistedIPs = new Map();
+const blacklistedUserIds = new Map();
+
+// Durée de vie des entrées et intervalle de nettoyage
+const ENTRY_TTL_MS = 24 * 60 * 60 * 1000; // 24 heures
+const CLEANUP_INTERVAL_MS = 60 * 60 * 1000; // 1 heure
+
+// Fonction de nettoyage pour supprimer les entrées expirées
+const cleanupBlacklist = () => {
+  const now = Date.now();
+
+  for (const [ip, timestamp] of blacklistedIPs) {
+    if (now - timestamp > ENTRY_TTL_MS) {
+      blacklistedIPs.delete(ip);
+    }
+  }
+
+  for (const [userId, timestamp] of blacklistedUserIds) {
+    if (now - timestamp > ENTRY_TTL_MS) {
+      blacklistedUserIds.delete(userId);
+    }
+  }
+};
+
+// Nettoyage périodique toutes les heures
+setInterval(cleanupBlacklist, CLEANUP_INTERVAL_MS);
+
+// Fonctions utilitaires pour blacklister une IP ou un utilisateur
+const blacklistIP = (ip) => {
+  if (ip) {
+    blacklistedIPs.set(ip, Date.now());
+  }
+};
+
+const blacklistUser = (userId) => {
+  if (userId) {
+    blacklistedUserIds.set(userId, Date.now());
+  }
+};
 
 // Middleware pour vérifier si la requête provient d'une source blacklistée
 const checkBlacklist = (req, res, next) => {
@@ -21,6 +58,8 @@ const checkBlacklist = (req, res, next) => {
 
 module.exports = {
   checkBlacklist,
+  blacklistIP,
+  blacklistUser,
   blacklistedIPs,
   blacklistedUserIds
 };
