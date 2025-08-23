@@ -365,7 +365,7 @@ function displayQuiz(quiz, containerId = 'quizSection') {
             <div class="quiz-question" data-question-index="${qi}">
                 <h4><span class="question-number">${qi + 1}.</span>${q.question}</h4>
                 <div class="quiz-options">${optionsHtml}</div>
-                <div class="quiz-explanation" style="display:none;"></div>
+                  <div class="quiz-explanation hidden"></div>
             </div>
         `;
     }).join('');
@@ -373,7 +373,7 @@ function displayQuiz(quiz, containerId = 'quizSection') {
     quizSection.innerHTML = `
         <div class="quiz-header"><h3><i data-lucide="help-circle"></i> Quiz</h3></div>
         ${questionsHtml}
-        <div class="quiz-score" id="quizScore" style="display:none;">
+          <div class="quiz-score hidden" id="quizScore">
             <div class="score-icon">🎉</div>
             <h3></h3>
         </div>
