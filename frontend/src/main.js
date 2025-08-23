@@ -1,0 +1,9 @@
+import '../app/assets/js/config.js';
+import '../app/assets/js/onboarding-manager.js';
+import '../app/assets/js/auth-check.js';
+import '../app/assets/js/app-init.js';
+import '../app/assets/js/utils/utils.js';
+import '../app/assets/js/googleAuth.js';
+import '../app/assets/js/auth.js';
+import '../app/assets/js/course-manager.js';
+import '../app/assets/js/main.js';
