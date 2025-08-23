@@ -5,20 +5,23 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { exec } = require('child_process');
+const util = require('util');
 const { logger } = require('../src/infrastructure/utils/helpers');
 
+const execAsync = util.promisify(exec);
+
 // Vérifie si un fichier est suivi par git
-function isTracked(file, cwd) {
+async function isTracked(file, cwd) {
   try {
-    execSync(`git ls-files --error-unmatch ${file}`, { stdio: 'ignore', cwd });
+    await execAsync(`git ls-files --error-unmatch ${file}`, { cwd });
     return true;
   } catch {
     return false;
   }
 }
 
-function checkEnv() {
+async function checkEnv() {
   const repoRoot = path.resolve(__dirname, '..', '..');
   const backendRoot = path.resolve(__dirname, '..');
 
@@ -29,7 +32,7 @@ function checkEnv() {
   ];
 
   for (const file of envFiles) {
-    if (fs.existsSync(file) && isTracked(path.relative(repoRoot, file), repoRoot)) {
+    if (fs.existsSync(file) && (await isTracked(path.relative(repoRoot, file), repoRoot))) {
       logger.error(`Le fichier ${file} est suivi par git. Retirez les secrets du dépôt.`);
       process.exit(1);
     }
@@ -58,8 +61,15 @@ function checkEnv() {
     }
   }
 
-  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-    malformed.push('JWT_SECRET (32 chars min)');
+  if (process.env.JWT_SECRET) {
+    const secret = process.env.JWT_SECRET;
+    const hasMinLength = secret.length >= 32;
+    const hasMixedCase = /[a-z]/.test(secret) && /[A-Z]/.test(secret);
+    const hasDigit = /\d/.test(secret);
+    const uniqueChars = new Set(secret).size;
+    if (!hasMinLength || !hasMixedCase || !hasDigit || uniqueChars < 5) {
+      malformed.push('JWT_SECRET (32+ chars, mixed case, digits, entropy)');
+    }
   }
 
   if (required.includes('TLS_CERT_PATH') && !fs.existsSync(process.env.TLS_CERT_PATH)) {
@@ -83,12 +93,10 @@ function checkEnv() {
 }
 
 if (require.main === module) {
-  try {
-    checkEnv();
-  } catch (err) {
-    logger.error('Erreur lors de la vérification des variables d\'environnement', err);
+  checkEnv().catch((err) => {
+    logger.error("Erreur lors de la vérification des variables d'environnement", err);
     process.exit(1);
-  }
+  });
 }
 
 module.exports = { checkEnv };
