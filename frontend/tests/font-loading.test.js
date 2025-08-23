@@ -6,11 +6,11 @@ const path = require('node:path');
 const frontendDir = path.join(__dirname, '..');
 
 const htmlFiles = fs.readdirSync(frontendDir, { withFileTypes: true })
-  .filter(dirent => dirent.isDirectory())
-  .flatMap(dirent =>
-    fs.readdirSync(path.join(frontendDir, dirent.name))
+  .filter(directory => directory.isDirectory())
+  .flatMap(directory =>
+    fs.readdirSync(path.join(frontendDir, directory.name))
       .filter(f => f.endsWith('.html'))
-      .map(f => path.join(frontendDir, dirent.name, f))
+      .map(f => path.join(frontendDir, directory.name, f))
   );
 
 test('Inter font loads only weights 400 and 600 with swap', () => {
