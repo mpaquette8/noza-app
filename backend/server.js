@@ -44,7 +44,7 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 const startServer = async () => {
   try {
     // Vérifier les variables d'environnement
-    checkEnv();
+    await checkEnv();
 
     // Vérifier et appliquer les migrations
     logger.info('Vérification des migrations de base de données...');
