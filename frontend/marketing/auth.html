@@ -21,10 +21,11 @@
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
     </noscript>
+    <link rel="stylesheet" href="../shared/styles.css">
     <link rel="stylesheet" href="assets/css/marketing.css">
 </head>
 <body>
-    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="loading-spinner"></div>
     </div>
     <div class="container">
@@ -47,7 +48,7 @@
         </header>
 
         <!-- Section d'authentification -->
-        <div id="authSection" class="auth-section" style="display:block;">
+        <div id="authSection" class="auth-section">
             <div class="auth-container">
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="login">Connexion</button>
@@ -84,7 +85,7 @@
                 </div>
 
                 <!-- Formulaire d'inscription -->
-                <div id="registerForm" class="auth-form" style="display: none;">
+                <div id="registerForm" class="auth-form hidden">
                     <h3>Créer un compte</h3>
 
                     <!-- Bouton Google pour inscription -->

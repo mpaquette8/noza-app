@@ -21,17 +21,18 @@
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
     </noscript>
+    <link rel="stylesheet" href="../shared/styles.css">
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="loading-spinner"></div>
     </div>
     <div class="container">
         <!-- Section utilisateur connecté -->
         <div id="userSection" class="user-section">
             <div class="user-info">
-                <img id="userAvatar" class="user-avatar" src="" alt="Avatar utilisateur" style="display: none;">
+                <img id="userAvatar" class="user-avatar hidden" src="" alt="Avatar utilisateur">
                 <i data-lucide="user-circle" id="userDefaultIcon" aria-hidden="true"></i>
                 <span class="user-name"></span>
             </div>
@@ -112,8 +113,8 @@
                         </button>
                     </div>
                 </div>
-                <div class="course-content" id="courseContent" style="display: none;">
-                        <div id="quizSection" style="display: none;"></div>
+                <div class="course-content hidden" id="courseContent">
+                        <div id="quizSection" class="hidden"></div>
                         <div class="course-actions">
                             <button class="action-btn" id="exportPdf">
                                 <i data-lucide="file-text" aria-hidden="true"></i>
@@ -140,7 +141,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-content" id="quiz-on-demandTab" style="display: none;">
+                <div class="tab-content hidden" id="quiz-on-demandTab">
                     <div class="quiz-ondemand-section" id="quizOnDemandSection">
                         <div class="form-group">
                             <label for="quizSubject">Sujet du quiz</label>
@@ -176,16 +177,16 @@
                             Générer le quiz
                         </button>
                     </div>
-                    <div id="quizOnDemandResults" style="display: none;"></div>
+                    <div id="quizOnDemandResults" class="hidden"></div>
                 </div>
-                <div class="tab-content" id="historyTab" style="display: none;">
+                <div class="tab-content hidden" id="historyTab">
                     <div class="empty-state">
                         <i data-lucide="history" aria-hidden="true"></i>
                         <h3>Aucun historique</h3>
                         <p>Vos cours générés apparaîtront ici automatiquement.</p>
                     </div>
                 </div>
-                <div class="tab-content" id="pathsTab" style="display: none;">
+                <div class="tab-content hidden" id="pathsTab">
                     <div class="empty-state">
                         <i data-lucide="map" aria-hidden="true"></i>
                         <h3>Aucun parcours</h3>

@@ -6,9 +6,15 @@
     "prebuild": "node frontend/scripts/generate-env.js",
     "build": "node build.js && npm install --prefix backend",
     "start": "npm start --prefix backend",
-    "test": "node build.js && node --test frontend/tests/*.js backend/tests/**/*.js"
+    "lint:css": "stylelint \"frontend/**/*.css\"",
+    "test": "npm run lint:css && node build.js && node --test frontend/tests/*.js backend/tests/**/*.js"
   },
   "engines": {
     "node": ">=18"
+  }
+  ,
+  "devDependencies": {
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^36.0.0"
   }
 }
