@@ -10,3 +10,4 @@ backend/node_modules/*
 !backend/node_modules/compression/**
 .DS_Store
 *.log
+backend/public/

@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "prebuild": "node frontend/scripts/generate-env.js",
-    "build": "npm --prefix frontend run build && npm install --prefix backend",
+    "build": "node build.js && npm install --prefix backend",
     "start": "npm start --prefix backend",
-    "test": "node --test frontend/tests/*.js backend/tests/**/*.js"
+    "test": "node build.js && node --test frontend/tests/*.js backend/tests/**/*.js"
   },
   "engines": {
     "node": ">=18"
