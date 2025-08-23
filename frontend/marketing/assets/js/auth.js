@@ -1,6 +1,13 @@
 // frontend/assets/js/auth.js
 
-import { utils, API_BASE_URL } from './utils.js';
+let utils, API_BASE_URL;
+async function loadUtils() {
+    if (!utils) {
+        const module = await import('./utils.js');
+        utils = module.utils;
+        API_BASE_URL = module.API_BASE_URL;
+    }
+}
 
 class AuthManager {
     constructor() {
@@ -27,13 +34,15 @@ class AuthManager {
         document.body.appendChild(notification);
     }
 
-    savePendingAuth(payload) {
+    async savePendingAuth(payload) {
+        await loadUtils();
         localStorage.setItem('pending-auth', JSON.stringify(payload));
         utils.showNotification('Données sauvegardées pour réessai ultérieur', 'success');
     }
 
     // ⭐ NOUVELLE MÉTHODE : Authentification Google
     async handleGoogleLogin(googleResponse) {
+        await loadUtils();
         if (!googleResponse?.credential) {
             utils.showNotification('Token Google manquant', 'error');
             return { success: false, error: 'Token Google manquant' };
@@ -88,9 +97,10 @@ class AuthManager {
 
     // CONNEXION email (existant)
     async login(email, password) {
+        await loadUtils();
         try {
             console.log('Tentative de connexion pour:', email);
-            
+
             const response = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -125,9 +135,10 @@ class AuthManager {
 
     // INSCRIPTION email (existant)
     async register(name, email, password) {
+        await loadUtils();
         try {
             console.log('Tentative d\'inscription pour:', { name, email });
-            
+
             const response = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -276,8 +287,9 @@ function setupAuthListeners() {
     const loginBtn = document.getElementById('loginBtn');
     if (loginBtn) {
         loginBtn.addEventListener('click', async function() {
+            await loadUtils();
             console.log('Clic sur le bouton de connexion');
-            
+
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             if (!email || !password) {
@@ -299,9 +311,7 @@ function setupAuthListeners() {
             this.disabled = false;
             this.innerHTML = '<i data-lucide="log-in"></i>Se connecter';
             // Réinitialiser les icônes
-            if (typeof utils !== 'undefined') {
-                utils.initializeLucide();
-            }
+            utils.initializeLucide();
         });
     }
 
@@ -309,8 +319,9 @@ function setupAuthListeners() {
     const registerBtn = document.getElementById('registerBtn');
     if (registerBtn) {
         registerBtn.addEventListener('click', async function() {
+            await loadUtils();
             console.log('Clic sur le bouton d\'inscription');
-            
+
             const name = document.getElementById('registerName').value.trim();
             const email = document.getElementById('registerEmail').value.trim();
             const password = document.getElementById('registerPassword').value;
@@ -339,9 +350,7 @@ function setupAuthListeners() {
             this.disabled = false;
             this.innerHTML = '<i data-lucide="user-plus"></i>Créer mon compte';
             // Réinitialiser les icônes
-            if (typeof utils !== 'undefined') {
-                utils.initializeLucide();
-            }
+            utils.initializeLucide();
         });
     }
 
@@ -382,7 +391,8 @@ function setupAuthListeners() {
     });
 }
 
-function showNotification(message, type = 'success') {
+async function showNotification(message, type = 'success') {
+    await loadUtils();
     if (typeof utils !== 'undefined' && utils.showNotification) {
         utils.showNotification(message, type);
     } else {
