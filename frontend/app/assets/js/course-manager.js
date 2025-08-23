@@ -74,11 +74,12 @@ class CourseManager {
     if (courseId) {
       localStorage.removeItem(`noza-course-${courseId}`);
     }
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith('noza-course-list')) {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('noza-course-list')) {
         localStorage.removeItem(key);
       }
-    });
+    }
   }
 
   // Afficher un message d'erreur avec action
