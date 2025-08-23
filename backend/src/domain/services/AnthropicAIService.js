@@ -14,6 +14,11 @@ const {
 } = require('../errors');
 
 const MAX_COURSE_LENGTH = LIMITS.MAX_COURSE_LENGTH;
+const ANALYSIS_WORD_LIMIT = 1000;
+const COMMON_WORDS = new Set([
+  'le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou',
+  'mais', 'donc', 'car', 'ni', 'or'
+]);
 
 
 // Mapping duration presets to approximate word counts
@@ -278,25 +283,26 @@ Réponse :`;
     );
 
     // TROISIÈME VÉRIFICATION : Analyse contextuelle plus fine
-    const courseWords = courseContent.toLowerCase().split(/\s+/);
-    const questionWords = questionLower.split(/\s+/);
-    
-    // Filtrer les mots communs (articles, prépositions, etc.)
-    const commonWords = ['le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou', 'mais', 'donc', 'car', 'ni', 'or'];
-    const meaningfulQuestionWords = questionWords.filter(word => 
-      word.length > 3 && !commonWords.includes(word)
+    const courseWordsSet = new Set(
+      courseContent.toLowerCase().split(/\s+/, ANALYSIS_WORD_LIMIT)
     );
-    
-    const sharedWords = meaningfulQuestionWords.filter(word => 
-      courseWords.includes(word)
-    );
+
+    let sharedCount = 0;
+    for (const word of questionLower.split(/\s+/)) {
+      if (word.length <= 3 || COMMON_WORDS.has(word)) {
+        continue;
+      }
+      if (courseWordsSet.has(word) && ++sharedCount >= 3) {
+        break;
+      }
+    }
 
     // LOGIQUE DE DÉCISION AMÉLIORÉE
     if (hasCourseKeywords) {
       return 'course-related';
     } else if (hasGeneralKeywords) {
       return 'general';
-    } else if (sharedWords.length >= 3) {
+    } else if (sharedCount >= 3) {
       // Beaucoup de mots en commun = probablement lié au cours
       return 'course-related';
     } else {
