@@ -165,38 +165,16 @@ app.use((_, res, next) => {
 app.use(compression);
 app.use(cacheControl);
 
-// Servir les fichiers statiques pour l'application et le marketing
-app.use(
-  '/app',
-  express.static(path.join(__dirname, '../../../frontend/app'), {
-    setHeaders: setStaticHeaders
-  })
-);
-app.use(
-  '/',
-  express.static(path.join(__dirname, '../../../frontend/marketing'), {
-    setHeaders: setStaticHeaders
-  })
-);
+// Servir les fichiers statiques construits
+const publicDir = path.join(__dirname, '../../public');
+app.use(express.static(publicDir, { setHeaders: setStaticHeaders }));
 
 // Routes pour les applications frontend
-app.get(
-  '/app*',
-  setHtmlCache,
-  (_, res) =>
-    res.sendFile(
-      path.join(__dirname, '../../../frontend/app/index.html'),
-      { cacheControl: false }
-    )
+app.get('/app*', setHtmlCache, (_, res) =>
+  res.sendFile(path.join(publicDir, 'app/index.html'), { cacheControl: false })
 );
-app.get(
-  '/',
-  setHtmlCache,
-  (_, res) =>
-    res.sendFile(
-      path.join(__dirname, '../../../frontend/marketing/index.html'),
-      { cacheControl: false }
-    )
+app.get('/', setHtmlCache, (_, res) =>
+  res.sendFile(path.join(publicDir, 'app/index.html'), { cacheControl: false })
 );
 
 // Routes API
