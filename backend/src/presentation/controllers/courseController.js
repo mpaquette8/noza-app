@@ -8,8 +8,12 @@ const container = require('../../infrastructure/container');
 class CourseController {
   async getAllCourses(req, res) {
     try {
-      const page = req.query.page || 1;
-      const limit = req.query.limit || 10;
+      let page = parseInt(req.query.page, 10);
+      let limit = parseInt(req.query.limit, 10);
+
+      page = Number.isNaN(page) ? 1 : Math.max(page, 1);
+      limit = Number.isNaN(limit) ? 10 : Math.max(Math.min(limit, 50), 1);
+
       const skip = (page - 1) * limit;
       const repository = container.resolve('courseRepository');
       const courses = await repository.findAllByUserId(req.user.id, { skip, take: limit });
