@@ -237,7 +237,7 @@ const combinations = {
 
 function updateDetailGauge() {
     const slider = document.getElementById('detailSlider');
-    const value = parseInt(slider.value);
+    const value = parseInt(slider.value, 10);
     const level = detailLevels[value];
     
     const valueEl = document.getElementById('detailValue');
@@ -256,7 +256,7 @@ function updateDetailGauge() {
 
 function updateVulgarizationGauge() {
     const slider = document.getElementById('vulgarizationSlider');
-    const value = parseInt(slider.value);
+    const value = parseInt(slider.value, 10);
     const level = vulgarizationLevels[value];
     
     const valueEl = document.getElementById('vulgarizationValue');
@@ -395,8 +395,8 @@ function displayQuiz(quiz, containerId = 'quizSection') {
 }
 
 function handleQuizAnswer(btn) {
-    const questionIndex = parseInt(btn.dataset.questionIndex);
-    const optionIndex = parseInt(btn.dataset.optionIndex);
+    const questionIndex = parseInt(btn.dataset.questionIndex, 10);
+    const optionIndex = parseInt(btn.dataset.optionIndex, 10);
     const question = currentQuiz.questions[questionIndex];
     const questionEl = btn.closest('.quiz-question');
 
@@ -404,7 +404,7 @@ function handleQuizAnswer(btn) {
 
     questionEl.querySelectorAll('.quiz-option').forEach(opt => {
         opt.style.pointerEvents = 'none';
-        if (parseInt(opt.dataset.optionIndex) === question.correct) {
+        if (parseInt(opt.dataset.optionIndex, 10) === question.correct) {
             opt.classList.add('correct');
         }
     });
