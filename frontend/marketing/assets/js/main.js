@@ -78,7 +78,7 @@ const combinations = {
 
 function updateDetailGauge() {
     const slider = document.getElementById('detailSlider');
-    const value = parseInt(slider.value);
+    const value = parseInt(slider.value, 10);
     const level = detailLevels[value];
     
     const valueEl = document.getElementById('detailValue');
@@ -97,7 +97,7 @@ function updateDetailGauge() {
 
 function updateVulgarizationGauge() {
     const slider = document.getElementById('vulgarizationSlider');
-    const value = parseInt(slider.value);
+    const value = parseInt(slider.value, 10);
     const level = vulgarizationLevels[value];
     
     const valueEl = document.getElementById('vulgarizationValue');

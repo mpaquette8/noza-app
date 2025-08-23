@@ -79,13 +79,17 @@ const mapLegacyParams = ({
 
   const finalDetail =
     detailLevel ||
-    parseInt(Object.keys(durationMap).find((key) => durationMap[key] === finalDuration));
+    parseInt(
+      Object.keys(durationMap).find((key) => durationMap[key] === finalDuration),
+      10
+    );
   const finalLegacyVulgarization =
     vulgarizationLevel ||
     parseInt(
       Object.keys(vulgarizationMap).find(
         (key) => vulgarizationMap[key] === finalVulgarization
-      )
+      ),
+      10
     );
 
   return {
