@@ -74,13 +74,58 @@ class AnthropicAIService {
     };
   }
 
+  getEngagementInstructions(vulgarization, teacherType) {
+    const teacherTone = {
+      [TEACHER_TYPES.PASSIONATE]:
+        "Utilise des anecdotes personnelles et un ton enthousiaste.",
+      [TEACHER_TYPES.ANALOGIST]:
+        "Multiplie les comparaisons créatives pour clarifier chaque notion.",
+      [TEACHER_TYPES.PRAGMATIC]:
+        "Souligne systématiquement l'utilité concrète des concepts.",
+      [TEACHER_TYPES.METHODICAL]:
+        "Progresse étape par étape avec une logique claire.",
+      [TEACHER_TYPES.BENEVOLENT]:
+        "Rassure et encourage régulièrement le lecteur.",
+      [TEACHER_TYPES.SYNTHETIC]:
+        "Va à l'essentiel en proposant des synthèses percutantes."
+    };
+
+    const vocab = {
+      [VULGARIZATION_LEVELS.GENERAL_PUBLIC]:
+        "Adopte un langage familier avec des analogies du quotidien.",
+      [VULGARIZATION_LEVELS.ENLIGHTENED]:
+        "Mélange vocabulaire courant et notions scientifiques accessibles.",
+      [VULGARIZATION_LEVELS.KNOWLEDGEABLE]:
+        "Suppose les bases acquises et propose des analogies plus techniques.",
+      [VULGARIZATION_LEVELS.EXPERT]:
+        "Conserve un registre technique mais reste créatif dans les explications."
+    };
+
+    return [
+      "Commence par une accroche captivante (question intrigante ou fait surprenant) et évite les formules génériques comme 'Ce cours traite de...'.",
+      "Crée une connexion émotionnelle immédiate avec le lecteur.",
+      "Découpe le cours en modules courts (2–4 phrases) en alternant théorie et exemples concrets.",
+      "Intègre des émojis et des encadrés colorés pour rythmer la lecture.",
+      "Ajoute des mini-questions pour maintenir l'attention.",
+      "Utilise systématiquement des analogies et des exemples du quotidien pour expliquer les concepts abstraits.",
+      "Décompose chaque idée complexe en étapes simples liées à l'expérience personnelle du lecteur.",
+      "Insère toutes les 2–3 sections des blocs interactifs : 💡 Le saviez-vous ?, 🔍 En pratique, ⚠️ Attention piège !.",
+      "Pose des questions rhétoriques pour impliquer le lecteur."
+    ].concat([teacherTone[teacherType], vocab[vulgarization]].filter(Boolean));
+  }
+
   createPrompt(subject, vulgarization, duration, teacherType) {
     const adaptive = this.getAdaptiveInstructions(
       teacherType,
       vulgarization,
       duration
     );
-    const adaptiveText = [
+    const engagement = this.getEngagementInstructions(
+      vulgarization,
+      teacherType
+    );
+
+    const pedagogicText = [
       adaptive.teacherStyle,
       adaptive.vulgarizationLevel,
       adaptive.durationConstraint
@@ -89,14 +134,24 @@ class AnthropicAIService {
       .map(line => `- ${line}`)
       .join('\\n');
 
+    const engagementText = engagement
+      .filter(Boolean)
+      .map(line => `- ${line}`)
+      .join('\\n');
+
     return `<h1>Titre du Cours</h1>
 
 PHILOSOPHIE PÉDAGOGIQUE :
-${adaptiveText}
+${pedagogicText}
+
+ENGAGEMENT ET COMPRÉHENSION :
+${engagementText}
 
 STRUCTURE :
-- Commence par une introduction et termine par une conclusion.
-- Après la conclusion, ajoute un bloc générique 'Pour aller plus loin' avec 2–3 questions de réflexion et 2–3 pistes de cours ou lectures.
+- Génère des sections <section class="module"> de 2 à 4 phrases.
+- Alterne théorie et exemples concrets.
+- Utilise des émojis et des encadrés colorés (<aside class="hint|practice|warning">).
+- Termine par une conclusion puis un bloc générique 'Pour aller plus loin' avec 2–3 questions de réflexion et 2–3 pistes de cours ou lectures.
 
 Sujet : '${subject}'
 

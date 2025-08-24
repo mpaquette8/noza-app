@@ -13,6 +13,12 @@ Module._load = (request, parent, isMain) => {
   if (request === 'sanitize-html') {
     return input => input;
   }
+  if (request === 'dotenv') {
+    return { config: () => ({ parsed: {} }) };
+  }
+  if (request === '../../config') {
+    return { api: { anthropicApiKey: 'test-key' } };
+  }
   return originalLoad(request, parent, isMain);
 };
 
@@ -43,6 +49,19 @@ test('createPrompt allows pedagogical freedom', () => {
   );
 
   assert.doesNotMatch(prompt, /STRUCTURE REQUISE/);
+});
+
+test('createPrompt integrates personalization parameters', () => {
+  const prompt = anthropicService.createPrompt(
+    'Sujet',
+    VULGARIZATION_LEVELS.EXPERT,
+    DURATIONS.LONG,
+    TEACHER_TYPES.PASSIONATE
+  );
+
+  assert.match(prompt, /Transmets l'information avec passion et enthousiasme/);
+  assert.match(prompt, /environ 4200 mots/);
+  assert.match(prompt, /Conserve un registre technique mais reste créatif/);
 });
 
 test('sendWithTimeout retries on overload errors', async () => {
