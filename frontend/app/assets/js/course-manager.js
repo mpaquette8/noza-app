@@ -258,7 +258,9 @@ class CourseManager {
       ? utils.sanitizeHTML(course.content)
       : course.content;
     document.getElementById('generatedCourse').innerHTML = sanitizedContent;
-    
+
+    this.renderVisuals();
+
     // Réinitialiser le chat
     const chatMessages = document.getElementById('chatMessages');
     chatMessages.innerHTML = '';
@@ -269,6 +271,30 @@ class CourseManager {
     document.getElementById('quizSection').innerHTML = '';
     
     utils.initializeLucide();
+  }
+
+  renderVisuals() {
+    // Initialiser Mermaid si des balises <pre class="mermaid"> sont présentes
+    if (window.mermaid && document.querySelector('pre.mermaid')) {
+      try {
+        mermaid.initialize({ startOnLoad: false });
+        mermaid.init(undefined, document.querySelectorAll('pre.mermaid'));
+      } catch (error) {
+        console.error('Erreur Mermaid:', error);
+      }
+    }
+
+    // Initialiser Chart.js pour chaque canvas disposant de l'attribut data-chart
+    if (window.Chart) {
+      document.querySelectorAll('canvas[data-chart]').forEach(canvas => {
+        try {
+          const config = JSON.parse(canvas.dataset.chart || '{}');
+          new Chart(canvas.getContext('2d'), config);
+        } catch (error) {
+          console.error('Erreur Chart.js:', error);
+        }
+      });
+    }
   }
 
   // Charger l'historique utilisateur
