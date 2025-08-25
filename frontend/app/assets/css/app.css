@@ -2650,3 +2650,26 @@ body::before {
 .checkbox-item input[type="checkbox"] {
     margin-right: 6px;
 }
+
+/* ==========================================================================
+   Mermaid & Chart.js visuals
+   ========================================================================== */
+
+pre.mermaid {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin: 20px 0;
+    padding: 20px;
+}
+
+canvas[data-chart] {
+    display: block;
+    width: 100% !important;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin: 20px 0;
+}
