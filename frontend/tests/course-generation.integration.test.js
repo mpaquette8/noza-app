@@ -54,13 +54,13 @@ test('course generation triggered from decryptage controls', async () => {
   const { VULGARIZATION_LABELS, TEACHER_TYPE_LABELS } = await import('../app/assets/js/course-manager.js');
 
   global.configManager = {
-    getConfig() { return { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic' }; },
+    getConfig() { return { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic', visual_style: 'diagrammes' }; },
     enableQuizCard() {}
   };
 
   global.courseManager = {
-    async generateCourse(subject, vulgarization, duration, teacher_type) {
-      calledWith = { subject, vulgarization, duration, teacher_type };
+    async generateCourse(subject, vulgarization, duration, teacher_type, visual_style) {
+      calledWith = { subject, vulgarization, duration, teacher_type, visual_style };
       return {};
     }
   };
@@ -69,8 +69,8 @@ test('course generation triggered from decryptage controls', async () => {
 
   async function handleGenerateCourse() {
       const subject = document.getElementById('subject').value.trim();
-      const { vulgarization, duration, teacher_type } = configManager.getConfig();
-      await courseManager.generateCourse(subject, vulgarization, duration, teacher_type);
+      const { vulgarization, duration, teacher_type, visual_style } = configManager.getConfig();
+      await courseManager.generateCourse(subject, vulgarization, duration, teacher_type, visual_style);
       utils.initializeLucide();
   }
 
@@ -82,7 +82,8 @@ test('course generation triggered from decryptage controls', async () => {
     subject: 'Quantum Mechanics',
     vulgarization: 'expert',
     duration: 'long',
-    teacher_type: 'synthetic'
+    teacher_type: 'synthetic',
+    visual_style: 'diagrammes'
   });
   assert.strictEqual(VULGARIZATION_LABELS[calledWith.vulgarization], 'Expert');
   assert.strictEqual(TEACHER_TYPE_LABELS[calledWith.teacher_type], 'Synthétique');

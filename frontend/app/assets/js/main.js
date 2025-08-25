@@ -66,13 +66,15 @@ async function handleGenerateCourse() {
         configManager.getConfig() : {
           vulgarization: 'enlightened',
           duration: 'medium',
-          teacher_type: 'methodical'
+          teacher_type: 'methodical',
+          visual_style: 'texte'
         };
-    const isLegacyPayload = !cfg.vulgarization && !cfg.duration && !cfg.teacher_type;
+    const isLegacyPayload = !cfg.vulgarization && !cfg.duration && !cfg.teacher_type && !cfg.visual_style;
     cfg.vulgarization ??= 'enlightened';
     cfg.duration ??= 'medium';
     cfg.teacher_type ??= 'methodical';
-    const { vulgarization, duration, teacher_type } = cfg;
+    cfg.visual_style ??= 'texte';
+    const { vulgarization, duration, teacher_type, visual_style } = cfg;
 
     if (!subject) {
         utils.handleAuthError('Veuillez entrer un sujet pour le décryptage');
@@ -85,7 +87,8 @@ async function handleGenerateCourse() {
                 subject,
                 vulgarization,
                 duration,
-                teacher_type
+                teacher_type,
+                visual_style
             );
             if (course) {
                 currentCourse = course;
@@ -102,6 +105,7 @@ async function handleGenerateCourse() {
                         vulgarization,
                         duration,
                         teacher_type,
+                        visual_style,
                         isLegacyPayload,
                         subject_length: subjectLength
                     });

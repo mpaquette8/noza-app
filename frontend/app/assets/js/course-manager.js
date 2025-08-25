@@ -26,6 +26,12 @@ export const TEACHER_TYPE_LABELS = {
   synthetic: 'Synthétique'
 };
 
+export const VISUAL_STYLE_LABELS = {
+  texte: 'Texte',
+  diagrammes: 'Diagrammes',
+  graphiques: 'Graphiques'
+};
+
 // Rate limit between costly actions
 const REQUEST_COOLDOWN = 5000; // 5 seconds
 const LAST_REQUEST_KEY = 'noza-last-request';
@@ -106,7 +112,7 @@ class CourseManager {
   }
 
   // Générer un cours
-  async generateCourse(subject, vulgarization, duration, teacher_type) {
+  async generateCourse(subject, vulgarization, duration, teacher_type, visual_style) {
     if (!this.checkRateLimit()) {
       return null;
     }
@@ -127,6 +133,9 @@ class CourseManager {
       }
       if (teacher_type && TEACHER_TYPE_LABELS[teacher_type]) {
         payload.teacher_type = utils.sanitizeInput(teacher_type);
+      }
+      if (visual_style && VISUAL_STYLE_LABELS[visual_style]) {
+        payload.visual_style = utils.sanitizeInput(visual_style);
       }
 
       const response = await fetch(`${API_BASE_URL}/courses`, {
@@ -158,7 +167,8 @@ class CourseManager {
           ...data.course,
           vulgarization: data.course?.vulgarization || vulgarization,
           duration: data.course?.duration || duration,
-          teacher_type: data.course?.teacher_type || teacher_type
+          teacher_type: data.course?.teacher_type || teacher_type,
+          visual_style: data.course?.visual_style || visual_style
         };
         this.invalidateCache();
         setCache(`noza-course-${this.currentCourse.id}`, this.currentCourse);
@@ -167,7 +177,11 @@ class CourseManager {
         utils.showNotification('Cours généré avec succès !', 'success');
         return this.currentCourse;
       } else if (data.code === 'IA_TIMEOUT') {
-        this.showAction(data.error || 'Le service IA a expiré', 'Réessayer', () => this.generateCourse(subject, vulgarization, duration, teacher_type));
+        this.showAction(
+          data.error || 'Le service IA a expiré',
+          'Réessayer',
+          () => this.generateCourse(subject, vulgarization, duration, teacher_type, visual_style)
+        );
       } else if (data.code === 'QUOTA_EXCEEDED') {
         this.showAction(data.error || 'Quota IA dépassé', 'Sauvegarder', () => this.savePendingRequest(payload));
       } else {
