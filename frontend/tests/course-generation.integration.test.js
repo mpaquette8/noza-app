@@ -51,7 +51,11 @@ test('course generation triggered from decryptage controls', async () => {
   global.window = { location: { origin: '' } };
   global.localStorage = { getItem() { return null; }, setItem() {}, removeItem() {} };
 
-  const { VULGARIZATION_LABELS, TEACHER_TYPE_LABELS } = await import('../app/assets/js/course-manager.js');
+  const {
+    VULGARIZATION_LABELS,
+    TEACHER_TYPE_LABELS,
+    VISUAL_STYLE_LABELS,
+  } = await import('../app/assets/js/course-manager.js');
 
   global.configManager = {
     getConfig() { return { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic', visual_style: 'diagrammes' }; },
@@ -87,4 +91,5 @@ test('course generation triggered from decryptage controls', async () => {
   });
   assert.strictEqual(VULGARIZATION_LABELS[calledWith.vulgarization], 'Expert');
   assert.strictEqual(TEACHER_TYPE_LABELS[calledWith.teacher_type], 'Synthétique');
+  assert.strictEqual(VISUAL_STYLE_LABELS[calledWith.visual_style], 'Diagrammes');
 });

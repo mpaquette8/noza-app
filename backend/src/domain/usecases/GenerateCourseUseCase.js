@@ -6,7 +6,14 @@ class GenerateCourseUseCase {
     this.courseGenerationService = courseGenerationService;
   }
 
-  async execute({ userId, subject, teacherType, duration, vulgarization }) {
+  async execute({
+    userId,
+    subject,
+    teacherType,
+    duration,
+    vulgarization,
+    visualStyle,
+  }) {
     if (!userId) {
       throw new ValidationError('userId est requis');
     }
@@ -17,7 +24,8 @@ class GenerateCourseUseCase {
       subject,
       vulgarization,
       duration,
-      teacherType
+      teacherType,
+      visualStyle
     );
 
     const course = await this.courseRepository.create({

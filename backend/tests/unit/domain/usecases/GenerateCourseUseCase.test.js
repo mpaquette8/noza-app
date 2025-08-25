@@ -26,8 +26,20 @@ test('generates and saves course with provided parameters', async () => {
   const repoCalls = [];
 
   const courseGenerationService = {
-    generateCourse: async (subject, vulgarization, duration, teacherType) => {
-      serviceCalls.push({ subject, vulgarization, duration, teacherType });
+    generateCourse: async (
+      subject,
+      vulgarization,
+      duration,
+      teacherType,
+      visualStyle
+    ) => {
+      serviceCalls.push({
+        subject,
+        vulgarization,
+        duration,
+        teacherType,
+        visualStyle
+      });
       return generated;
     }
   };
@@ -45,7 +57,8 @@ test('generates and saves course with provided parameters', async () => {
     subject: 'History',
     teacherType: 'METHODICAL',
     duration: 'SHORT',
-    vulgarization: 'GENERAL_PUBLIC'
+    vulgarization: 'GENERAL_PUBLIC',
+    visualStyle: 'diagrammes'
   };
   const result = await useCase.execute(input);
 
@@ -54,7 +67,8 @@ test('generates and saves course with provided parameters', async () => {
       subject: 'History',
       vulgarization: 'GENERAL_PUBLIC',
       duration: 'SHORT',
-      teacherType: 'METHODICAL'
+      teacherType: 'METHODICAL',
+      visualStyle: 'diagrammes'
     }
   ]);
   assert.deepStrictEqual(repoCalls, [
