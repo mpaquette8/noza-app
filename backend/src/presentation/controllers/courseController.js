@@ -63,13 +63,24 @@ class CourseController {
     try {
       const dto = new GenerateCourseDTO(req.body);
       const errors = validateGenerateCourseDTO(dto);
+
+      const visualStyle = req.body.visual_style;
+      const allowedStyles = ['texte', 'diagrammes', 'graphiques'];
+      if (visualStyle && !allowedStyles.includes(visualStyle)) {
+        errors.push('visual_style invalide');
+      }
+
       if (errors.length) {
         const { response, statusCode } = createResponse(false, null, errors.join(', '), HTTP_STATUS.BAD_REQUEST);
         return res.status(statusCode).json(response);
       }
 
       const useCase = container.resolve('generateCourseUseCase');
-      const course = await useCase.execute({ userId: req.user.id, ...dto });
+      const course = await useCase.execute({
+        userId: req.user.id,
+        ...dto,
+        visualStyle,
+      });
       const { response, statusCode } = createResponse(true, { course }, null, HTTP_STATUS.CREATED);
       res.status(statusCode).json(response);
     } catch (error) {

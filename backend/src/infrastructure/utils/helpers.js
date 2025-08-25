@@ -7,7 +7,6 @@ const {
   VULGARIZATION_LEVELS,
   LEGACY_VULGARIZATION_LEVELS,
 } = require('./constants');
-const sanitizeHtml = require('sanitize-html');
 
 // Formatage de réponse standardisé
 const createResponse = (success, data = null, error = null, statusCode = HTTP_STATUS.OK, code = null) => {
@@ -101,19 +100,15 @@ const mapLegacyParams = ({
 // This mirrors frontend/assets/js/shared/sanitize.js to maintain
 // consistent behavior across client and server. Update both places
 // if the allowed character set or processing steps change.
-const sanitizeInput = (input, maxLength = 10000) => {
-  if (typeof input !== 'string') return input;
+  const sanitizeInput = (input, maxLength = 10000) => {
+    if (typeof input !== 'string') return input;
 
-  const clean = sanitizeHtml(input, {
-    allowedTags: [],
-    allowedAttributes: {},
-  });
-
-  return clean
-    .trim()
-    .replace(/[^\p{L}\p{N}\p{P}\p{Zs}\n\r]/gu, '')
-    .substring(0, maxLength);
-};
+    return input
+      .replace(/<[^>]*>/g, '')
+      .trim()
+      .replace(/[^\p{L}\p{N}\p{P}\p{Zs}\n\r]/gu, '')
+      .substring(0, maxLength);
+  };
 
 // Gestion des erreurs async
 const asyncHandler = (fn) => (req, res, next) => {

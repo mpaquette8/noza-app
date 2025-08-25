@@ -9,6 +9,50 @@ class AiController {
     this.prisma = container.resolve('prisma');
   }
 
+  // Générer un cours (compatibilité)
+  async generateCourse(req, res) {
+    try {
+      const allowedStyles = ['texte', 'diagrammes', 'graphiques'];
+      const visualStyle = req.body.visual_style;
+      if (visualStyle && !allowedStyles.includes(visualStyle)) {
+        const { response, statusCode } = createResponse(
+          false,
+          null,
+          'visual_style invalide',
+          HTTP_STATUS.BAD_REQUEST
+        );
+        return res.status(statusCode).json(response);
+      }
+
+      const useCase = container.resolve('generateCourseUseCase');
+      const course = await useCase.execute({
+        userId: req.user.id,
+        subject: req.body.subject,
+        teacherType: req.body.teacher_type || req.body.teacherType,
+        duration: req.body.duration,
+        vulgarization: req.body.vulgarization,
+        visualStyle,
+      });
+
+      const { response, statusCode } = createResponse(
+        true,
+        { course },
+        null,
+        HTTP_STATUS.CREATED
+      );
+      res.status(statusCode).json(response);
+    } catch (error) {
+      logger.error('Erreur génération cours', error);
+      const { response, statusCode } = createResponse(
+        false,
+        null,
+        ERROR_MESSAGES.SERVER_ERROR,
+        HTTP_STATUS.SERVER_ERROR
+      );
+      res.status(statusCode).json(response);
+    }
+  }
+
   // Répondre à une question
   async askQuestion(req, res) {
     if (this.anthropicService.isOffline()) {
