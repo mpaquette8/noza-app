@@ -114,7 +114,7 @@ class AnthropicAIService {
     ].concat([teacherTone[teacherType], vocab[vulgarization]].filter(Boolean));
   }
 
-  createPrompt(subject, vulgarization, duration, teacherType) {
+  createPrompt(subject, vulgarization, duration, teacherType, visualStyle) {
     const adaptive = this.getAdaptiveInstructions(
       teacherType,
       vulgarization,
@@ -139,6 +139,14 @@ class AnthropicAIService {
       .map(line => `- ${line}`)
       .join('\\n');
 
+    const visualInstructions = {
+      diagram: "Inclure des balises <figure> contenant du code Mermaid pour les schémas.",
+      chart: "Proposer des graphiques simplifiés sous forme de <canvas> (Chart.js).",
+      image: "Ajouter une <img> illustrative pertinente."
+    };
+
+    const visualText = visualInstructions[visualStyle];
+
     return `<h1>Titre du Cours</h1>
 
 PHILOSOPHIE PÉDAGOGIQUE :
@@ -156,12 +164,13 @@ STRUCTURE :
 Sujet : '${subject}'
 
 RENDU ATTENDU :
-- Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).`;
+- Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).
+${visualText ? '- ' + visualText : ''}`;
   }
 
 
 // Générer un cours
-  async generateCourse(subject, vulgarization, duration, teacherType) {
+  async generateCourse(subject, vulgarization, duration, teacherType, visualStyle) {
     if (this.isOffline()) {
       return this.getOfflineMessage();
     }
@@ -177,9 +186,21 @@ RENDU ATTENDU :
     teacherType = teacherType || TEACHER_TYPES.METHODICAL;
 
     try {
-      const prompt = this.createPrompt(subject, vulgarization, duration, teacherType);
+      const prompt = this.createPrompt(
+        subject,
+        vulgarization,
+        duration,
+        teacherType,
+        visualStyle
+      );
 
-      logger.info('Génération cours', { subject, vulgarization, duration, teacherType });
+      logger.info('Génération cours', {
+        subject,
+        vulgarization,
+        duration,
+        teacherType,
+        visualStyle
+      });
 
       const response = await this.aiService.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',

@@ -33,11 +33,13 @@ test('createPrompt creates flexible educational content', () => {
     'Sujet',
     VULGARIZATION_LEVELS.GENERAL_PUBLIC,
     DURATIONS.MEDIUM,
-    TEACHER_TYPES.METHODICAL
+    TEACHER_TYPES.METHODICAL,
+    'diagram'
   );
 
   assert.match(prompt, /PHILOSOPHIE PÉDAGOGIQUE/);
   assert.match(prompt, /Pour aller plus loin/);
+  assert.match(prompt, /Mermaid/);
 });
 
 test('createPrompt allows pedagogical freedom', () => {
@@ -45,7 +47,8 @@ test('createPrompt allows pedagogical freedom', () => {
     'Sujet',
     VULGARIZATION_LEVELS.GENERAL_PUBLIC,
     DURATIONS.MEDIUM,
-    TEACHER_TYPES.METHODICAL
+    TEACHER_TYPES.METHODICAL,
+    'diagram'
   );
 
   assert.doesNotMatch(prompt, /STRUCTURE REQUISE/);
@@ -56,12 +59,14 @@ test('createPrompt integrates personalization parameters', () => {
     'Sujet',
     VULGARIZATION_LEVELS.EXPERT,
     DURATIONS.LONG,
-    TEACHER_TYPES.PASSIONATE
+    TEACHER_TYPES.PASSIONATE,
+    'chart'
   );
 
   assert.match(prompt, /Transmets l'information avec passion et enthousiasme/);
   assert.match(prompt, /environ 4200 mots/);
   assert.match(prompt, /Conserve un registre technique mais reste créatif/);
+  assert.match(prompt, /Chart\.js/);
 });
 
 test('sendWithTimeout retries on overload errors', async () => {
@@ -113,7 +118,13 @@ test('APIUserAbortError does not trigger offline mode', async () => {
   };
 
   try {
-    await orchestrator.generateCourse('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.SHORT, TEACHER_TYPES.METHODICAL);
+    await orchestrator.generateCourse(
+      'Sujet',
+      VULGARIZATION_LEVELS.ENLIGHTENED,
+      DURATIONS.SHORT,
+      TEACHER_TYPES.METHODICAL,
+      'diagram'
+    );
     assert.fail('generateCourse should throw');
   } catch (err) {
     assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);
