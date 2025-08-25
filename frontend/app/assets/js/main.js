@@ -5,6 +5,7 @@ import { authManager } from './auth.js';
 import { courseManager, VULGARIZATION_LABELS, DURATION_LABELS, TEACHER_TYPE_LABELS } from './course-manager.js';
 
 // État global de l'application
+let courseRenderer = null;
 let currentCourse = null;
 let currentQuiz = null;
 let quizState = { answered: 0, correct: 0 };
@@ -641,3 +642,151 @@ window.displayCourseMetadata = displayCourseMetadata;
 
 // Exposer globalement pour index.html
 window.initializeApp = initializeApp;
+
+
+// Nouveau système de génération de cours moderne
+async function generateCourse() {
+  const subjectInput = document.getElementById('subject');
+  const subject = subjectInput ? subjectInput.value.trim() : '';
+
+  if (!subject) {
+    utils.handleAuthError('Veuillez entrer un sujet');
+    return;
+  }
+
+  utils.showLoading(['generateBtn']);
+
+  try {
+    const vulgarization = getSelectedValue('vulgarization');
+    const duration = getSelectedValue('duration');
+    const teacherType = getSelectedValue('teacher');
+    const visualStyle = getSelectedValue('visual') || 'none';
+
+    const userPreferences = getUserPreferences();
+    const context = getUserContext();
+
+    const params = {
+      subject,
+      vulgarization,
+      duration,
+      teacherType,
+      visualStyle,
+      userPreferences,
+      context
+    };
+
+    const response = await fetch('/api/ai/generate-course', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(params)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      const courseContent = document.getElementById('courseContent');
+      const generatedCourse = document.getElementById('generatedCourse');
+
+      if (!courseRenderer) {
+        courseRenderer = new ModernCourseRenderer(generatedCourse);
+      }
+
+      courseRenderer.render(data.course);
+      if (courseContent) {
+        courseContent.style.display = 'block';
+        courseContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      enableCourseActions && enableCourseActions();
+      initChat && initChat();
+      saveCourseToHistory && saveCourseToHistory(subject, data.course);
+    } else {
+      utils.handleAuthError(data.error || 'Erreur lors de la génération');
+    }
+  } catch (error) {
+    console.error('Erreur:', error);
+    utils.handleAuthError('Erreur de connexion');
+  } finally {
+    utils.hideLoading(['generateBtn']);
+  }
+}
+
+function getUserPreferences() {
+  const saved = localStorage.getItem('userPreferences');
+  const defaults = {
+    learningStyle: 'mixed',
+    outputStyle: 'modern',
+    interactionLevel: 'medium',
+    primaryColor: '#3182ce',
+    accentColor: '#805ad5'
+  };
+  return saved ? JSON.parse(saved) : defaults;
+}
+
+function getUserContext() {
+  const history = JSON.parse(localStorage.getItem('courseHistory') || '[]');
+  const recentTopics = history.slice(-5).map(h => h.subject);
+  return {
+    previousTopics: recentTopics,
+    userLevel: getUserLevel(),
+    goal: getSelectedValue('goal') || 'understand',
+    timeAvailable: null,
+    domain: null
+  };
+}
+
+function getUserLevel() {
+  const history = JSON.parse(localStorage.getItem('courseHistory') || '[]');
+  const counts = {};
+  history.forEach(c => {
+    const level = c.vulgarization || 'intermediate';
+    counts[level] = (counts[level] || 0) + 1;
+  });
+  const entries = Object.entries(counts);
+  if (entries.length === 0) return 'intermediate';
+  entries.sort((a,b)=>b[1]-a[1]);
+  return entries[0][0];
+}
+
+function initializeAdvancedControls() {
+  const advancedSettings = document.getElementById('advancedSettings');
+  if (!advancedSettings) return;
+  const additionalControls = `
+    <div class="selector-group">
+      <div class="selector-title">🎯 Objectif d'apprentissage</div>
+      <div class="selector-buttons" data-type="goal">
+        <button data-value="understand" class="active">Comprendre</button>
+        <button data-value="memorize">Mémoriser</button>
+        <button data-value="apply">Appliquer</button>
+        <button data-value="teach">Enseigner</button>
+      </div>
+    </div>
+    <div class="selector-group">
+      <div class="selector-title">🎨 Style visuel</div>
+      <div class="selector-buttons" data-type="outputStyle">
+        <button data-value="modern" class="active">Moderne</button>
+        <button data-value="classic">Classique</button>
+        <button data-value="minimalist">Minimaliste</button>
+        <button data-value="playful">Ludique</button>
+      </div>
+    </div>`;
+  const container = document.createElement('div');
+  container.innerHTML = additionalControls;
+  advancedSettings.appendChild(container);
+  initializeSelectorButtons && initializeSelectorButtons();
+}
+
+function getSelectedValue(type) {
+  const group = document.querySelector(`.selector-buttons[data-type="${type}"] .active`);
+  return group ? group.getAttribute('data-value') : null;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeAdvancedControls();
+  const script = document.createElement('script');
+  script.src = '/app/assets/js/courseRenderer.js';
+  document.head.appendChild(script);
+});

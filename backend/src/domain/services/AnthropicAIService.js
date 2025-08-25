@@ -7,6 +7,7 @@ const {
   LIMITS,
   ERROR_CODES
 } = require('../../infrastructure/utils/constants');
+const PromptBuilder = require('./PromptBuilder');
 const {
   DomainError,
   ValidationError,
@@ -170,36 +171,23 @@ ${visualText ? '- ' + visualText : ''}`;
 
 
 // Générer un cours
-  async generateCourse(subject, vulgarization, duration, teacherType, visualStyle) {
+  async generateCourse(params) {
     if (this.isOffline()) {
       return this.getOfflineMessage();
     }
 
-    // Fallback for legacy parameter order
-    if (Object.values(TEACHER_TYPES).includes(vulgarization)) {
-      const legacyTeacher = vulgarization;
-      const legacyVulgarization = teacherType;
-      teacherType = legacyTeacher;
-      vulgarization = legacyVulgarization;
-    }
-
-    teacherType = teacherType || TEACHER_TYPES.METHODICAL;
-
     try {
-      const prompt = this.createPrompt(
-        subject,
-        vulgarization,
-        duration,
-        teacherType,
-        visualStyle
-      );
+      const promptBuilder = new PromptBuilder();
+      const prompt = promptBuilder
+        .addSystemContext(params)
+        .addContentStructure(params)
+        .addOutputFormat()
+        .build(params.subject);
 
-      logger.info('Génération cours', {
-        subject,
-        vulgarization,
-        duration,
-        teacherType,
-        visualStyle
+      logger.info('Génération cours enrichi', {
+        subject: params.subject,
+        style: params.userPreferences?.outputStyle,
+        goal: params.context?.goal
       });
 
       const response = await this.aiService.sendWithTimeout({
@@ -212,10 +200,30 @@ ${visualText ? '- ' + visualText : ''}`;
         }]
       });
 
-      const courseContent = response.content[0].text;
-      logger.success('Cours généré', { length: courseContent.length });
+      const content = response.content[0].text;
+      let structuredContent;
 
-      return courseContent;
+      try {
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          structuredContent = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('Format JSON non trouvé');
+        }
+      } catch (parseError) {
+        logger.warn('Fallback vers format HTML', parseError);
+        structuredContent = {
+          legacy: true,
+          html: content
+        };
+      }
+
+      logger.success('Cours structuré généré', {
+        sections: structuredContent.sections?.length,
+        hasMetadata: !!structuredContent.metadata
+      });
+
+      return structuredContent;
     } catch (error) {
       const code = this.aiService.categorizeError(error);
       logger.error('Erreur génération cours', { code, error });
