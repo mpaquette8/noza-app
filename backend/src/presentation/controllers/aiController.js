@@ -9,44 +9,94 @@ class AiController {
     this.prisma = container.resolve('prisma');
   }
 
-  // Générer un cours (compatibilité)
   async generateCourse(req, res) {
+    if (this.anthropicService.isOffline()) {
+      const { response, statusCode } = createResponse(
+        false,
+        null,
+        'Service IA temporairement indisponible',
+        HTTP_STATUS.SERVICE_UNAVAILABLE
+      );
+      return res.status(statusCode).json(response);
+    }
+
     try {
-      const allowedStyles = ['texte', 'diagrammes', 'graphiques'];
-      const visualStyle = req.body.visual_style;
-      if (visualStyle && !allowedStyles.includes(visualStyle)) {
+      const {
+        subject,
+        vulgarization,
+        duration,
+        teacherType,
+        visualStyle,
+        userPreferences,
+        context
+      } = req.body;
+
+      if (!subject || !vulgarization || !duration || !teacherType) {
         const { response, statusCode } = createResponse(
           false,
           null,
-          'visual_style invalide',
+          'Paramètres manquants',
           HTTP_STATUS.BAD_REQUEST
         );
         return res.status(statusCode).json(response);
       }
 
-      const useCase = container.resolve('generateCourseUseCase');
-      const course = await useCase.execute({
+      const params = {
+        subject,
+        vulgarization,
+        duration,
+        teacherType,
+        visualStyle: visualStyle || 'none',
+        userPreferences: userPreferences || {
+          learningStyle: 'mixed',
+          outputStyle: 'modern',
+          interactionLevel: 'medium',
+          primaryColor: '#3182ce',
+          accentColor: '#805ad5'
+        },
+        context: context || {
+          previousTopics: [],
+          userLevel: vulgarization,
+          goal: 'understand',
+          timeAvailable: null,
+          domain: null
+        }
+      };
+
+      const courseContent = await this.anthropicService.generateCourse(params);
+
+      logger.info('Cours moderne généré', {
         userId: req.user.id,
-        subject: req.body.subject,
-        teacherType: req.body.teacher_type || req.body.teacherType,
-        duration: req.body.duration,
-        vulgarization: req.body.vulgarization,
-        visualStyle,
+        subject,
+        style: params.userPreferences.outputStyle,
+        hasStructure: !courseContent.legacy
       });
 
-      const { response, statusCode } = createResponse(
-        true,
-        { course },
-        null,
-        HTTP_STATUS.CREATED
-      );
-      res.status(statusCode).json(response);
+      if (req.user && !courseContent.legacy) {
+        await this.prisma.course.create({
+          data: {
+            userId: req.user.id,
+            subject,
+            content: JSON.stringify(courseContent),
+            vulgarization,
+            duration,
+            teacherType,
+            metadata: {
+              style: params.userPreferences.outputStyle,
+              goal: params.context.goal
+            }
+          }
+        });
+      }
+
+      const { response } = createResponse(true, { course: courseContent });
+      res.json(response);
     } catch (error) {
-      logger.error('Erreur génération cours', error);
+      logger.error('Erreur génération cours moderne', error);
       const { response, statusCode } = createResponse(
         false,
         null,
-        ERROR_MESSAGES.SERVER_ERROR,
+        'Erreur lors de la génération',
         HTTP_STATUS.SERVER_ERROR
       );
       res.status(statusCode).json(response);
