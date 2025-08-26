@@ -427,6 +427,125 @@ body::before {
     }
 }
 
+/* Grille des cartes professeurs */
+.teacher-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+}
+
+/* Carte individuelle de professeur */
+.teacher-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 200px;
+}
+
+.teacher-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-2px);
+}
+
+.teacher-card.active {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+/* Icône du professeur */
+.teacher-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+/* Informations du professeur */
+.teacher-info {
+    width: 100%;
+}
+
+.teacher-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 6px 0;
+}
+
+.teacher-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-style: italic;
+    margin: 0 0 12px 0;
+}
+
+/* Liste des caractéristiques */
+.teacher-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.teacher-features li {
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-bottom: 6px;
+    padding-left: 16px;
+    position: relative;
+}
+
+.teacher-features li::before {
+    content: "•";
+    color: #3b82f6;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .teacher-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-card {
+        min-height: auto;
+        padding: 16px;
+    }
+
+    .teacher-icon {
+        font-size: 2rem;
+    }
+
+    .teacher-name {
+        font-size: 1.1rem;
+    }
+}
+
+/* Pour écrans très larges, limiter à 2 colonnes */
+@media (min-width: 1200px) {
+    .teacher-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 800px;
+    }
+}
+
+/* Effet d'animation supplémentaire sur l'icône */
+.teacher-card:hover .teacher-icon {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
 /* --- Gauge Slider System - Style Moderne --- */
 .gauge-group {
     margin-bottom: 30px;
