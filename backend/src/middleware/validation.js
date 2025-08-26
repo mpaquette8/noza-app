@@ -1,7 +1,7 @@
 // backend/src/middleware/validation.js
 const { body, validationResult } = require('express-validator');
 const { createResponse } = require('../utils/helpers');
-const { HTTP_STATUS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS } = require('../utils/constants');
+const { HTTP_STATUS, DURATIONS, TEACHER_TYPES, VULGARIZATION_LEVELS, INTENSITY_LEVELS } = require('../utils/constants');
 
 // Middleware pour gérer les erreurs de validation
 const handleValidationErrors = (req, res, next) => {
@@ -48,6 +48,10 @@ const courseValidation = [
     .trim()
     .isLength({ min: 1, max: 500 })
     .withMessage('Le sujet doit faire entre 1 et 500 caractères'),
+  body('intensity')
+    .optional()
+    .isIn(Object.values(INTENSITY_LEVELS))
+    .withMessage("Niveau d'intensité invalide"),
   body('teacher_type')
     .optional()
     .isIn(Object.values(TEACHER_TYPES))

@@ -106,7 +106,7 @@ class CourseManager {
   }
 
   // Générer un cours
-  async generateCourse(subject, vulgarization, duration, teacher_type) {
+  async generateCourse(subject, vulgarization, duration, teacher_type, intensity) {
     if (!this.checkRateLimit()) {
       return null;
     }
@@ -127,6 +127,9 @@ class CourseManager {
       }
       if (teacher_type && TEACHER_TYPE_LABELS[teacher_type]) {
         payload.teacher_type = utils.sanitizeInput(teacher_type);
+      }
+      if (intensity) {
+        payload.intensity = utils.sanitizeInput(intensity);
       }
 
       const response = await fetch(`${API_BASE_URL}/courses`, {

@@ -1,7 +1,7 @@
 // backend/src/controllers/courseController.js
 const { prisma } = require('../config/database');
 const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES } = require('../utils/constants');
+const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES, INTENSITY_LEVELS, INTENSITY_TO_CONFIG } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
 const crypto = require('crypto');
 
@@ -95,15 +95,16 @@ class CourseController {
   // Générer un nouveau cours
   async generateCourse(req, res) {
     try {
-      const {
-        subject,
-        detailLevel,
-        vulgarizationLevel,
-        teacherType,
-        teacher_type,
-        duration,
-        vulgarization,
-      } = req.body;
+        const {
+          subject,
+          detailLevel,
+          vulgarizationLevel,
+          teacherType,
+          teacher_type,
+          duration,
+          vulgarization,
+          intensity
+        } = req.body;
 
       const deprecatedFields = [];
       if (detailLevel != null) deprecatedFields.push('detailLevel');
@@ -114,29 +115,46 @@ class CourseController {
         logger.warn('Utilisation de paramètres dépréciés', { deprecatedFields });
       }
 
-      const isLegacyPayload =
-        teacherType == null &&
-        teacher_type == null &&
-        duration == null &&
-        vulgarization == null &&
-        hasDeprecatedParams;
+        const isLegacyPayload =
+          intensity == null &&
+          teacherType == null &&
+          teacher_type == null &&
+          duration == null &&
+          vulgarization == null &&
+          hasDeprecatedParams;
 
       // Conversion et valeurs par défaut
-      const params = mapLegacyParams({
-        detailLevel,
-        vulgarizationLevel,
-        teacherType: teacher_type ?? teacherType,
-        duration,
-        vulgarization,
-      });
+        const params = mapLegacyParams({
+          detailLevel,
+          vulgarizationLevel,
+          teacherType: teacher_type ?? teacherType,
+          duration,
+          vulgarization,
+        });
+
+        let selectedIntensity = intensity;
+        if (selectedIntensity) {
+          const cfg = INTENSITY_TO_CONFIG[selectedIntensity] || INTENSITY_TO_CONFIG[INTENSITY_LEVELS.BALANCED];
+          params.duration = cfg.duration;
+          params.vulgarization = cfg.vulgarization;
+          const mapped = mapLegacyParams({
+            duration: params.duration,
+            vulgarization: params.vulgarization,
+            teacherType: params.teacherType
+          });
+          params.detailLevel = mapped.detailLevel;
+          params.vulgarizationLevel = mapped.vulgarizationLevel;
+        } else {
+          selectedIntensity = INTENSITY_LEVELS.BALANCED;
+        }
 
       // Validation
       const validationErrors = validateCourseParams(
         subject,
-        params.vulgarization,
-        params.duration,
-        params.teacherType
-      );
+          params.vulgarization,
+          params.duration,
+          params.teacherType
+        );
       if (validationErrors.length > 0) {
         const { response, statusCode } = createResponse(false, null, validationErrors.join(', '), HTTP_STATUS.BAD_REQUEST);
         return res.status(statusCode).json(response);
@@ -146,12 +164,11 @@ class CourseController {
       const sanitizedSubject = sanitizeInput(subject, 500);
 
       // Génération du cours
-      const courseContent = await anthropicService.generateCourse(
-        sanitizedSubject,
-        params.vulgarization,
-        params.duration,
-        params.teacherType
-      );
+        const courseContent = await anthropicService.generateCourse(
+          sanitizedSubject,
+          selectedIntensity,
+          params.teacherType
+        );
 
       // Sauvegarde en base
       const savedCourse = await prisma.course.create({
@@ -160,21 +177,22 @@ class CourseController {
           content: courseContent,
           detailLevel: parseInt(params.detailLevel),
           vulgarizationLevel: parseInt(params.vulgarizationLevel),
-          teacherType: params.teacherType,
-          duration: params.duration,
-          vulgarization: params.vulgarization,
-          userId: req.user.id
-        }
-      });
+            teacherType: params.teacherType,
+            duration: params.duration,
+            vulgarization: params.vulgarization,
+            userId: req.user.id
+          }
+        });
 
       logger.success('Cours généré et sauvegardé', {
         courseId: savedCourse.id,
         userId: req.user.id,
-        teacherType: params.teacherType,
-        duration: params.duration,
-        vulgarization: params.vulgarization,
-        isLegacyPayload
-      });
+          teacherType: params.teacherType,
+          duration: params.duration,
+          vulgarization: params.vulgarization,
+          intensity: selectedIntensity,
+          isLegacyPayload
+        });
 
       const { response, statusCode } = createResponse(true, { course: savedCourse }, null, HTTP_STATUS.CREATED);
 

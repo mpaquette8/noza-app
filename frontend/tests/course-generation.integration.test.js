@@ -33,6 +33,7 @@ test('course generation triggered from decryptage controls', async () => {
   subjectInput.value = 'Quantum Mechanics';
 
   const generateBtn = createElement();
+  const teacherBtn = createElement({ dataset: { type: 'teacher_type', value: 'synthetic' }, className: 'active' });
 
   global.document = {
     getElementById(id) {
@@ -42,25 +43,32 @@ test('course generation triggered from decryptage controls', async () => {
     },
     querySelector(selector) {
       if (selector === '.decryptage-controls #generateBtn') return generateBtn;
+      if (selector === '[data-type="teacher_type"].active') return teacherBtn;
       return null;
     },
     querySelectorAll() { return []; },
     addEventListener() {},
     body: { appendChild() {} }
   };
-  global.window = { location: { origin: '' } };
+  global.window = { location: { origin: '' }, currentIntensity: { level: 3, vulgarization: 'expert', duration: 'long' } };
   global.localStorage = { getItem() { return null; }, setItem() {}, removeItem() {} };
 
   const { VULGARIZATION_LABELS, TEACHER_TYPE_LABELS } = await import('../app/assets/js/course-manager.js');
 
-  global.configManager = {
-    getConfig() { return { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic' }; },
-    enableQuizCard() {}
-  };
+  function collectFormParameters() {
+    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'methodical';
+    const intensity = window.currentIntensity || { level: 2, vulgarization: 'enlightened', duration: 'medium' };
+    return {
+      teacher_type: teacherType,
+      intensity: intensity.level === 1 ? 'rapid_simple' : intensity.level === 2 ? 'balanced' : 'deep_expert',
+      vulgarization: intensity.vulgarization,
+      duration: intensity.duration
+    };
+  }
 
   global.courseManager = {
-    async generateCourse(subject, vulgarization, duration, teacher_type) {
-      calledWith = { subject, vulgarization, duration, teacher_type };
+    async generateCourse(subject, vulgarization, duration, teacher_type, intensity) {
+      calledWith = { subject, vulgarization, duration, teacher_type, intensity };
       return {};
     }
   };
@@ -68,10 +76,10 @@ test('course generation triggered from decryptage controls', async () => {
   global.utils = { initializeLucide() {} };
 
   async function handleGenerateCourse() {
-      const subject = document.getElementById('subject').value.trim();
-      const { vulgarization, duration, teacher_type } = configManager.getConfig();
-      await courseManager.generateCourse(subject, vulgarization, duration, teacher_type);
-      utils.initializeLucide();
+    const subject = document.getElementById('subject').value.trim();
+    const { teacher_type, intensity, vulgarization, duration } = collectFormParameters();
+    await courseManager.generateCourse(subject, vulgarization, duration, teacher_type, intensity);
+    utils.initializeLucide();
   }
 
   const btn = document.querySelector('.decryptage-controls #generateBtn');
@@ -82,7 +90,8 @@ test('course generation triggered from decryptage controls', async () => {
     subject: 'Quantum Mechanics',
     vulgarization: 'expert',
     duration: 'long',
-    teacher_type: 'synthetic'
+    teacher_type: 'synthetic',
+    intensity: 'deep_expert'
   });
   assert.strictEqual(VULGARIZATION_LABELS[calledWith.vulgarization], 'Expert');
   assert.strictEqual(TEACHER_TYPE_LABELS[calledWith.teacher_type], 'Synthétique');
