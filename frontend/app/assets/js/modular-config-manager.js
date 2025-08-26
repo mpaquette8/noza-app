@@ -21,18 +21,18 @@ export class ModularConfigManager {
 
     // Attach listeners to advanced selector buttons
     setupCardInteractions() {
-        const buttons = document.querySelectorAll('.selector-group button');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type = btn.dataset.type;
-                const value = btn.dataset.value;
+        const elements = document.querySelectorAll('.selector-group [data-type][data-value]');
+        elements.forEach(el => {
+            el.addEventListener('click', () => {
+                const type = el.dataset.type;
+                const value = el.dataset.value;
                 this.currentValues[type] = value;
                 this.currentPreset = 'custom';
 
-                document.querySelectorAll(`.selector-group button[data-type="${type}"]`).forEach(b => {
+                document.querySelectorAll(`.selector-group [data-type="${type}"]`).forEach(b => {
                     b.classList.remove('active');
                 });
-                btn.classList.add('active');
+                el.classList.add('active');
 
                 // Remove active state from preset buttons when custom value chosen
                 document.querySelectorAll('.quick-config [data-preset]').forEach(p => p.classList.remove('active'));
@@ -55,7 +55,7 @@ export class ModularConfigManager {
                 // Update advanced controls
                 ['vulgarization', 'duration', 'teacher_type'].forEach(type => {
                     const val = values[type];
-                    document.querySelectorAll(`.selector-group button[data-type="${type}"]`).forEach(b => {
+                    document.querySelectorAll(`.selector-group [data-type="${type}"]`).forEach(b => {
                         b.classList.toggle('active', b.dataset.value === val);
                     });
                 });
