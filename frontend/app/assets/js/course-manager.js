@@ -18,10 +18,10 @@ export const DURATION_LABELS = {
 };
 
 export const TEACHER_TYPE_LABELS = {
-  spark: '🔥 Prof Étincelle',
-  builder: '🏗️ Prof Lego',
-  storyteller: '🧙‍♂️ Prof Métaphore',
-  lightning: '⚡ Prof Flash'
+  spark: '🔥 Pour vibrer',
+  builder: '🏗️ Pour comprendre',
+  storyteller: '🧙‍♂️ Pour imaginer',
+  lightning: '⚡ Pour retenir'
 };
 
 const LEGACY_TEACHER_TYPE_MAP = {

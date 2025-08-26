@@ -14,10 +14,10 @@ const QUESTION_CONFIG = [
     label: "Quel type d'enseignant préfères-tu ?",
     type: 'select',
     options: [
-      { value: 'spark', label: '🔥 Prof Étincelle' },
-      { value: 'builder', label: '🏗️ Prof Lego' },
-      { value: 'storyteller', label: '🧙‍♂️ Prof Métaphore' },
-      { value: 'lightning', label: '⚡ Prof Flash' }
+      { value: 'spark', label: '🔥 Pour vibrer' },
+      { value: 'builder', label: '🏗️ Pour comprendre' },
+      { value: 'storyteller', label: '🧙‍♂️ Pour imaginer' },
+      { value: 'lightning', label: '⚡ Pour retenir' }
     ]
   },
   {
