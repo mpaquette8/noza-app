@@ -25,22 +25,63 @@ const DURATION_TO_WORDS = {
   [DURATIONS.LONG]: 4200
 };
 
-// Instructions to adapt tone and approach based on teacher type
+// Instructions détaillées selon le type de prof
 const TEACHER_STYLE_INSTRUCTIONS = {
-  [TEACHER_TYPES.METHODICAL]: "Adopte une approche méthodique et structurée.",
-  [TEACHER_TYPES.PASSIONATE]: "Transmets l'information avec passion et enthousiasme.",
-  [TEACHER_TYPES.ANALOGIST]: "Utilise des analogies pour expliquer les concepts.",
-  [TEACHER_TYPES.PRAGMATIC]: "Mets l'accent sur les applications pratiques.",
-  [TEACHER_TYPES.BENEVOLENT]: "Adopte un ton bienveillant et encourageant.",
-  [TEACHER_TYPES.SYNTHETIC]: "Propose des synthèses claires et concises."
+  [TEACHER_TYPES.METHODICAL]: {
+    approach: "Adopte une approche méthodique et structurée avec des étapes claires.",
+    structure: "Organise le contenu en sections numérotées avec des sous-parties logiques.",
+    language: "Utilise un vocabulaire précis et des transitions explicites entre les idées.",
+    examples: "Propose des exemples concrets suivant une progression logique."
+  },
+  [TEACHER_TYPES.PASSIONATE]: {
+    approach: "Transmets l'information avec passion, enthousiasme et émotion.",
+    structure: "Commence par captiver l'attention avec des anecdotes ou faits marquants.",
+    language: "Emploie un ton dynamique, des exclamations et un vocabulaire vivant.",
+    examples: "Raconte des histoires inspirantes et des découvertes fascinantes."
+  },
+  [TEACHER_TYPES.ANALOGIST]: {
+    approach: "Explique chaque concept complexe par des analogies du quotidien.",
+    structure: "Alterne systématiquement entre concept théorique et analogie concrète.",
+    language: "Utilise des comparaisons : 'C'est comme...', 'Imagine que...', 'À l'image de...'",
+    examples: "Transforme les notions abstraites en situations familières et visuelles."
+  },
+  [TEACHER_TYPES.PRAGMATIC]: {
+    approach: "Mets l'accent sur les applications pratiques et l'utilité concrète.",
+    structure: "Présente d'abord l'utilité pratique avant la théorie.",
+    language: "Privilégie les termes concrets et les bénéfices tangibles.",
+    examples: "Donne des cas d'usage réels, des outils pratiques et des conseils applicables."
+  },
+  [TEACHER_TYPES.BENEVOLENT]: {
+    approach: "Adopte un ton bienveillant, encourageant et rassurant.",
+    structure: "Progresse graduellement, en rassurant sur la difficulté.",
+    language: "Utilise des formulations positives et encourageantes.",
+    examples: "Propose des exercices progressifs et valorise chaque étape d'apprentissage."
+  },
+  [TEACHER_TYPES.SYNTHETIC]: {
+    approach: "Propose des synthèses claires, concises et structurées.",
+    structure: "Présente les informations sous forme de listes, tableaux, schémas.",
+    language: "Privilégie la clarté et la concision, évite les digressions.",
+    examples: "Résume en points clés, fait des comparaisons synthétiques."
+  }
 };
 
-// Guidance based on vulgarization level
-const VULGARIZATION_INSTRUCTIONS = {
-  [VULGARIZATION_LEVELS.GENERAL_PUBLIC]: "Explique les concepts de manière simple pour le grand public.",
-  [VULGARIZATION_LEVELS.ENLIGHTENED]: "Suppose un public curieux avec quelques connaissances préalables.",
-  [VULGARIZATION_LEVELS.KNOWLEDGEABLE]: "Adresse un public possédant de bonnes connaissances de base.",
-  [VULGARIZATION_LEVELS.EXPERT]: "Utilise un niveau de détail adapté à un public expert."
+// Instructions selon l'intensité pédagogique
+const INTENSITY_INSTRUCTIONS = {
+  'rapid_simple': {
+    vulgarization: VULGARIZATION_LEVELS.GENERAL_PUBLIC,
+    duration: DURATIONS.SHORT,
+    instruction: "Cours concis et accessible : explique simplement, va à l'essentiel, environ 750 mots."
+  },
+  'balanced': {
+    vulgarization: VULGARIZATION_LEVELS.ENLIGHTENED,
+    duration: DURATIONS.MEDIUM,
+    instruction: "Cours équilibré : bon niveau de détail avec accessibilité, environ 2250 mots."
+  },
+  'deep_expert': {
+    vulgarization: VULGARIZATION_LEVELS.EXPERT,
+    duration: DURATIONS.LONG,
+    instruction: "Cours approfondi : analyse détaillée avec vocabulaire technique, environ 4200 mots."
+  }
 };
 
 class AnthropicService {
@@ -121,67 +162,63 @@ class AnthropicService {
     return words ? `Le cours doit contenir environ ${words} mots.` : '';
   }
 
-  getAdaptiveInstructions(teacherType, vulgarization, duration) {
+  getAdaptiveInstructions(teacherType, intensity = 'balanced') {
+    const teacher =
+      TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
+      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
+    const intensityConfig =
+      INTENSITY_INSTRUCTIONS[intensity] || INTENSITY_INSTRUCTIONS['balanced'];
+
     return {
-      teacherStyle:
-        TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
-        TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL],
-      vulgarizationLevel: VULGARIZATION_INSTRUCTIONS[vulgarization] || '',
-      durationConstraint: this.getDurationConstraint(duration)
+      teacherApproach: teacher.approach,
+      teacherStructure: teacher.structure,
+      teacherLanguage: teacher.language,
+      teacherExamples: teacher.examples,
+      intensityInstruction: intensityConfig.instruction,
+      vulgarization: intensityConfig.vulgarization,
+      duration: intensityConfig.duration
     };
   }
 
-  createPrompt(subject, vulgarization, duration, teacherType) {
-    const adaptive = this.getAdaptiveInstructions(
-      teacherType,
-      vulgarization,
-      duration
-    );
+  createPrompt(subject, intensity = 'balanced', teacherType) {
+    const adaptive = this.getAdaptiveInstructions(teacherType, intensity);
+
     const adaptiveText = [
-      adaptive.teacherStyle,
-      adaptive.vulgarizationLevel,
-      adaptive.durationConstraint
-    ]
-      .filter(Boolean)
-      .map(line => `- ${line}`)
-      .join('\\n');
+      `APPROCHE PÉDAGOGIQUE : ${adaptive.teacherApproach}`,
+      `STRUCTURE DU COURS : ${adaptive.teacherStructure}`,
+      `STYLE DE LANGAGE : ${adaptive.teacherLanguage}`,
+      `EXEMPLES ET ILLUSTRATIONS : ${adaptive.teacherExamples}`,
+      `CONTRAINTES : ${adaptive.intensityInstruction}`
+    ].join('\n');
 
     return `<h1>Titre du Cours</h1>
 
-PHILOSOPHIE PÉDAGOGIQUE :
+PROFIL PÉDAGOGIQUE :
 ${adaptiveText}
 
-STRUCTURE :
-- Commence par une introduction et termine par une conclusion.
-- Après la conclusion, ajoute un bloc générique 'Pour aller plus loin' avec 2–3 questions de réflexion et 2–3 pistes de cours ou lectures.
+INSTRUCTIONS :
+- Respecte scrupuleusement le profil pédagogique défini ci-dessus
+- Adapte ton ton, ta structure et tes exemples selon le type d'enseignant
+- Commence par une introduction engageante adaptée au style
+- Termine par une conclusion et un bloc "Pour aller plus loin"
+- Le bloc "Pour aller plus loin" doit contenir 2-3 questions de réflexion et 2-3 suggestions d'approfondissement
 
-Sujet : '${subject}'
-
-RENDU ATTENDU :
-- Retourne UNIQUEMENT le HTML final prêt à être injecté (aucun commentaire extérieur).`;
+Sujet à traiter : ${subject}`;
   }
 
 
 // Générer un cours
-  async generateCourse(subject, vulgarization, duration, teacherType) {
+  async generateCourse(subject, intensity = 'balanced', teacherType) {
     if (this.offline) {
       return this.getOfflineMessage();
-    }
-
-    // Fallback for legacy parameter order
-    if (Object.values(TEACHER_TYPES).includes(vulgarization)) {
-      const legacyTeacher = vulgarization;
-      const legacyVulgarization = teacherType;
-      teacherType = legacyTeacher;
-      vulgarization = legacyVulgarization;
     }
 
     teacherType = teacherType || TEACHER_TYPES.METHODICAL;
 
     try {
-      const prompt = this.createPrompt(subject, vulgarization, duration, teacherType);
+      const prompt = this.createPrompt(subject, intensity, teacherType);
 
-      logger.info('Génération cours', { subject, vulgarization, duration, teacherType });
+      logger.info('Génération cours', { subject, intensity, teacherType });
 
       const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',

@@ -40,6 +40,29 @@ const DURATIONS = {
   LONG: 'long'
 };
 
+// Niveaux d'intensité pédagogique
+const INTENSITY_LEVELS = {
+  RAPID_SIMPLE: 'rapid_simple',
+  BALANCED: 'balanced',
+  DEEP_EXPERT: 'deep_expert'
+};
+
+// Mapping intensité vers vulgarisation/durée
+const INTENSITY_TO_CONFIG = {
+  [INTENSITY_LEVELS.RAPID_SIMPLE]: {
+    vulgarization: VULGARIZATION_LEVELS.GENERAL_PUBLIC,
+    duration: DURATIONS.SHORT
+  },
+  [INTENSITY_LEVELS.BALANCED]: {
+    vulgarization: VULGARIZATION_LEVELS.ENLIGHTENED,
+    duration: DURATIONS.MEDIUM
+  },
+  [INTENSITY_LEVELS.DEEP_EXPERT]: {
+    vulgarization: VULGARIZATION_LEVELS.EXPERT,
+    duration: DURATIONS.LONG
+  }
+};
+
 // Types de questions
 const QUESTION_TYPES = {
   COURSE_RELATED: 'course-related',
@@ -126,5 +149,7 @@ module.exports = {
   HTTP_STATUS,
   ERROR_CODES,
   AI_ERROR_MESSAGES,
-  DURATIONS
+  DURATIONS,
+  INTENSITY_LEVELS,
+  INTENSITY_TO_CONFIG
 };

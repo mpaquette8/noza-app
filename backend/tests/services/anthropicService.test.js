@@ -18,25 +18,23 @@ Module._load = (request, parent, isMain) => {
 
 const anthropicService = require('../../src/services/anthropicService');
 Module._load = originalLoad;
-const { TEACHER_TYPES, DURATIONS, VULGARIZATION_LEVELS, ERROR_CODES } = require('../../src/utils/constants');
+const { TEACHER_TYPES, INTENSITY_LEVELS, ERROR_CODES } = require('../../src/utils/constants');
 
 test('createPrompt creates flexible educational content', () => {
   const prompt = anthropicService.createPrompt(
     'Sujet',
-    VULGARIZATION_LEVELS.GENERAL_PUBLIC,
-    DURATIONS.MEDIUM,
+    INTENSITY_LEVELS.BALANCED,
     TEACHER_TYPES.METHODICAL
   );
 
-  assert.match(prompt, /PHILOSOPHIE PÉDAGOGIQUE/);
+  assert.match(prompt, /PROFIL PÉDAGOGIQUE/);
   assert.match(prompt, /Pour aller plus loin/);
 });
 
 test('createPrompt allows pedagogical freedom', () => {
   const prompt = anthropicService.createPrompt(
     'Sujet',
-    VULGARIZATION_LEVELS.GENERAL_PUBLIC,
-    DURATIONS.MEDIUM,
+    INTENSITY_LEVELS.BALANCED,
     TEACHER_TYPES.METHODICAL
   );
 
@@ -90,7 +88,7 @@ test('APIUserAbortError does not trigger offline mode', async () => {
   };
 
   try {
-    await anthropicService.generateCourse('Sujet', VULGARIZATION_LEVELS.ENLIGHTENED, DURATIONS.SHORT, TEACHER_TYPES.METHODICAL);
+    await anthropicService.generateCourse('Sujet', INTENSITY_LEVELS.RAPID_SIMPLE, TEACHER_TYPES.METHODICAL);
     assert.fail('generateCourse should throw');
   } catch (err) {
     assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);
