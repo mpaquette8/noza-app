@@ -27,41 +27,29 @@ const DURATION_TO_WORDS = {
 
 // Instructions détaillées selon le type de prof
 const TEACHER_STYLE_INSTRUCTIONS = {
-  [TEACHER_TYPES.METHODICAL]: {
-    approach: "Adopte une approche méthodique et structurée avec des étapes claires.",
-    structure: "Organise le contenu en sections numérotées avec des sous-parties logiques.",
-    language: "Utilise un vocabulaire précis et des transitions explicites entre les idées.",
-    examples: "Propose des exemples concrets suivant une progression logique."
+  [TEACHER_TYPES.SPARK]: {
+    approach: "Transmets l'information avec passion explosive et enthousiasme contagieux.",
+    structure: "Commence par captiver avec une anecdote épique, transforme chaque point en découverte fascinante.",
+    language: "Emploie un ton dynamique avec exclamations, vocabulaire vivant et métaphores enflammées.",
+    examples: "Raconte des histoires inspirantes, utilise des découvertes révolutionnaires comme exemples."
   },
-  [TEACHER_TYPES.PASSIONATE]: {
-    approach: "Transmets l'information avec passion, enthousiasme et émotion.",
-    structure: "Commence par captiver l'attention avec des anecdotes ou faits marquants.",
-    language: "Emploie un ton dynamique, des exclamations et un vocabulaire vivant.",
-    examples: "Raconte des histoires inspirantes et des découvertes fascinantes."
+  [TEACHER_TYPES.BUILDER]: {
+    approach: "Décompose la connaissance étape par étape comme un guide de construction.",
+    structure: "Organise en phases claires : fondations → construction → assemblage final.",
+    language: "Utilise un vocabulaire de construction : 'construisons', 'assemblons', 'posons les bases'.",
+    examples: "Donne des analogies de construction, compare aux projets DIY, explique l'utilité pratique."
   },
-  [TEACHER_TYPES.ANALOGIST]: {
-    approach: "Explique chaque concept complexe par des analogies du quotidien.",
-    structure: "Alterne systématiquement entre concept théorique et analogie concrète.",
-    language: "Utilise des comparaisons : 'C'est comme...', 'Imagine que...', 'À l'image de...'",
-    examples: "Transforme les notions abstraites en situations familières et visuelles."
+  [TEACHER_TYPES.STORYTELLER]: {
+    approach: "Transforme chaque concept en conte merveilleux avec des analogies magiques.",
+    structure: "Structure comme un récit : situation initiale → transformation → résolution.",
+    language: "Adopte un ton bienveillant de conteur : 'Il était une fois...', 'Imagine un royaume où...'",
+    examples: "Utilise des métaphores fantastiques, des personnages, des univers imaginaires."
   },
-  [TEACHER_TYPES.PRAGMATIC]: {
-    approach: "Mets l'accent sur les applications pratiques et l'utilité concrète.",
-    structure: "Présente d'abord l'utilité pratique avant la théorie.",
-    language: "Privilégie les termes concrets et les bénéfices tangibles.",
-    examples: "Donne des cas d'usage réels, des outils pratiques et des conseils applicables."
-  },
-  [TEACHER_TYPES.BENEVOLENT]: {
-    approach: "Adopte un ton bienveillant, encourageant et rassurant.",
-    structure: "Progresse graduellement, en rassurant sur la difficulté.",
-    language: "Utilise des formulations positives et encourageantes.",
-    examples: "Propose des exercices progressifs et valorise chaque étape d'apprentissage."
-  },
-  [TEACHER_TYPES.SYNTHETIC]: {
-    approach: "Propose des synthèses claires, concises et structurées.",
-    structure: "Présente les informations sous forme de listes, tableaux, schémas.",
-    language: "Privilégie la clarté et la concision, évite les digressions.",
-    examples: "Résume en points clés, fait des comparaisons synthétiques."
+  [TEACHER_TYPES.LIGHTNING]: {
+    approach: "Synthétise avec une efficacité redoutable, va à l'essentiel avec impact.",
+    structure: "Structure ultra-claire : points clés → schémas → synthèse percutante.",
+    language: "Style direct et percutant, phrases courtes et mémorables.",
+    examples: "Résumés en bullet points, comparaisons synthétiques, tableaux visuels."
   }
 };
 
@@ -165,7 +153,7 @@ class AnthropicService {
   getAdaptiveInstructions(teacherType, intensity = 'balanced') {
     const teacher =
       TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
-      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.METHODICAL];
+      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.BUILDER];
     const intensityConfig =
       INTENSITY_INSTRUCTIONS[intensity] || INTENSITY_INSTRUCTIONS['balanced'];
 
@@ -213,7 +201,7 @@ Sujet à traiter : ${subject}`;
       return this.getOfflineMessage();
     }
 
-    teacherType = teacherType || TEACHER_TYPES.METHODICAL;
+    teacherType = teacherType || TEACHER_TYPES.BUILDER;
 
     try {
       const prompt = this.createPrompt(subject, intensity, teacherType);

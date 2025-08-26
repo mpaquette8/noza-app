@@ -2,9 +2,9 @@ export class ModularConfigManager {
     constructor() {
         this.currentPreset = 'default';
         this.presets = {
-            default: { vulgarization: 'general_public', duration: 'short', teacher_type: 'methodical' },
-            balanced: { vulgarization: 'enlightened', duration: 'medium', teacher_type: 'pragmatic' },
-            expert: { vulgarization: 'expert', duration: 'long', teacher_type: 'synthetic' }
+            default: { vulgarization: 'general_public', duration: 'short', teacher_type: 'builder' },
+            balanced: { vulgarization: 'enlightened', duration: 'medium', teacher_type: 'storyteller' },
+            expert: { vulgarization: 'expert', duration: 'long', teacher_type: 'lightning' }
         };
         this.currentValues = { ...this.presets[this.currentPreset] };
     }

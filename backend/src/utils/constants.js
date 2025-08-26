@@ -25,12 +25,10 @@ const LEGACY_VULGARIZATION_LEVELS = {
 
 // Types d'enseignants
 const TEACHER_TYPES = {
-  METHODICAL: 'methodical',
-  PASSIONATE: 'passionate',
-  ANALOGIST: 'analogist',
-  PRAGMATIC: 'pragmatic',
-  BENEVOLENT: 'benevolent',
-  SYNTHETIC: 'synthetic'
+  SPARK: 'spark',
+  BUILDER: 'builder',
+  STORYTELLER: 'storyteller',
+  LIGHTNING: 'lightning'
 };
 
 // Durées estimées des cours

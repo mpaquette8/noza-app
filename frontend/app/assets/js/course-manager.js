@@ -18,13 +18,25 @@ export const DURATION_LABELS = {
 };
 
 export const TEACHER_TYPE_LABELS = {
-  methodical: 'Méthodique',
-  passionate: 'Passionné',
-  analogist: 'Analogiste',
-  pragmatic: 'Pragmatique',
-  benevolent: 'Bienveillant',
-  synthetic: 'Synthétique'
+  spark: '🔥 Prof Étincelle',
+  builder: '🏗️ Prof Lego',
+  storyteller: '🧙‍♂️ Prof Métaphore',
+  lightning: '⚡ Prof Flash'
 };
+
+const LEGACY_TEACHER_TYPE_MAP = {
+  methodical: 'builder',
+  pragmatic: 'builder',
+  analogist: 'storyteller',
+  benevolent: 'storyteller',
+  passionate: 'spark',
+  synthetic: 'lightning'
+};
+
+export function getTeacherTypeLabel(type) {
+  const normalized = LEGACY_TEACHER_TYPE_MAP[type] || type;
+  return TEACHER_TYPE_LABELS[normalized] || normalized;
+}
 
 // Rate limit between costly actions
 const REQUEST_COOLDOWN = 5000; // 5 seconds
@@ -343,7 +355,7 @@ class CourseManager {
         .map(course => {
           const vulgarizationLabel = VULGARIZATION_LABELS[course.vulgarization] || course.vulgarization;
           const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-          const teacherTypeLabel = TEACHER_TYPE_LABELS[course.teacher_type] || course.teacher_type;
+          const teacherTypeLabel = getTeacherTypeLabel(course.teacher_type);
 
           return `
         <div class="history-item" onclick="courseManager.loadCourseFromHistory('${course.id}')">
@@ -409,7 +421,7 @@ class CourseManager {
       if (typeof displayCourseMetadata === 'function') {
         const vulgarizationLabel = VULGARIZATION_LABELS[course.vulgarization] || course.vulgarization;
         const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-        const teacherTypeLabel = TEACHER_TYPE_LABELS[course.teacher_type] || course.teacher_type;
+        const teacherTypeLabel = getTeacherTypeLabel(course.teacher_type);
         displayCourseMetadata(vulgarizationLabel, durationLabel, teacherTypeLabel);
       }
       utils.showNotification('Cours chargé depuis l\'historique', 'success');

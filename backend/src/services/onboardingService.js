@@ -14,12 +14,10 @@ const QUESTION_CONFIG = [
     label: "Quel type d'enseignant préfères-tu ?",
     type: 'select',
     options: [
-      { value: 'methodical', label: 'Méthodique' },
-      { value: 'passionate', label: 'Passionné' },
-      { value: 'analogist', label: 'Analogiste' },
-      { value: 'pragmatic', label: 'Pragmatique' },
-      { value: 'benevolent', label: 'Bienveillant' },
-      { value: 'synthetic', label: 'Synthétique' }
+      { value: 'spark', label: '🔥 Prof Étincelle' },
+      { value: 'builder', label: '🏗️ Prof Lego' },
+      { value: 'storyteller', label: '🧙‍♂️ Prof Métaphore' },
+      { value: 'lightning', label: '⚡ Prof Flash' }
     ]
   },
   {

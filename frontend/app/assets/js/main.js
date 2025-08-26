@@ -2,7 +2,7 @@
 
 import { utils, API_BASE_URL } from './utils/utils.js';
 import { authManager } from './auth.js';
-import { courseManager, VULGARIZATION_LABELS, DURATION_LABELS, TEACHER_TYPE_LABELS } from './course-manager.js';
+import { courseManager, VULGARIZATION_LABELS, DURATION_LABELS, getTeacherTypeLabel } from './course-manager.js';
 
 // État global de l'application
 let currentCourse = null;
@@ -83,7 +83,7 @@ async function handleGenerateCourse() {
                 currentCourse = course;
                 const vulgarizationLabel = VULGARIZATION_LABELS[course.vulgarization] || course.vulgarization;
                 const durationLabel = DURATION_LABELS[course.duration] || course.duration;
-                const teacherTypeLabel = TEACHER_TYPE_LABELS[course.teacher_type] || course.teacher_type;
+                const teacherTypeLabel = getTeacherTypeLabel(course.teacher_type);
                 displayCourseMetadata(vulgarizationLabel, durationLabel, teacherTypeLabel);
                 if (typeof configManager !== 'undefined') {
                     configManager.enableQuizCard();
@@ -260,7 +260,7 @@ function initializeGauges() {
 }
 
 function collectFormParameters() {
-    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'methodical';
+    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'builder';
     const intensity = window.currentIntensity || intensityLevels[2];
 
     return {

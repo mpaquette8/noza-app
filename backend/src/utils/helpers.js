@@ -72,7 +72,17 @@ const mapLegacyParams = ({
     [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT,
   };
 
-  const finalTeacherType = teacherType || TEACHER_TYPES.METHODICAL;
+  const legacyTeacherMap = {
+    methodical: TEACHER_TYPES.BUILDER,
+    pragmatic: TEACHER_TYPES.BUILDER,
+    analogist: TEACHER_TYPES.STORYTELLER,
+    benevolent: TEACHER_TYPES.STORYTELLER,
+    passionate: TEACHER_TYPES.SPARK,
+    synthetic: TEACHER_TYPES.LIGHTNING
+  };
+
+  const normalizedTeacherType = legacyTeacherMap[teacherType] || teacherType;
+  const finalTeacherType = normalizedTeacherType || TEACHER_TYPES.BUILDER;
   const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
   const finalVulgarization =
     vulgarization || vulgarizationMap[vulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;

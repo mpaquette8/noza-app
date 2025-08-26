@@ -21,7 +21,7 @@ Creates a new course for the authenticated user.
 ### New fields
 - `vulgarization` (string, required): audience level. Values: `general_public`, `enlightened`, `knowledgeable`, `expert`.
 - `duration` (string, required): course length. Values: `short`, `medium`, `long`.
-- `teacher_type` (string, required): teacher persona. Values: `methodical`, `passionate`, `analogist`, `pragmatic`, `benevolent`, `synthetic`.
+- `teacher_type` (string, required): teacher persona. Values: `spark`, `builder`, `storyteller`, `lightning`.
 
 ### Deprecated fields
 - `detailLevel` (number): 1 `synthesis`, 2 `detailed`, 3 `exhaustive`. Replaced by `duration`.
@@ -39,7 +39,7 @@ Content-Type: application/json
   "subject": "Introduction to Algebra",
   "vulgarization": "enlightened",
   "duration": "medium",
-  "teacher_type": "methodical"
+  "teacher_type": "builder"
 }
 ```
 
