@@ -447,7 +447,7 @@ body::before {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    min-height: 200px;
+    min-height: 140px;
 }
 
 .teacher-card:hover {
@@ -475,41 +475,18 @@ body::before {
 }
 
 .teacher-name {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.3rem;
+    font-weight: 700;
     color: #1f2937;
-    margin: 0 0 6px 0;
+    margin: 0 0 8px 0;
 }
 
 .teacher-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #6b7280;
     font-style: italic;
-    margin: 0 0 12px 0;
-}
-
-/* Liste des caractéristiques */
-.teacher-features {
-    list-style: none;
-    padding: 0;
+    line-height: 1.4;
     margin: 0;
-    text-align: left;
-}
-
-.teacher-features li {
-    font-size: 0.85rem;
-    color: #4b5563;
-    margin-bottom: 6px;
-    padding-left: 16px;
-    position: relative;
-}
-
-.teacher-features li::before {
-    content: "•";
-    color: #3b82f6;
-    font-weight: bold;
-    position: absolute;
-    left: 0;
 }
 
 /* Responsive */
@@ -519,7 +496,7 @@ body::before {
     }
 
     .teacher-card {
-        min-height: auto;
+        min-height: 120px;
         padding: 16px;
     }
 
@@ -528,7 +505,11 @@ body::before {
     }
 
     .teacher-name {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+    }
+
+    .teacher-subtitle {
+        font-size: 0.9rem;
     }
 }
 
