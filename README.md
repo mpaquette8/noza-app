@@ -7,7 +7,7 @@ The `POST /api/courses` endpoint now supports the following parameters:
 - `subject` (string, required): topic to generate a course about.
 - `vulgarization` (string, required): target audience. Accepted values: `general_public`, `enlightened`, `knowledgeable`, `expert`.
 - `duration` (string, required): estimated course length. Accepted values: `short`, `medium`, `long`.
-- `teacher_type` (string, required): teaching persona. Accepted values: `methodical`, `passionate`, `analogist`, `pragmatic`, `benevolent`, `synthetic`.
+- `teacher_type` (string, required): teaching persona. Accepted values: `spark`, `builder`, `storyteller`, `lightning`.
 - `detailLevel` (number, deprecated): legacy field mapped to `duration`.
 - `vulgarizationLevel` (number, deprecated): legacy field mapped to `vulgarization`.
 - `style` (string, deprecated): maps to `vulgarization`.
@@ -20,7 +20,7 @@ The `POST /api/courses` endpoint now supports the following parameters:
   "subject": "Introduction to Algebra",
   "vulgarization": "enlightened",
   "duration": "medium",
-  "teacher_type": "methodical"
+  "teacher_type": "builder"
 }
 ```
 
@@ -36,7 +36,7 @@ The `POST /api/courses` endpoint now supports the following parameters:
     "vulgarizationLevel": 2,
     "vulgarization": "enlightened",
     "duration": "medium",
-    "teacherType": "methodical",
+    "teacherType": "builder",
     "createdAt": "2024-01-01T00:00:00.000Z"
   }
 }
