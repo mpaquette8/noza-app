@@ -171,27 +171,85 @@ class AnthropicService {
   createPrompt(subject, intensity = 'balanced', teacherType) {
     const adaptive = this.getAdaptiveInstructions(teacherType, intensity);
 
-    const adaptiveText = [
-      `APPROCHE PÉDAGOGIQUE : ${adaptive.teacherApproach}`,
-      `STRUCTURE DU COURS : ${adaptive.teacherStructure}`,
-      `STYLE DE LANGAGE : ${adaptive.teacherLanguage}`,
-      `EXEMPLES ET ILLUSTRATIONS : ${adaptive.teacherExamples}`,
-      `CONTRAINTES : ${adaptive.intensityInstruction}`
-    ].join('\n');
+    const conversationalPrompt = `Tu es un expert pédagogique conversationnel. Crée un cours dans un style moderne d'IA conversationnelle (type ChatGPT/Claude).
 
-    return `<h1>Titre du Cours</h1>
+STYLE DE RÉPONSE OBLIGATOIRE :
+- Format conversationnel naturel et engageant
+- Utilise des émojis pour structurer (📚 🎯 💡 ✨ 🔍)
+- Paragraphes courts et respirants (3-4 lignes max)
+- Transitions fluides entre les sections
+- Ton accessible mais expert
+- FORMULES : Utilise la notation LaTeX claire et centrée
+- TABLEAUX : Format HTML avec en-têtes distinctes et lignes alternées
+- Pas de HTML brut sauf pour formules et tableaux
 
 PROFIL PÉDAGOGIQUE :
-${adaptiveText}
+- Approche : ${adaptive.teacherApproach}
+- Structure : ${adaptive.teacherStructure}
+- Langage : ${adaptive.teacherLanguage}
+- Exemples : ${adaptive.teacherExamples}
+- Contraintes : ${adaptive.intensityInstruction}
 
-INSTRUCTIONS :
-- Respecte scrupuleusement le profil pédagogique défini ci-dessus
-- Adapte ton ton, ta structure et tes exemples selon le type d'enseignant
-- Commence par une introduction engageante adaptée au style
-- Termine par une conclusion et un bloc "Pour aller plus loin"
-- Le bloc "Pour aller plus loin" doit contenir 2-3 questions de réflexion et 2-3 suggestions d'approfondissement
+STRUCTURE OBLIGATOIRE :
 
-Sujet à traiter : ${subject}`;
+# [Titre accrocheur du cours]
+
+## 🎯 Introduction
+[Paragraphe d'accroche engageant qui explique pourquoi ce sujet est important]
+
+## 📚 L'essentiel à comprendre
+[Explication des concepts clés, divisée en sous-sections courtes]
+
+### Point clé 1
+[Explication claire et concise]
+
+### Point clé 2
+[Explication claire et concise]
+
+## 💡 Exemple concret
+[Illustration pratique avec formules bien formatées si nécessaire]
+
+**Formule principale :**
+\`\`\`
+C = S₀ · N(d₁) - K · e^(-rT) · N(d₂)
+\`\`\`
+
+## 📊 Variables importantes
+| Variable | Signification | Unité |
+|----------|---------------|-------|
+| C | Prix du call | monnaie |
+| S₀ | Prix actuel de l'actif | monnaie |
+| K | Prix d'exercice | monnaie |
+
+## ✨ Points à retenir
+- [Point important 1]
+- [Point important 2]
+- [Point important 3]
+
+## 🔍 Pour aller plus loin
+**Questions de réflexion :**
+1. [Question qui pousse à réfléchir]
+2. [Question qui pousse à réfléchir]
+
+**Approfondissements suggérés :**
+- [Suggestion 1]
+- [Suggestion 2]
+
+---
+
+CONSIGNES STRICTES :
+- Respecte scrupuleusement le profil pédagogique défini
+- Adapte le niveau selon l'intensité demandée
+- Utilise un langage naturel et conversationnel
+- Pour les FORMULES : utilise des blocs \`\`\`code\`\`\` avec notation claire
+- Pour les TABLEAUX : utilise le format markdown | col1 | col2 |
+- Évite les phrases trop longues
+- Ajoute des transitions entre les sections
+- Garde un ton bienveillant et expert
+
+Sujet à traiter : "${subject}"`;
+
+    return conversationalPrompt;
   }
 
 
@@ -259,36 +317,32 @@ Sujet à traiter : ${subject}`;
 
       if (questionType === 'course-related' && courseContent) {
         // Question liée au cours
-        prompt = `Contexte : Voici le contenu d'un cours :
+        prompt = `Contexte du cours :
 ${courseContent}
 
-Niveau de vulgarisation : ${levelInstructions[level]}
+Question : ${question}
 
-Question de l'utilisateur : ${question}
-
-Instructions :
-- Si la question porte sur le contenu du cours ci-dessus, réponds en te basant sur ce contenu
-- Si la question sort du contexte du cours, réponds avec tes connaissances générales
-- Adapte ta réponse au niveau de vulgarisation demandé
-- Limite ta réponse à 2–3 phrases ou à moins de 100 mots
-- Sois utile et informatif dans tous les cas
+Réponds dans un style conversationnel naturel (comme ChatGPT/Claude) :
+- Ton bienveillant et expert
+- Paragraphes courts et clairs
+- Utilise des émojis si approprié (💡 ✨ 🎯)
+- Adapte le niveau : ${levelInstructions[level]}
+- Maximum 150 mots pour rester concis
 
 Réponse :`;
 
       } else {
         // Question générale - TOUJOURS répondre
-        prompt = `Tu es un assistant pédagogique expert. Réponds à cette question en adaptant ton niveau de vulgarisation.
-
-Niveau de vulgarisation : ${levelInstructions[level]}
+        prompt = `Tu es un assistant pédagogique expert.
 
 Question : ${question}
 
-Instructions :
-- Donne une réponse claire et conversationnelle en 2–3 phrases ou moins de 100 mots
-- Adapte ton vocabulaire et tes explications au niveau demandé
-- Utilise des exemples concrets si nécessaire
-- Reste informatif tout en étant accessible
-- Réponds toujours de manière utile, même pour des questions générales
+Réponds dans un style conversationnel moderne :
+- Ton naturel et engageant
+- Explications claires et accessibles
+- Utilise des émojis pour structurer si pertinent
+- Niveau : ${levelInstructions[level]}
+- Maximum 150 mots
 
 Réponse :`;
       }

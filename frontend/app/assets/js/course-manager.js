@@ -252,13 +252,22 @@ class CourseManager {
     }
   }
 
-  // Afficher un cours
+  // Afficher un cours avec formatage conversationnel
   displayCourse(course) {
     document.getElementById('courseContent').style.display = 'block';
+    
+    // Appliquer le post-traitement de formatage
+    const formattedContent = this.formatConversationalContent(course.content);
+    
+    // Sanitiser le contenu
     const sanitizedContent = typeof utils.sanitizeHTML === 'function'
-      ? utils.sanitizeHTML(course.content)
-      : course.content;
-    document.getElementById('generatedCourse').innerHTML = sanitizedContent;
+      ? utils.sanitizeHTML(formattedContent)
+      : formattedContent;
+    
+    // Convertir le markdown léger en HTML
+    const htmlContent = this.convertMarkdownToHTML(sanitizedContent);
+    
+    document.getElementById('generatedCourse').innerHTML = htmlContent;
     
     // Réinitialiser le chat
     const chatMessages = document.getElementById('chatMessages');
@@ -270,6 +279,76 @@ class CourseManager {
     document.getElementById('quizSection').innerHTML = '';
     
     utils.initializeLucide();
+  }
+
+  // Fonction de post-traitement pour améliorer le formatage
+  formatConversationalContent(rawContent) {
+    return rawContent
+      // Nettoyer les sections mal formatées
+      .replace(/INTRODUCTION\s*/gi, '## 🎯 Introduction\n')
+      .replace(/POINTS CLÉ?S?\s*/gi, '## 📚 Points clés\n')
+      .replace(/POINTS? IMPORTANT?S?\s*/gi, '## 📚 Points importants\n')
+      .replace(/L'ESSENTIEL\s*/gi, '## 📚 L\'essentiel\n')
+      .replace(/EXEMPLE?S?\s*PRATIQUE?S?\s*/gi, '## 💡 Exemple pratique\n')
+      .replace(/CONCLUSION\s*/gi, '## 🎯 Conclusion\n')
+      .replace(/POUR ALLER PLUS LOIN\s*/gi, '## 🔍 Pour aller plus loin\n')
+      .replace(/APPLICATIONS?\s*PRATIQUES?\s*/gi, '## 💡 Applications pratiques\n')
+      .replace(/LIMITES?\s*DU\s*MODÈLE\s*/gi, '## ⚠️ Limites à connaître\n')
+      
+      // Transformer les listes mal formatées
+      .replace(/^\s*[•\-\*]\s+(.+)/gm, '- $1')
+      .replace(/^\s*\d+\.\s+(.+)/gm, '1. $1')
+      
+      // Nettoyer les tableaux mal formatés
+      .replace(/\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g, '| $1 | $2 |')
+      
+      // Ajouter des espaces entre les sections
+      .replace(/\n([#]{1,3}\s)/g, '\n\n$1')
+      .replace(/([.!?])\n([A-Z])/g, '$1\n\n$2')
+      
+      // Nettoyer les espaces multiples
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  // Convertir markdown + LaTeX + tableaux en HTML esthétique
+  convertMarkdownToHTML(content) {
+    return content
+      // Convertir les titres
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      
+      // Convertir les formules en blocs centrés
+      .replace(/```\n([\s\S]*?)\n```/g, '<div class="formula">$1</div>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      
+      // Convertir les tableaux markdown en HTML stylé
+      .replace(/\|(.+)\|\n\|[-\s|:]+\|\n((?:\|.+\|\n?)*)/g, function(match, header, rows) {
+        const headerCells = header.split('|').filter(cell => cell.trim()).map(cell => 
+          `<th>${cell.trim()}</th>`
+        ).join('');
+        
+        const bodyRows = rows.trim().split('\n').map(row => {
+          const cells = row.split('|').filter(cell => cell.trim()).map(cell => 
+            `<td>${cell.trim()}</td>`
+          ).join('');
+          return `<tr>${cells}</tr>`;
+        }).join('');
+        
+        return `<table class="styled-table"><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+      })
+      
+      // Convertir les listes
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+      
+      // Convertir les paragraphes
+      .replace(/\n\n(.+?)(?=\n\n|$)/gs, '<p>$1</p>')
+      
+      // Nettoyer les balises imbriquées
+      .replace(/<\/ul>\s*<ul>/g, '')
+      .replace(/<\/ol>\s*<ol>/g, '');
   }
 
   // Charger l'historique utilisateur
