@@ -161,16 +161,28 @@ body::before {
     width: 100%;
     margin: 20px 0;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 20px;
 }
 
-.decryptage-left {
-    flex: 0 0 65%;
+.decryptage-row-1 {
+    width: 70%;
+    margin: 0 auto;
 }
 
-.decryptage-right {
-    flex: 0 0 35%;
+.subject-container {
+    width: 100%;
+}
+
+.decryptage-row-2 {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+}
+
+.intensity-container,
+.teacher-container {
+    flex: 1;
 }
 
 .config-card {
@@ -369,14 +381,6 @@ body::before {
     animation: spin 0.8s ease-in-out;
 }
 
-/* --- Nouveaux sélecteurs de configuration --- */
-.new-selector-container {
-    display: flex;
-    flex-direction: row;
-    gap: 25px;
-    justify-content: space-between;
-}
-
 .selector-group {
     display: flex;
     flex-direction: column;
@@ -413,17 +417,17 @@ body::before {
 }
 
 @media (max-width: 768px) {
-    .decryptage-controls {
+    .decryptage-row-1 {
+        width: 100%;
+    }
+
+    .decryptage-row-2 {
         flex-direction: column;
     }
 
-    .decryptage-left,
-    .decryptage-right {
-        flex: 0 0 100%;
-    }
-
-    .new-selector-container {
-        flex-direction: column;
+    .intensity-container,
+    .teacher-container {
+        width: 100%;
     }
 }
 
