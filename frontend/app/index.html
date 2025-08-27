@@ -36,22 +36,24 @@
             <div class="tab-content" id="courseTab">
                 <div class="config-card primary-card">
                     <div class="decryptage-controls">
-                        <div class="decryptage-left">
-                            <div class="form-group">
-                                <label for="subject">Sujet à décrypter</label>
-                                <div class="subject-input-container">
-                                    <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
-                                    <button type="button" class="random-subject-btn" id="randomSubjectBtn">
-                                        <i data-lucide="sparkles" aria-hidden="true"></i>
-                                        Générer un sujet aléatoire
-                                        <i data-lucide="dice-6" aria-hidden="true"></i>
-                                    </button>
+                        <div class="decryptage-row-1">
+                            <div class="subject-container">
+                                <div class="form-group">
+                                    <label for="subject">Sujet à décrypter</label>
+                                    <div class="subject-input-container">
+                                        <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
+                                        <button type="button" class="random-subject-btn" id="randomSubjectBtn">
+                                            <i data-lucide="sparkles" aria-hidden="true"></i>
+                                            Générer un sujet aléatoire
+                                            <i data-lucide="dice-6" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="decryptage-right">
-                            <div id="advancedSettings" class="advanced-settings">
-                                <div class="new-selector-container">
+                        <div id="advancedSettings" class="advanced-settings">
+                            <div class="decryptage-row-2">
+                                <div class="intensity-container">
                                     <div class="selector-group">
                                         <div class="selector-title">🎓 Intensité Pédagogique</div>
                                         <div class="intensity-slider-container">
@@ -76,6 +78,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="teacher-container">
                                     <div class="selector-group">
                                         <div class="selector-title">👨‍🏫 Type de prof</div>
                                         <div class="teacher-cards-grid">
