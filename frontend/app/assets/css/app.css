@@ -166,12 +166,6 @@ body::before {
     margin: 0 auto;
 }
 
-/* Container du sujet */
-.subject-container {
-    flex: 1;
-    min-width: 0;
-}
-
 /* === NOUVEAUX BOUTONS HORIZONTAUX === */
 .action-buttons-horizontal {
     display: flex;
@@ -421,66 +415,6 @@ body::before {
     line-height: 1.5;
 }
 
-.subject-container textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-/* --- Subject Input with Random Button (Version 3 - NOUVEAU) --- */
-.subject-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.subject-input-container textarea {
-    width: 100%;
-}
-
-.random-subject-btn {
-    padding: 12px 20px;
-    border: 2px dashed #9f7aea;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(159, 122, 234, 0.1), rgba(128, 90, 213, 0.1));
-    color: #805ad5;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.random-subject-btn:hover {
-    background: linear-gradient(135deg, #9f7aea, #805ad5);
-    color: white;
-    border-style: solid;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(159, 122, 234, 0.3);
-}
-
-.random-subject-btn:active {
-    transform: translateY(-1px) scale(0.98);
-}
-
-.random-subject-btn:disabled {
-    background: #e2e8f0;
-    color: #a0aec0;
-    cursor: not-allowed;
-    transform: none;
-    border-style: solid;
-}
-
-.random-subject-btn i {
-    transition: transform 0.3s ease;
-    font-size: 1.1rem;
-}
-
-.random-subject-btn.spinning i {
-    animation: spin 0.8s ease-in-out;
-}
 
 .selector-group {
     display: flex;
