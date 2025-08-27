@@ -2768,3 +2768,70 @@ body::before {
     font-size: 0.9rem;
     color: #4a5568;
 }
+/* Formules mathématiques centrées */
+.formula {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 25px 0;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2d3748;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tableaux stylés */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.styled-table thead tr {
+  background: #2d3748;
+  color: white;
+  text-align: left;
+  font-weight: 600;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.styled-table tbody tr {
+  background: white;
+  transition: background-color 0.2s ease;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background: #f8f9fa;
+}
+
+.styled-table tbody tr:hover {
+  background: #ebf8ff;
+}
+
+.styled-table td {
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+/* Code inline */
+code {
+  background: #f1f5f9;
+  color: #e53e3e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 0.9em;
+  font-weight: 600;
+}
