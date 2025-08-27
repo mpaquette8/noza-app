@@ -35,100 +35,94 @@
 
             <div class="tab-content" id="courseTab">
                 <div class="config-card primary-card">
-                    <div class="decryptage-controls">
-                        <div class="decryptage-row-1">
+                    <div class="decryptage-controls-new">
+                        <div class="subject-action-row">
                             <div class="subject-container">
                                 <div class="form-group">
                                     <label for="subject">Sujet à décrypter</label>
-                                    <div class="subject-input-container">
-                                        <textarea id="subject" placeholder="Ex: Le fonctionnement de la mémoire humaine"></textarea>
-                                        <button type="button" class="random-subject-btn" id="randomSubjectBtn">
-                                            <i data-lucide="sparkles" aria-hidden="true"></i>
-                                            Générer un sujet aléatoire
-                                            <i data-lucide="dice-6" aria-hidden="true"></i>
-                                        </button>
+                                    <textarea id="subject" placeholder="Ex: La théorie de la dérive des continents" rows="4"></textarea>
+                                    <button type="button" class="random-subject-btn" id="randomSubjectBtn">
+                                        <i data-lucide="sparkles" aria-hidden="true"></i>
+                                        Générer un sujet aléatoire
+                                        <i data-lucide="dice-6" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="action-buttons-vertical">
+                                <button class="generate-btn" id="generateBtn">
+                                    <i data-lucide="zap" aria-hidden="true"></i>
+                                    Décrypter le sujet
+                                </button>
+                                <button class="generate-quiz-btn" id="generateQuiz" disabled>
+                                    <i data-lucide="help-circle" aria-hidden="true"></i>
+                                    Quiz du cours
+                                </button>
+                            </div>
+                        </div>
+                        <div class="intensity-row">
+                            <div class="selector-group">
+                                <div class="selector-title">🎚️ Intensité Pédagogique</div>
+                                <div class="intensity-slider-container">
+                                    <div class="slider-wrapper">
+                                        <input type="range"
+                                               id="intensitySlider"
+                                               min="1"
+                                               max="3"
+                                               value="2"
+                                               class="intensity-slider">
+                                        <div class="slider-track">
+                                            <div class="slider-fill" id="intensityTrack"></div>
+                                        </div>
+                                    </div>
+                                    <div class="slider-labels">
+                                        <span class="slider-label left">⚡ Rapide & Simple</span>
+                                        <span class="slider-label center">⚖️ Équilibré</span>
+                                        <span class="slider-label right">🎓 Approfondi & Expert</span>
+                                    </div>
+                                    <div class="intensity-description" id="intensityDescription">
+                                        <strong>Équilibré :</strong> Cours complet avec bon équilibre accessibilité/profondeur
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="advancedSettings" class="advanced-settings">
-                            <div class="decryptage-row-2">
-                                <div class="intensity-container">
-                                    <div class="selector-group">
-                                        <div class="selector-title">🎓 Intensité Pédagogique</div>
-                                        <div class="intensity-slider-container">
-                                            <div class="slider-wrapper">
-                                                <input type="range"
-                                                       id="intensitySlider"
-                                                       min="1"
-                                                       max="3"
-                                                       value="2"
-                                                       class="intensity-slider">
-                                                <div class="slider-track">
-                                                    <div class="slider-fill" id="intensityTrack"></div>
-                                                </div>
-                                            </div>
-                                            <div class="slider-labels">
-                                                <span class="slider-label left">⚡ Rapide & Simple</span>
-                                                <span class="slider-label center">⚖️ Équilibré</span>
-                                                <span class="slider-label right">🎓 Approfondi & Expert</span>
-                                            </div>
-                                            <div class="intensity-description" id="intensityDescription">
-                                                <strong>Équilibré :</strong> Cours complet avec bon équilibre accessibilité/profondeur
-                                            </div>
+                        <div class="teacher-row">
+                            <div class="selector-group">
+                                <div class="selector-title">👨‍🏫 Type de prof</div>
+                                <div class="teacher-cards-grid">
+                                    <div class="teacher-card active" data-type="teacher_type" data-value="spark">
+                                        <div class="teacher-icon">🔥</div>
+                                        <div class="teacher-info">
+                                            <h3 class="teacher-name">Pour vibrer</h3>
+                                            <p class="teacher-subtitle">Cours dynamiques et passionnants qui réveillent votre curiosité</p>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="teacher-container">
-                                    <div class="selector-group">
-                                        <div class="selector-title">👨‍🏫 Type de prof</div>
-                                        <div class="teacher-cards-grid">
-                                            <div class="teacher-card active" data-type="teacher_type" data-value="spark">
-                                                <div class="teacher-icon">🔥</div>
-                                                <div class="teacher-info">
-                                                    <h3 class="teacher-name">Pour vibrer</h3>
-                                                    <p class="teacher-subtitle">Cours dynamiques et passionnants qui réveillent votre curiosité</p>
-                                                </div>
-                                            </div>
 
-                                            <div class="teacher-card" data-type="teacher_type" data-value="builder">
-                                                <div class="teacher-icon">🏗️</div>
-                                                <div class="teacher-info">
-                                                    <h3 class="teacher-name">Pour comprendre</h3>
-                                                    <p class="teacher-subtitle">Explications progressives et claires qui construisent votre savoir solide</p>
-                                                </div>
-                                            </div>
+                                    <div class="teacher-card" data-type="teacher_type" data-value="builder">
+                                        <div class="teacher-icon">🏗️</div>
+                                        <div class="teacher-info">
+                                            <h3 class="teacher-name">Pour comprendre</h3>
+                                            <p class="teacher-subtitle">Explications progressives et claires qui construisent votre savoir solide</p>
+                                        </div>
+                                    </div>
 
-                                            <div class="teacher-card" data-type="teacher_type" data-value="storyteller">
-                                                <div class="teacher-icon">🧙‍♂️</div>
-                                                <div class="teacher-info">
-                                                    <h3 class="teacher-name">Pour imaginer</h3>
-                                                    <p class="teacher-subtitle">Apprentissage créatif avec des histoires et métaphores qui marquent</p>
-                                                </div>
-                                            </div>
+                                    <div class="teacher-card" data-type="teacher_type" data-value="storyteller">
+                                        <div class="teacher-icon">🧙‍♂️</div>
+                                        <div class="teacher-info">
+                                            <h3 class="teacher-name">Pour imaginer</h3>
+                                            <p class="teacher-subtitle">Apprentissage créatif avec des histoires et métaphores qui marquent</p>
+                                        </div>
+                                    </div>
 
-                                            <div class="teacher-card" data-type="teacher_type" data-value="lightning">
-                                                <div class="teacher-icon">⚡</div>
-                                                <div class="teacher-info">
-                                                    <h3 class="teacher-name">Pour retenir</h3>
-                                                    <p class="teacher-subtitle">Synthèses percutantes qui vont à l'essentiel de manière mémorable</p>
-                                                </div>
-                                            </div>
+                                    <div class="teacher-card" data-type="teacher_type" data-value="lightning">
+                                        <div class="teacher-icon">⚡</div>
+                                        <div class="teacher-info">
+                                            <h3 class="teacher-name">Pour retenir</h3>
+                                            <p class="teacher-subtitle">Synthèses percutantes qui vont à l'essentiel de manière mémorable</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="generate-btn" id="generateBtn">
-                            <i data-lucide="sparkles" aria-hidden="true"></i>
-                            Décrypter le sujet
-                        </button>
-                        <button class="generate-quiz-btn" id="generateQuiz" disabled>
-                            <i data-lucide="help-circle" aria-hidden="true"></i>
-                            Quiz du cours
-                        </button>
                     </div>
                 </div>
                 <div class="course-content" id="courseContent" style="display: none;">
