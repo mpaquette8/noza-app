@@ -157,32 +157,123 @@ body::before {
    3. Configuration Cards
    ========================================================================== */
 
-.decryptage-controls {
-    width: 100%;
-    margin: 20px 0;
+/* New decryptage layout */
+.decryptage-controls-new {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-.decryptage-row-1 {
-    width: 70%;
+    gap: 25px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.subject-container {
-    width: 100%;
-}
-
-.decryptage-row-2 {
+.subject-action-row {
     display: flex;
-    width: 100%;
     gap: 20px;
+    align-items: flex-start;
 }
 
-.intensity-container,
-.teacher-container {
+.subject-container {
     flex: 1;
+    min-width: 0;
+}
+
+.action-buttons-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+    width: 180px;
+}
+
+.action-buttons-vertical .generate-btn,
+.action-buttons-vertical .generate-quiz-btn {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 50px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.action-buttons-vertical .generate-btn {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.action-buttons-vertical .generate-btn:hover {
+    background: linear-gradient(135deg, #3182ce, #2c5282);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+}
+
+.action-buttons-vertical .generate-quiz-btn {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.action-buttons-vertical .generate-quiz-btn:hover {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+}
+
+.action-buttons-vertical .generate-btn:disabled,
+.action-buttons-vertical .generate-quiz-btn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.7;
+}
+
+.intensity-row,
+.teacher-row {
+    width: 100%;
+}
+
+.intensity-row .selector-group,
+.teacher-row .selector-group {
+    width: 100%;
+}
+
+
+@media (max-width: 768px) {
+    .subject-action-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .action-buttons-vertical {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .action-buttons-vertical .generate-btn,
+    .action-buttons-vertical .generate-quiz-btn {
+        flex: 1;
+        min-height: 45px;
+        font-size: 0.9rem;
+        padding: 12px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .action-buttons-vertical {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
 
 .config-card {
@@ -274,10 +365,6 @@ body::before {
     display: none;
 }
 
-.advanced-settings {
-    margin-top: 15px;
-}
-
 
 /* --- Form Groups & Inputs --- */
 .form-group {
@@ -323,6 +410,11 @@ body::before {
     min-height: 110px;
     resize: vertical;
     line-height: 1.5;
+}
+
+.subject-container textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 /* --- Subject Input with Random Button (Version 3 - NOUVEAU) --- */
@@ -416,20 +508,6 @@ body::before {
     border-color: #3182ce;
 }
 
-@media (max-width: 768px) {
-    .decryptage-row-1 {
-        width: 100%;
-    }
-
-    .decryptage-row-2 {
-        flex-direction: column;
-    }
-
-    .intensity-container,
-    .teacher-container {
-        width: 100%;
-    }
-}
 
 /* Grille des cartes professeurs */
 .teacher-cards-grid {
@@ -690,13 +768,6 @@ body::before {
     font-weight: 500;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 15px;
-    align-items: stretch;
-}
-
-/* --- Main Generate Button - Style CTA Attractif --- */
 .generate-btn {
     flex: 1;
     width: auto;
@@ -748,78 +819,6 @@ body::before {
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
-}
-
-/* === CORRECTION ALIGNEMENT BOUTONS CÔTE À CÔTE === */
-.action-buttons .generate-btn,
-.action-buttons .generate-quiz-btn {
-    flex: 1;
-    width: auto;
-    padding: 18px 24px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    min-height: 60px;
-    box-sizing: border-box;
-    margin: 0;
-}
-
-/* Bouton "Décrypter le sujet" */
-.action-buttons .generate-btn {
-    background: linear-gradient(135deg, #4299e1, #3182ce, #2c5282);
-    color: white;
-    box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
-}
-
-.action-buttons .generate-btn:hover {
-    background: linear-gradient(135deg, #3182ce, #2c5282, #2a4365);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(66, 153, 225, 0.6);
-}
-
-/* Bouton "Quiz du cours" */
-.action-buttons .generate-quiz-btn {
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    color: white;
-    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
-}
-
-.action-buttons .generate-quiz-btn:hover {
-    background: linear-gradient(135deg, #68d391, #48bb78);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(72, 187, 120, 0.6);
-}
-
-/* États désactivés avec hauteur conservée */
-.action-buttons .generate-btn:disabled,
-.action-buttons .generate-quiz-btn:disabled {
-    background: linear-gradient(135deg, #a0aec0, #718096);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-    opacity: 0.6;
-}
-
-/* Responsive - Conservation hauteur sur mobile */
-@media (max-width: 768px) {
-    .action-buttons {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .action-buttons .generate-btn,
-    .action-buttons .generate-quiz-btn {
-        min-height: 55px;
-        font-size: 1rem;
-        padding: 16px 20px;
-    }
 }
 
 /* ==========================================================================
