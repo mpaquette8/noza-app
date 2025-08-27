@@ -36,7 +36,7 @@
             <div class="tab-content" id="courseTab">
                 <div class="config-card primary-card">
                     <div class="decryptage-controls-new">
-                        <div class="subject-action-row">
+                        <div class="subject-action-row-new">
                             <div class="subject-container">
                                 <div class="form-group">
                                     <label for="subject">Sujet à décrypter</label>
@@ -48,16 +48,22 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="action-buttons-vertical">
-                                <button class="generate-btn" id="generateBtn">
-                                    <i data-lucide="zap" aria-hidden="true"></i>
-                                    Décrypter le sujet
-                                </button>
-                                <button class="generate-quiz-btn" id="generateQuiz" disabled>
-                                    <i data-lucide="help-circle" aria-hidden="true"></i>
-                                    Quiz du cours
-                                </button>
-                            </div>
+                        </div>
+
+                        <!-- NOUVEAUX BOUTONS HORIZONTAUX -->
+                        <div class="action-buttons-horizontal">
+                            <button class="action-btn primary-action" id="generateBtn">
+                                <i data-lucide="zap" aria-hidden="true"></i>
+                                Décrypter le sujet
+                            </button>
+                            <button class="action-btn secondary-action" id="generateQuiz" disabled>
+                                <i data-lucide="help-circle" aria-hidden="true"></i>
+                                Quiz
+                            </button>
+                            <button class="action-btn tertiary-action" id="randomSubjectBtnNew">
+                                <i data-lucide="shuffle" aria-hidden="true"></i>
+                                Sujet aléatoire
+                            </button>
                         </div>
                         <div class="intensity-row">
                             <div class="selector-group">
