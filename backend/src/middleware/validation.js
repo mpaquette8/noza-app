@@ -54,7 +54,7 @@ const courseValidation = [
     .withMessage("Niveau d'intensité invalide"),
   body('teacher_type')
     .optional()
-    .isIn(['spark', 'builder', 'storyteller', 'lightning'])
+    .isIn(['calculator', 'experimenter', 'memorizer', 'spark', 'builder', 'storyteller', 'lightning'])
     .withMessage("Type d'enseignant invalide"),
   body('vulgarization')
     .optional()
@@ -68,7 +68,7 @@ const courseValidation = [
   // Alias de compatibilité
   body('teacherType')
     .optional()
-    .isIn(['spark', 'builder', 'storyteller', 'lightning'])
+    .isIn(['calculator', 'experimenter', 'memorizer', 'spark', 'builder', 'storyteller', 'lightning'])
     .withMessage("Type d'enseignant invalide"),
   body('vulgarizationLevel')
     .optional()

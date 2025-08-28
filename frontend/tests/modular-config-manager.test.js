@@ -34,9 +34,9 @@ test('preset selection updates advanced controls', async () => {
   const vulgarizationExpert = createElement({ dataset: { type: 'vulgarization', value: 'expert' } });
   const durationShort = createElement({ dataset: { type: 'duration', value: 'short' } });
   const durationLong = createElement({ dataset: { type: 'duration', value: 'long' } });
-  const teacherBuilder = createElement({ dataset: { type: 'teacher_type', value: 'builder' } });
-  const teacherLightning = createElement({ dataset: { type: 'teacher_type', value: 'lightning' } });
-  const allButtons = [vulgarizationGeneral, vulgarizationExpert, durationShort, durationLong, teacherBuilder, teacherLightning];
+  const teacherCalculator = createElement({ dataset: { type: 'teacher_type', value: 'calculator' } });
+  const teacherMemorizer = createElement({ dataset: { type: 'teacher_type', value: 'memorizer' } });
+  const allButtons = [vulgarizationGeneral, vulgarizationExpert, durationShort, durationLong, teacherCalculator, teacherMemorizer];
 
   global.document = {
     querySelectorAll(selector) {
@@ -51,7 +51,7 @@ test('preset selection updates advanced controls', async () => {
       const sel = selector.replace(/^\.decryptage-controls\s*/, '');
       if (sel === '[data-type="vulgarization"][data-value="expert"]') return vulgarizationExpert;
       if (sel === '[data-type="duration"][data-value="long"]') return durationLong;
-      if (sel === '[data-type="teacher_type"][data-value="lightning"]') return teacherLightning;
+      if (sel === '[data-type="teacher_type"][data-value="memorizer"]') return teacherMemorizer;
       return null;
     },
     getElementById() { return null; },
@@ -72,12 +72,12 @@ test('preset selection updates advanced controls', async () => {
   const cfg = manager.getConfig();
   assert.strictEqual(cfg.vulgarization, 'expert');
   assert.strictEqual(cfg.duration, 'long');
-  assert.strictEqual(cfg.teacher_type, 'lightning');
+  assert.strictEqual(cfg.teacher_type, 'memorizer');
   assert.ok(vulgarizationExpert.classList.contains('active'));
   assert.ok(durationLong.classList.contains('active'));
-  assert.ok(teacherLightning.classList.contains('active'));
+  assert.ok(teacherMemorizer.classList.contains('active'));
   assert.strictEqual(VULGARIZATION_LABELS[cfg.vulgarization], 'Expert');
-  assert.strictEqual(TEACHER_TYPE_LABELS[cfg.teacher_type], '⚡ Prof Flash');
+  assert.strictEqual(TEACHER_TYPE_LABELS[cfg.teacher_type], '📖 Pour mémoriser');
 });
 
 test('quiz button reflects quiz availability', async () => {
