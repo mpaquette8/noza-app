@@ -155,6 +155,62 @@ app.get('/', (_, res) =>
 // Routes API
 app.use('/api', apiRoutes);
 
+// Nouvelle route pour la visualisation
+app.post('/api/visualize', async (req, res) => {
+  try {
+    const { content, courseId } = req.body;
+
+    if (!content) {
+      return res.status(400).json({
+        success: false,
+        error: "Contenu requis pour l'analyse"
+      });
+    }
+
+    const { VisualizationService } = require('./services/visualizationService');
+    const visualizations = VisualizationService.analyzeContentForVisualizations(content);
+
+    const enrichedVisualizations = visualizations.map(viz => ({
+      ...viz,
+      data: VisualizationService.extractDataForVisualization(content, viz.type),
+      id: `viz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    }));
+
+    res.json({
+      success: true,
+      visualizations: enrichedVisualizations,
+      totalDetected: visualizations.length
+    });
+  } catch (error) {
+    logger.error('Erreur génération visualisations:', error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur lors de l'analyse pour visualisations"
+    });
+  }
+});
+
+// Nouvelle route pour les analytics de visualisation
+app.post('/api/analytics/visualization', (req, res) => {
+  try {
+    const { eventType, visualizationType, courseId, metadata } = req.body;
+
+    const { AnalyticsService } = require('./services/analyticsService');
+    AnalyticsService.logVisualizationEvent(eventType, {
+      visualizationType,
+      courseId,
+      metadata,
+      userAgent: req.headers['user-agent'],
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erreur analytics:', error);
+    res.status(500).json({ success: false, error: 'Erreur analytics' });
+  }
+});
+
 // Client-side logs endpoint
 app.post('/api/logs', (req, res) => {
   try {

@@ -186,6 +186,16 @@ PROFIL PÉDAGOGIQUE :
 
 STRUCTURE OBLIGATOIRE :
 
+INSTRUCTIONS SPÉCIALES POUR VISUALISATIONS :
+- Si ton cours contient des équations mathématiques, utilise la notation LaTeX claire
+- Pour les données chronologiques, mentionne explicitement les dates importantes
+- Pour les comparaisons, utilise des données numériques concrètes quand possible
+- Pour les processus, structure clairement chaque étape
+- Pour les statistiques, inclus des pourcentages et données quantitatives
+- Pour la géométrie, décris les formes et dimensions avec précision
+
+Le système détectera automatiquement ces éléments pour proposer des visualisations interactives.
+
 # [Titre accrocheur du cours]
 
 ## 🎯 Introduction

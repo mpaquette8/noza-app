@@ -42,16 +42,20 @@
                         </div>
 
                         <!-- NOUVEAUX BOUTONS HORIZONTAUX -->
-                        <div class="action-buttons-horizontal">
-                            <button class="action-btn primary-action" id="generateBtn">
-                                <i data-lucide="zap" aria-hidden="true"></i>
-                                Décrypter le sujet
-                            </button>
-                            <button class="action-btn secondary-action" id="generateQuiz" disabled>
-                                <i data-lucide="help-circle" aria-hidden="true"></i>
-                                Quiz
-                            </button>
-                            <button class="action-btn tertiary-action" id="randomSubjectBtn">
+                            <div class="action-buttons-horizontal">
+                                <button class="action-btn primary-action" id="generateBtn">
+                                    <i data-lucide="zap" aria-hidden="true"></i>
+                                    Décrypter le sujet
+                                </button>
+                                <button class="action-btn secondary-action" id="generateVisualsBtn" disabled>
+                                    <i data-lucide="bar-chart-3" aria-hidden="true"></i>
+                                    <span>🎨 Générer les visuels</span>
+                                </button>
+                                <button class="action-btn secondary-action" id="generateQuiz" disabled>
+                                    <i data-lucide="help-circle" aria-hidden="true"></i>
+                                    Quiz
+                                </button>
+                                <button class="action-btn tertiary-action" id="randomSubjectBtn">
                                 <i data-lucide="sparkles" aria-hidden="true"></i>
                                 Générer un sujet aléatoire
                                 <i data-lucide="dice-6" aria-hidden="true"></i>
@@ -206,6 +210,7 @@
     <script type="module" src="assets/js/utils/utils.js"></script>
     <script src="assets/js/googleAuth.js"></script>
     <script type="module" src="assets/js/auth.js"></script>
+    <script type="module" src="assets/js/visualization-engine.js"></script>
     <script type="module" src="assets/js/course-manager.js"></script>
     <script type="module" src="assets/js/main.js"></script>
 </body>

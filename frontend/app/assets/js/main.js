@@ -42,12 +42,31 @@ function setupEventListeners() {
     const generateQuiz = document.getElementById('generateQuiz');
     const copyContent = document.getElementById('copyContent');
     const randomQuizSubjectBtn = document.getElementById('randomQuizSubjectBtn');
+    const generateVisualsBtn = document.getElementById('generateVisualsBtn');
 
     if (generateBtn) generateBtn.addEventListener('click', handleGenerateCourse);
     if (generateQuiz) generateQuiz.addEventListener('click', handleGenerateQuiz);
     if (copyContent) copyContent.addEventListener('click', () => courseManager && courseManager.copyContent());
     document.getElementById('randomSubjectBtn')?.addEventListener('click', generateRandomSubject);
     if (randomQuizSubjectBtn) randomQuizSubjectBtn.addEventListener('click', generateRandomQuizSubject);
+    if (generateVisualsBtn) {
+        generateVisualsBtn.addEventListener('click', async () => {
+            if (courseManager.currentCourse) {
+                try {
+                    utils.showLoading(['generateVisualsBtn']);
+                    await courseManager.detectAndSuggestVisualizations(courseManager.currentCourse);
+                    utils.showNotification('Visualisations générées avec succès !', 'success');
+                } catch (error) {
+                    console.error('Erreur génération visualisations:', error);
+                    utils.showNotification('Erreur lors de la génération des visualisations', 'error');
+                } finally {
+                    utils.hideLoading(['generateVisualsBtn']);
+                }
+            } else {
+                utils.showNotification('Générez d\'abord un cours pour créer des visualisations', 'warning');
+            }
+        });
+    }
     const generateOnDemandQuiz = document.getElementById('generateOnDemandQuiz');
     if (generateOnDemandQuiz) {
         generateOnDemandQuiz.addEventListener('click', handleGenerateOnDemandQuiz);
@@ -86,6 +105,12 @@ async function handleGenerateCourse() {
                 displayCourseMetadata(vulgarizationLabel, durationLabel, teacherTypeLabel);
                 if (typeof configManager !== 'undefined') {
                     configManager.enableQuizCard();
+                }
+
+                const generateVisualsBtn = document.getElementById('generateVisualsBtn');
+                if (generateVisualsBtn) {
+                    generateVisualsBtn.disabled = false;
+                    generateVisualsBtn.classList.add('btn-enabled');
                 }
 
                 if (typeof gtag === 'function') {

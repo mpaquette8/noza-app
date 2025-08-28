@@ -271,17 +271,109 @@ class CourseManager {
     const htmlContent = this.convertMarkdownToHTML(sanitizedContent);
     
     document.getElementById('generatedCourse').innerHTML = htmlContent;
-    
+
+    // NOUVEAU : Détecter automatiquement les visualisations possibles
+    this.detectAndSuggestVisualizations(course);
+
     // Réinitialiser le chat
     const chatMessages = document.getElementById('chatMessages');
     chatMessages.innerHTML = '';
     chatMessages.style.display = 'none';
-    
+
     // Masquer le quiz s'il était affiché
     document.getElementById('quizSection').style.display = 'none';
     document.getElementById('quizSection').innerHTML = '';
-    
+
     utils.initializeLucide();
+  }
+
+  // Nouvelle méthode pour détecter et suggérer des visualisations
+  async detectAndSuggestVisualizations(course) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/visualize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authManager.getAuthHeaders()
+        },
+        body: JSON.stringify({
+          content: course.content,
+          courseId: course.id
+        })
+      });
+
+      const data = await response.json();
+      if (data.success && data.visualizations.length > 0) {
+        this.showVisualizationSuggestions(data.visualizations);
+      }
+    } catch (error) {
+      console.error('Erreur détection visualisations:', error);
+    }
+  }
+
+  // Afficher les suggestions de visualisation
+  showVisualizationSuggestions(visualizations) {
+    const courseContainer = document.getElementById('generatedCourse');
+    const suggestionBadge = document.createElement('div');
+    suggestionBadge.className = 'visualization-suggestion';
+    suggestionBadge.innerHTML = `
+      <div class="suggestion-content">
+        <span class="suggestion-icon">📊</span>
+        <span class="suggestion-text">${visualizations.length} visualisation(s) disponible(s)</span>
+        <button class="suggestion-btn" id="generateVisualizationsBtn">
+          🎨 Générer les visuels
+        </button>
+      </div>
+    `;
+
+    const existingBadges = courseContainer.querySelector('.message-badges');
+    if (existingBadges) {
+      existingBadges.after(suggestionBadge);
+    } else {
+      courseContainer.prepend(suggestionBadge);
+    }
+
+    document
+      .getElementById('generateVisualizationsBtn')
+      .addEventListener('click', () => {
+        this.generateVisualizations(visualizations);
+        suggestionBadge.remove();
+      });
+  }
+
+  // Générer et afficher les visualisations
+  generateVisualizations(visualizations) {
+    const courseContainer = document.getElementById('generatedCourse');
+    const vizSection = document.createElement('div');
+    vizSection.className = 'visualizations-section';
+    vizSection.innerHTML = `
+      <div class="viz-section-header">
+        <h3>📊 Visualisations Interactives</h3>
+        <p>Graphiques générés automatiquement à partir du contenu</p>
+      </div>
+      <div class="viz-grid" id="vizGrid">
+        ${visualizations
+          .map(
+            viz => `
+          <div class="viz-item" id="vizContainer_${viz.id}">
+            <div class="viz-loading">
+              <div class="loading-spinner"></div>
+              <p>Génération de ${viz.preview}...</p>
+            </div>
+          </div>`
+          )
+          .join('')}
+      </div>
+    `;
+
+    courseContainer.appendChild(vizSection);
+
+    visualizations.forEach((viz, index) => {
+      setTimeout(() => {
+        const containerId = `vizContainer_${viz.id}`;
+        visualizationEngine.createVisualization(viz, containerId);
+      }, index * 500);
+    });
   }
 
   // Fonction de post-traitement pour améliorer le formatage
