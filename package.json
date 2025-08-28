@@ -5,9 +5,14 @@
   "scripts": {
     "build": "npm install --prefix backend",
     "start": "npm start --prefix backend",
-    "test": "node --test frontend/tests/*.js backend/tests/**/*.js"
+    "test": "node --test frontend/tests/*.js backend/tests/**/*.js",
+    "test:frontend": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "cypress": "^13.3.0"
   }
 }
