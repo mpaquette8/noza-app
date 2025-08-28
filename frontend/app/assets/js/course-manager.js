@@ -301,10 +301,66 @@ class CourseManager {
       // Transformer les listes mal formatées
       .replace(/^\s*[•\-\*]\s+(.+)/gm, '- $1')
       .replace(/^\s*\d+\.\s+(.+)/gm, '1. $1')
-      
-      // Nettoyer les tableaux mal formatés
-      .replace(/\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g, '| $1 | $2 |')
-      
+
+      // === NETTOYAGE AVANCÉ DES TABLEAUX MALFORMÉS ===
+      .replace(/(\*\s*)?\|\s*([^|]+(?:\|\s*[^|]+)*)\s*\|\s*(\|\s*[-:\s|]+\s*\|)?\s*((?:\|\s*[^|]+)*)/g, function(match, bullet, content) {
+        // Détecter si c'est un tableau condensé sur une ligne
+        if (content.includes('|') && content.split('|').length >= 4) {
+          const parts = content.split('|').map(p => p.trim()).filter(p => p.length > 0);
+
+          // Détecter les séparateurs (lignes avec des tirets)
+          let headerIndex = -1;
+          let separatorIndex = -1;
+
+          for (let i = 0; i < parts.length; i++) {
+            if (parts[i].match(/^[-:\s]+$/)) {
+              separatorIndex = i;
+              headerIndex = i - 3; // Les 3 éléments précédents sont l'en-tête
+              break;
+            }
+          }
+
+          // Si on trouve une structure cohérente, reformater
+          if (headerIndex >= 0 && separatorIndex > headerIndex) {
+            const headers = parts.slice(headerIndex, separatorIndex);
+            const remainingParts = parts.slice(separatorIndex + 1);
+
+            // Construire l'en-tête
+            let result = '\n| ' + headers.join(' | ') + ' |\n';
+
+            // Ajouter la ligne séparatrice
+            result += '|' + headers.map(() => '-------').join('|') + '|\n';
+
+            // Ajouter les lignes de données (groupées par nombre de colonnes)
+            const colCount = headers.length;
+            for (let i = 0; i < remainingParts.length; i += colCount) {
+              const row = remainingParts.slice(i, i + colCount);
+              if (row.length === colCount) {
+                result += '| ' + row.join(' | ') + ' |\n';
+              }
+            }
+
+            return result;
+          }
+        }
+
+        // Fallback : nettoyage simple pour autres cas
+        return match.replace(/\|\s*([^|]+)\s*\|/g, '| $1 |');
+      })
+
+      // Nettoyage supplémentaire pour tableaux markdown standards malformés  
+      .replace(/\n\s*\|\s*([^|\n]+(?:\s*\|\s*[^|\n]+)*)\s*\|\s*\n/g, function(match, row) {
+        const cells = row.split('|').map(cell => cell.trim());
+        return '\n| ' + cells.join(' | ') + ' |\n';
+      })
+
+      // Assurer la cohérence des lignes de séparation
+      .replace(/\n\s*\|\s*([-:\s|]+)\s*\|\s*\n/g, function(match, separator) {
+        const parts = separator.split('|').map(p => p.trim());
+        const cleanSeps = parts.map(p => p.match(/[-:\s]/) ? '-------' : p);
+        return '\n|' + cleanSeps.join('|') + '|\n';
+      })
+
       // Ajouter des espaces entre les sections
       .replace(/\n([#]{1,3}\s)/g, '\n\n$1')
       .replace(/([.!?])\n([A-Z])/g, '$1\n\n$2')
