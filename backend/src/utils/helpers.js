@@ -73,16 +73,20 @@ const mapLegacyParams = ({
   };
 
   const legacyTeacherMap = {
-    methodical: TEACHER_TYPES.BUILDER,
-    pragmatic: TEACHER_TYPES.BUILDER,
-    analogist: TEACHER_TYPES.STORYTELLER,
-    benevolent: TEACHER_TYPES.STORYTELLER,
-    passionate: TEACHER_TYPES.SPARK,
-    synthetic: TEACHER_TYPES.LIGHTNING
+    spark: TEACHER_TYPES.EXPERIMENTER,
+    builder: TEACHER_TYPES.CALCULATOR,
+    storyteller: TEACHER_TYPES.MEMORIZER,
+    lightning: TEACHER_TYPES.MEMORIZER,
+    methodical: TEACHER_TYPES.CALCULATOR,
+    pragmatic: TEACHER_TYPES.CALCULATOR,
+    analogist: TEACHER_TYPES.MEMORIZER,
+    benevolent: TEACHER_TYPES.MEMORIZER,
+    passionate: TEACHER_TYPES.EXPERIMENTER,
+    synthetic: TEACHER_TYPES.MEMORIZER
   };
 
   const normalizedTeacherType = legacyTeacherMap[teacherType] || teacherType;
-  const finalTeacherType = normalizedTeacherType || TEACHER_TYPES.BUILDER;
+  const finalTeacherType = normalizedTeacherType || TEACHER_TYPES.CALCULATOR;
   const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
   const finalVulgarization =
     vulgarization || vulgarizationMap[vulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;

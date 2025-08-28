@@ -453,11 +453,14 @@ body::before {
 
 
 /* Grille des cartes professeurs */
+
+/* Grille des cartes professeurs */
 .teacher-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-top: 12px;
+    max-width: 900px; /* Limite la largeur totale */
 }
 
 /* Carte individuelle de professeur */
@@ -515,6 +518,7 @@ body::before {
 }
 
 /* Responsive */
+/* Responsive pour mobile : 1 colonne */
 @media (max-width: 768px) {
     .teacher-cards-grid {
         grid-template-columns: 1fr;
@@ -538,11 +542,10 @@ body::before {
     }
 }
 
-/* Pour écrans très larges, limiter à 2 colonnes */
-@media (min-width: 1200px) {
+/* Responsive pour tablette : 2 colonnes */
+@media (max-width: 1024px) and (min-width: 769px) {
     .teacher-cards-grid {
         grid-template-columns: repeat(2, 1fr);
-        max-width: 800px;
     }
 }
 

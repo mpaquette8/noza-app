@@ -33,7 +33,7 @@ test('course generation triggered from decryptage controls', async () => {
   subjectInput.value = 'Quantum Mechanics';
 
   const generateBtn = createElement();
-  const teacherBtn = createElement({ dataset: { type: 'teacher_type', value: 'lightning' }, className: 'active' });
+  const teacherBtn = createElement({ dataset: { type: 'teacher_type', value: 'memorizer' }, className: 'active' });
 
   global.document = {
     getElementById(id) {
@@ -56,7 +56,7 @@ test('course generation triggered from decryptage controls', async () => {
   const { VULGARIZATION_LABELS, TEACHER_TYPE_LABELS } = await import('../app/assets/js/course-manager.js');
 
   function collectFormParameters() {
-    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'builder';
+    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'calculator';
     const intensity = window.currentIntensity || { level: 2, vulgarization: 'enlightened', duration: 'medium' };
     return {
       teacher_type: teacherType,
@@ -90,9 +90,9 @@ test('course generation triggered from decryptage controls', async () => {
     subject: 'Quantum Mechanics',
     vulgarization: 'expert',
     duration: 'long',
-    teacher_type: 'lightning',
+    teacher_type: 'memorizer',
     intensity: 'deep_expert'
   });
   assert.strictEqual(VULGARIZATION_LABELS[calledWith.vulgarization], 'Expert');
-  assert.strictEqual(TEACHER_TYPE_LABELS[calledWith.teacher_type], '⚡ Prof Flash');
+  assert.strictEqual(TEACHER_TYPE_LABELS[calledWith.teacher_type], '📖 Pour mémoriser');
 });

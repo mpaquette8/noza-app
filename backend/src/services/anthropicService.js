@@ -27,29 +27,23 @@ const DURATION_TO_WORDS = {
 
 // Instructions détaillées selon le type de prof
 const TEACHER_STYLE_INSTRUCTIONS = {
-  [TEACHER_TYPES.SPARK]: {
-    approach: "Transmets l'information avec passion explosive et enthousiasme contagieux.",
-    structure: "Commence par captiver avec une anecdote épique, transforme chaque point en découverte fascinante.",
-    language: "Emploie un ton dynamique avec exclamations, vocabulaire vivant et métaphores enflammées.",
-    examples: "Raconte des histoires inspirantes, utilise des découvertes révolutionnaires comme exemples."
+  [TEACHER_TYPES.CALCULATOR]: {
+    approach: "Résoudre les mystères mathématiques étape par étape avec logique rigoureuse.",
+    structure: "Organise comme un calcul : données → méthode → résolution → vérification.",
+    language: "Utilise un vocabulaire mathématique précis : 'calculons', 'résolvons', 'démontrons'.",
+    examples: "Donne des exemples concrets avec chiffres, formules et calculs détaillés."
   },
-  [TEACHER_TYPES.BUILDER]: {
-    approach: "Décompose la connaissance étape par étape comme un guide de construction.",
-    structure: "Organise en phases claires : fondations → construction → assemblage final.",
-    language: "Utilise un vocabulaire de construction : 'construisons', 'assemblons', 'posons les bases'.",
-    examples: "Donne des analogies de construction, compare aux projets DIY, explique l'utilité pratique."
+  [TEACHER_TYPES.EXPERIMENTER]: {
+    approach: "Découvrir les secrets scientifiques par l'observation et l'expérimentation.",
+    structure: "Structure comme une expérience : hypothèse → protocole → résultats → conclusion.",
+    language: "Adopte un ton de chercheur : 'observons', 'testons', 'analysons', 'découvrons'.",
+    examples: "Utilise des expériences, des observations, des phénomènes scientifiques concrets."
   },
-  [TEACHER_TYPES.STORYTELLER]: {
-    approach: "Transforme chaque concept en conte merveilleux avec des analogies magiques.",
-    structure: "Structure comme un récit : situation initiale → transformation → résolution.",
-    language: "Adopte un ton bienveillant de conteur : 'Il était une fois...', 'Imagine un royaume où...'",
-    examples: "Utilise des métaphores fantastiques, des personnages, des univers imaginaires."
-  },
-  [TEACHER_TYPES.LIGHTNING]: {
-    approach: "Synthétise avec une efficacité redoutable, va à l'essentiel avec impact.",
-    structure: "Structure ultra-claire : points clés → schémas → synthèse percutante.",
-    language: "Style direct et percutant, phrases courtes et mémorables.",
-    examples: "Résumés en bullet points, comparaisons synthétiques, tableaux visuels."
+  [TEACHER_TYPES.MEMORIZER]: {
+    approach: "Graver durablement les connaissances essentielles avec techniques de mémorisation.",
+    structure: "Organise pour la rétention : points clés → répétition → synthèse → ancrage.",
+    language: "Style mnémotechnique et répétitif : 'retenons', 'mémorisons', 'fixons', 'ancrons'.",
+    examples: "Utilise des moyens mnémotechniques, acronymes, répétitions structurées."
   }
 };
 
@@ -153,7 +147,7 @@ class AnthropicService {
   getAdaptiveInstructions(teacherType, intensity = 'balanced') {
     const teacher =
       TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
-      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.BUILDER];
+      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.CALCULATOR];
     const intensityConfig =
       INTENSITY_INSTRUCTIONS[intensity] || INTENSITY_INSTRUCTIONS['balanced'];
 
@@ -259,7 +253,7 @@ Sujet à traiter : "${subject}"`;
       return this.getOfflineMessage();
     }
 
-    teacherType = teacherType || TEACHER_TYPES.BUILDER;
+    teacherType = teacherType || TEACHER_TYPES.CALCULATOR;
 
     try {
       const prompt = this.createPrompt(subject, intensity, teacherType);

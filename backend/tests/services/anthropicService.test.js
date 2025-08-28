@@ -24,7 +24,7 @@ test('createPrompt creates flexible educational content', () => {
   const prompt = anthropicService.createPrompt(
     'Sujet',
     INTENSITY_LEVELS.BALANCED,
-    TEACHER_TYPES.BUILDER
+    TEACHER_TYPES.CALCULATOR
   );
 
   assert.match(prompt, /PROFIL PÉDAGOGIQUE/);
@@ -35,7 +35,7 @@ test('createPrompt allows pedagogical freedom', () => {
   const prompt = anthropicService.createPrompt(
     'Sujet',
     INTENSITY_LEVELS.BALANCED,
-    TEACHER_TYPES.BUILDER
+    TEACHER_TYPES.CALCULATOR
   );
 
   assert.doesNotMatch(prompt, /STRUCTURE REQUISE/);
@@ -88,7 +88,7 @@ test('APIUserAbortError does not trigger offline mode', async () => {
   };
 
   try {
-    await anthropicService.generateCourse('Sujet', INTENSITY_LEVELS.RAPID_SIMPLE, TEACHER_TYPES.BUILDER);
+    await anthropicService.generateCourse('Sujet', INTENSITY_LEVELS.RAPID_SIMPLE, TEACHER_TYPES.CALCULATOR);
     assert.fail('generateCourse should throw');
   } catch (err) {
     assert.strictEqual(err.code, ERROR_CODES.IA_TIMEOUT);

@@ -18,19 +18,22 @@ export const DURATION_LABELS = {
 };
 
 export const TEACHER_TYPE_LABELS = {
-  spark: '🔥 Pour vibrer',
-  builder: '🏗️ Pour comprendre',
-  storyteller: '🧙‍♂️ Pour imaginer',
-  lightning: '⚡ Pour retenir'
+  calculator: '📐 Pour calculer',
+  experimenter: '🔬 Pour expérimenter',
+  memorizer: '📖 Pour mémoriser'
 };
 
 const LEGACY_TEACHER_TYPE_MAP = {
-  methodical: 'builder',
-  pragmatic: 'builder',
-  analogist: 'storyteller',
-  benevolent: 'storyteller',
-  passionate: 'spark',
-  synthetic: 'lightning'
+  spark: 'experimenter',
+  builder: 'calculator',
+  storyteller: 'memorizer',
+  lightning: 'memorizer',
+  methodical: 'calculator',
+  pragmatic: 'calculator',
+  analogist: 'memorizer',
+  benevolent: 'memorizer',
+  passionate: 'experimenter',
+  synthetic: 'memorizer'
 };
 
 export function getTeacherTypeLabel(type) {
