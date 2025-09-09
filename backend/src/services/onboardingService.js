@@ -14,9 +14,9 @@ const QUESTION_CONFIG = [
     label: "Quel type d'enseignant préfères-tu ?",
     type: 'select',
     options: [
-      { value: 'calculator', label: '📐 Pour calculer' },
-      { value: 'experimenter', label: '🔬 Pour expérimenter' },
-      { value: 'memorizer', label: '📖 Pour mémoriser' }
+      { value: 'direct', label: '💡 Direct' },
+      { value: 'structure', label: '🏗️ Structuré' },
+      { value: 'immersif', label: '🎭 Immersif' }
     ]
   },
   {

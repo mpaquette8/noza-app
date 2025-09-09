@@ -4,6 +4,7 @@ const {
   HTTP_STATUS,
   DURATIONS,
   TEACHER_TYPES,
+  DEFAULT_TEACHER_TYPE,
   VULGARIZATION_LEVELS,
   LEGACY_VULGARIZATION_LEVELS,
 } = require('./constants');
@@ -72,21 +73,7 @@ const mapLegacyParams = ({
     [LEGACY_VULGARIZATION_LEVELS.EXPERT]: VULGARIZATION_LEVELS.EXPERT,
   };
 
-  const legacyTeacherMap = {
-    spark: TEACHER_TYPES.EXPERIMENTER,
-    builder: TEACHER_TYPES.CALCULATOR,
-    storyteller: TEACHER_TYPES.MEMORIZER,
-    lightning: TEACHER_TYPES.MEMORIZER,
-    methodical: TEACHER_TYPES.CALCULATOR,
-    pragmatic: TEACHER_TYPES.CALCULATOR,
-    analogist: TEACHER_TYPES.MEMORIZER,
-    benevolent: TEACHER_TYPES.MEMORIZER,
-    passionate: TEACHER_TYPES.EXPERIMENTER,
-    synthetic: TEACHER_TYPES.MEMORIZER
-  };
-
-  const normalizedTeacherType = legacyTeacherMap[teacherType] || teacherType;
-  const finalTeacherType = normalizedTeacherType || TEACHER_TYPES.CALCULATOR;
+  const finalTeacherType = teacherType || DEFAULT_TEACHER_TYPE;
   const finalDuration = duration || durationMap[detailLevel] || DURATIONS.MEDIUM;
   const finalVulgarization =
     vulgarization || vulgarizationMap[vulgarizationLevel] || VULGARIZATION_LEVELS.ENLIGHTENED;
