@@ -39,15 +39,10 @@ test('applies default duration, vulgarization and teacherType when none provided
   assert.strictEqual(result.duration, DURATIONS.MEDIUM);
   assert.strictEqual(result.vulgarization, VULGARIZATION_LEVELS.ENLIGHTENED);
   assert.strictEqual(result.vulgarizationLevel, LEGACY_VULGARIZATION_LEVELS.ENLIGHTENED);
-  assert.strictEqual(result.teacherType, TEACHER_TYPES.CALCULATOR);
+  assert.strictEqual(result.teacherType, TEACHER_TYPES.DIRECT);
 });
 
 test('returns provided teacherType', () => {
-  const result = mapLegacyParams({ teacherType: TEACHER_TYPES.EXPERIMENTER });
-  assert.strictEqual(result.teacherType, TEACHER_TYPES.EXPERIMENTER);
-});
-
-test('maps legacy teacher types to new ones', () => {
-  const result = mapLegacyParams({ teacherType: 'pragmatic' });
-  assert.strictEqual(result.teacherType, TEACHER_TYPES.CALCULATOR);
+  const result = mapLegacyParams({ teacherType: TEACHER_TYPES.IMMERSIF });
+  assert.strictEqual(result.teacherType, TEACHER_TYPES.IMMERSIF);
 });

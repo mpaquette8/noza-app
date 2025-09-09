@@ -7,11 +7,11 @@ test('calculateProfileConfidence computes fraction of answered questions', () =>
   const emptyProfile = {};
   assert.strictEqual(service.calculateProfileConfidence(emptyProfile), 0);
 
-  const partialProfile = { teacherType: 'calculator', vulgarization: 'general_public' };
+  const partialProfile = { teacherType: 'direct', vulgarization: 'general_public' };
   assert.strictEqual(service.calculateProfileConfidence(partialProfile), 2 / 3);
 
   const fullProfile = {
-    teacherType: 'calculator',
+    teacherType: 'direct',
     vulgarization: 'general_public',
     duration: 'short',
     interests: ['science', 'history']
@@ -21,14 +21,14 @@ test('calculateProfileConfidence computes fraction of answered questions', () =>
 
 test('needsOnboarding returns true when profile is missing fields', () => {
   const service = new OnboardingService();
-  const incompleteProfile = { teacherType: 'calculator', interests: ['science'] };
+  const incompleteProfile = { teacherType: 'direct', interests: ['science'] };
   assert.strictEqual(service.needsOnboarding(incompleteProfile), true);
 });
 
 test('needsOnboarding returns false when profile is complete', () => {
   const service = new OnboardingService();
   const fullProfile = {
-    teacherType: 'calculator',
+    teacherType: 'direct',
     vulgarization: 'general_public',
     duration: 'short',
     interests: ['science']
@@ -64,7 +64,7 @@ test('saveAnswers rejects when mandatory fields are missing', async () => {
   };
   const service = new OnboardingService(prismaMock);
   await assert.rejects(
-    service.saveAnswers('u1', { teacherType: 'calculator' }),
+    service.saveAnswers('u1', { teacherType: 'direct' }),
     /Champs obligatoires manquants/
   );
 });
@@ -94,7 +94,7 @@ test('saveAnswers stores optional fields including arrays', async () => {
 
   const service = new OnboardingService(prismaMock);
   const profile = await service.saveAnswers('u1', {
-    teacherType: 'calculator',
+    teacherType: 'direct',
     vulgarization: 'general_public',
     duration: 'short',
     interests: ['science', 'history'],

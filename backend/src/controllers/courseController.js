@@ -1,7 +1,7 @@
 // backend/src/controllers/courseController.js
 const { prisma } = require('../config/database');
 const { createResponse, validateCourseParams, sanitizeInput, logger, mapLegacyParams } = require('../utils/helpers');
-const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES, INTENSITY_LEVELS, INTENSITY_TO_CONFIG } = require('../utils/constants');
+const { HTTP_STATUS, ERROR_MESSAGES, LIMITS, ERROR_CODES, INTENSITY_LEVELS, INTENSITY_TO_CONFIG, DEFAULT_TEACHER_TYPE } = require('../utils/constants');
 const anthropicService = require('../services/anthropicService');
 const crypto = require('crypto');
 
@@ -99,12 +99,12 @@ class CourseController {
           subject,
           detailLevel,
           vulgarizationLevel,
-          teacherType,
-          teacher_type,
           duration,
           vulgarization,
           intensity
         } = req.body;
+        const rawTeacherType = req.body.teacher_type;
+        const teacher_type = rawTeacherType || DEFAULT_TEACHER_TYPE;
 
       const deprecatedFields = [];
       if (detailLevel != null) deprecatedFields.push('detailLevel');
@@ -117,8 +117,7 @@ class CourseController {
 
         const isLegacyPayload =
           intensity == null &&
-          teacherType == null &&
-          teacher_type == null &&
+          rawTeacherType == null &&
           duration == null &&
           vulgarization == null &&
           hasDeprecatedParams;
@@ -127,7 +126,7 @@ class CourseController {
         const params = mapLegacyParams({
           detailLevel,
           vulgarizationLevel,
-          teacherType: teacher_type ?? teacherType,
+          teacherType: teacher_type,
           duration,
           vulgarization,
         });

@@ -17,28 +17,28 @@ export const DURATION_LABELS = {
   long: 'Longue'
 };
 
-export const TEACHER_TYPE_LABELS = {
-  calculator: '📐 Pour calculer',
-  experimenter: '🔬 Pour expérimenter',
-  memorizer: '📖 Pour mémoriser'
+export const TEACHER_TYPES = {
+  DIRECT: 'direct',
+  STRUCTURE: 'structure',
+  IMMERSIF: 'immersif'
 };
 
-const LEGACY_TEACHER_TYPE_MAP = {
-  spark: 'experimenter',
-  builder: 'calculator',
-  storyteller: 'memorizer',
-  lightning: 'memorizer',
-  methodical: 'calculator',
-  pragmatic: 'calculator',
-  analogist: 'memorizer',
-  benevolent: 'memorizer',
-  passionate: 'experimenter',
-  synthetic: 'memorizer'
+export const TEACHER_TYPE_LABELS = {
+  direct: '💡 Direct',
+  structure: '🏗️ Structuré',
+  immersif: '🎭 Immersif'
 };
+
+export const TEACHER_TYPE_DESCRIPTIONS = {
+  direct: 'Je vais droit au but, sans détours',
+  structure: 'Je bâtis ta compréhension bloc par bloc',
+  immersif: "Je te plonge dans l'univers du sujet"
+};
+
+export const DEFAULT_TEACHER_TYPE = 'direct';
 
 export function getTeacherTypeLabel(type) {
-  const normalized = LEGACY_TEACHER_TYPE_MAP[type] || type;
-  return TEACHER_TYPE_LABELS[normalized] || normalized;
+  return TEACHER_TYPE_LABELS[type] || type;
 }
 
 // Rate limit between costly actions
@@ -140,9 +140,10 @@ class CourseManager {
       if (duration && DURATION_LABELS[duration]) {
         payload.duration = utils.sanitizeInput(duration);
       }
-      if (teacher_type && TEACHER_TYPE_LABELS[teacher_type]) {
-        payload.teacher_type = utils.sanitizeInput(teacher_type);
-      }
+      const teacherType = Object.values(TEACHER_TYPES).includes(teacher_type)
+        ? teacher_type
+        : DEFAULT_TEACHER_TYPE;
+      payload.teacher_type = utils.sanitizeInput(teacherType);
       if (intensity) {
         payload.intensity = utils.sanitizeInput(intensity);
       }

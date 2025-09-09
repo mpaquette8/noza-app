@@ -34,16 +34,16 @@ test('preset selection updates advanced controls', async () => {
   const vulgarizationExpert = createElement({ dataset: { type: 'vulgarization', value: 'expert' } });
   const durationShort = createElement({ dataset: { type: 'duration', value: 'short' } });
   const durationLong = createElement({ dataset: { type: 'duration', value: 'long' } });
-  const teacherCalculator = createElement({ dataset: { type: 'teacher_type', value: 'calculator' } });
-  const teacherMemorizer = createElement({ dataset: { type: 'teacher_type', value: 'memorizer' } });
-  const allButtons = [vulgarizationGeneral, vulgarizationExpert, durationShort, durationLong, teacherCalculator, teacherMemorizer];
+  const teacherDirect = createElement({ dataset: { type: 'teacher_type', value: 'direct' } });
+  const teacherStructure = createElement({ dataset: { type: 'teacher_type', value: 'structure' } });
+  const allButtons = [vulgarizationGeneral, vulgarizationExpert, durationShort, durationLong, teacherDirect, teacherStructure];
 
   global.document = {
     querySelectorAll(selector) {
       const sel = selector.replace(/^\.decryptage-controls\s*/, '');
       if (sel === '.quick-config [data-preset]') return [presetDefault, presetExpert];
-      if (sel === '.selector-group button') return allButtons;
-      const typeMatch = sel.match(/\.selector-group button\[data-type="([^"]+)"\]/);
+      if (sel === '.selector-group [data-type][data-value]') return allButtons;
+      const typeMatch = sel.match(/\.selector-group \[data-type="([^"]+)"\]/);
       if (typeMatch) return allButtons.filter(b => b.dataset.type === typeMatch[1]);
       return [];
     },
@@ -51,7 +51,7 @@ test('preset selection updates advanced controls', async () => {
       const sel = selector.replace(/^\.decryptage-controls\s*/, '');
       if (sel === '[data-type="vulgarization"][data-value="expert"]') return vulgarizationExpert;
       if (sel === '[data-type="duration"][data-value="long"]') return durationLong;
-      if (sel === '[data-type="teacher_type"][data-value="memorizer"]') return teacherMemorizer;
+      if (sel === '[data-type="teacher_type"][data-value="structure"]') return teacherStructure;
       return null;
     },
     getElementById() { return null; },
@@ -72,12 +72,12 @@ test('preset selection updates advanced controls', async () => {
   const cfg = manager.getConfig();
   assert.strictEqual(cfg.vulgarization, 'expert');
   assert.strictEqual(cfg.duration, 'long');
-  assert.strictEqual(cfg.teacher_type, 'memorizer');
+  assert.strictEqual(cfg.teacher_type, 'structure');
   assert.ok(vulgarizationExpert.classList.contains('active'));
   assert.ok(durationLong.classList.contains('active'));
-  assert.ok(teacherMemorizer.classList.contains('active'));
+  assert.ok(teacherStructure.classList.contains('active'));
   assert.strictEqual(VULGARIZATION_LABELS[cfg.vulgarization], 'Expert');
-  assert.strictEqual(TEACHER_TYPE_LABELS[cfg.teacher_type], '📖 Pour mémoriser');
+  assert.strictEqual(TEACHER_TYPE_LABELS[cfg.teacher_type], '🏗️ Structuré');
 });
 
 test('quiz button reflects quiz availability', async () => {

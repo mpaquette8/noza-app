@@ -23,12 +23,15 @@ const LEGACY_VULGARIZATION_LEVELS = {
   EXPERT: 4
 };
 
-// Types d'enseignants
+// Types de professeurs
 const TEACHER_TYPES = {
-  CALCULATOR: 'calculator',
-  EXPERIMENTER: 'experimenter',
-  MEMORIZER: 'memorizer'
+  DIRECT: 'direct',
+  STRUCTURE: 'structure',
+  IMMERSIF: 'immersif'
 };
+
+// Type par défaut
+const DEFAULT_TEACHER_TYPE = TEACHER_TYPES.DIRECT;
 
 // Durées estimées des cours
 const DURATIONS = {
@@ -139,6 +142,7 @@ module.exports = {
   VULGARIZATION_LEVELS,
   LEGACY_VULGARIZATION_LEVELS,
   TEACHER_TYPES,
+  DEFAULT_TEACHER_TYPE,
   QUESTION_TYPES,
   LIMITS,
   RATE_LIMITS,

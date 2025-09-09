@@ -259,7 +259,7 @@ function initializeGauges() {
 }
 
 function collectFormParameters() {
-    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'calculator';
+    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'direct';
     const intensity = window.currentIntensity || intensityLevels[2];
 
     return {

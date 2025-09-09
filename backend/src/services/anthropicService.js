@@ -4,7 +4,8 @@ const { logger } = require('../utils/helpers');
 const {
   DURATIONS,
   TEACHER_TYPES,
-  VULGARIZATION_LEVELS
+  VULGARIZATION_LEVELS,
+  DEFAULT_TEACHER_TYPE
 } = require('../utils/constants');
 
 const MAX_COURSE_LENGTH = 6000;
@@ -27,23 +28,26 @@ const DURATION_TO_WORDS = {
 
 // Instructions détaillées selon le type de prof
 const TEACHER_STYLE_INSTRUCTIONS = {
-  [TEACHER_TYPES.CALCULATOR]: {
-    approach: "Résoudre les mystères mathématiques étape par étape avec logique rigoureuse.",
-    structure: "Organise comme un calcul : données → méthode → résolution → vérification.",
-    language: "Utilise un vocabulaire mathématique précis : 'calculons', 'résolvons', 'démontrons'.",
-    examples: "Donne des exemples concrets avec chiffres, formules et calculs détaillés."
+  [TEACHER_TYPES.DIRECT]: {
+    approach: "Synthèse immédiate avec conclusion d'abord, sans détours",
+    structure: "Essentiel → Pourquoi → Comment (pyramide inversée)",
+    language: "Factuel, précis, sans fioritures, phrases courtes",
+    examples: "Points clés hiérarchisés, métaphores quotidiennes simples",
+    opening: "Commence par 'En résumé :' ou 'L'essentiel :'"
   },
-  [TEACHER_TYPES.EXPERIMENTER]: {
-    approach: "Découvrir les secrets scientifiques par l'observation et l'expérimentation.",
-    structure: "Structure comme une expérience : hypothèse → protocole → résultats → conclusion.",
-    language: "Adopte un ton de chercheur : 'observons', 'testons', 'analysons', 'découvrons'.",
-    examples: "Utilise des expériences, des observations, des phénomènes scientifiques concrets."
+  [TEACHER_TYPES.STRUCTURE]: {
+    approach: "Construction progressive et méthodique bloc par bloc",
+    structure: "Fondations → Développement → Consolidation (séquentiel)",
+    language: "Pédagogique avec étapes numérotées et transitions",
+    examples: "Analogies de construction, vérifications intermédiaires",
+    opening: "Commence par un plan ou 'Étape 1 :'"
   },
-  [TEACHER_TYPES.MEMORIZER]: {
-    approach: "Graver durablement les connaissances essentielles avec techniques de mémorisation.",
-    structure: "Organise pour la rétention : points clés → répétition → synthèse → ancrage.",
-    language: "Style mnémotechnique et répétitif : 'retenons', 'mémorisons', 'fixons', 'ancrons'.",
-    examples: "Utilise des moyens mnémotechniques, acronymes, répétitions structurées."
+  [TEACHER_TYPES.IMMERSIF]: {
+    approach: "Plongée narrative dans l'univers du sujet avec storytelling",
+    structure: "Mise en situation → Découverte → Révélation (dramatique)",
+    language: "Narratif avec analogies créatives et questions intriguantes",
+    examples: "Histoires, mystères, découvertes progressives",
+    opening: "Commence par une situation intrigante ou un mystère"
   }
 };
 
@@ -147,7 +151,7 @@ class AnthropicService {
   getAdaptiveInstructions(teacherType, intensity = 'balanced') {
     const teacher =
       TEACHER_STYLE_INSTRUCTIONS[teacherType] ||
-      TEACHER_STYLE_INSTRUCTIONS[TEACHER_TYPES.CALCULATOR];
+      TEACHER_STYLE_INSTRUCTIONS[DEFAULT_TEACHER_TYPE];
     const intensityConfig =
       INTENSITY_INSTRUCTIONS[intensity] || INTENSITY_INSTRUCTIONS['balanced'];
 
@@ -253,12 +257,14 @@ Sujet à traiter : "${subject}"`;
       return this.getOfflineMessage();
     }
 
-    teacherType = teacherType || TEACHER_TYPES.CALCULATOR;
+    const validTeacherType = Object.values(TEACHER_TYPES).includes(teacherType)
+      ? teacherType
+      : DEFAULT_TEACHER_TYPE;
 
     try {
-      const prompt = this.createPrompt(subject, intensity, teacherType);
+      const prompt = this.createPrompt(subject, intensity, validTeacherType);
 
-      logger.info('Génération cours', { subject, intensity, teacherType });
+      logger.info('Génération cours', { subject, intensity, teacherType: validTeacherType });
 
       const response = await this.sendWithTimeout({
         model: 'claude-3-5-sonnet-20241022',

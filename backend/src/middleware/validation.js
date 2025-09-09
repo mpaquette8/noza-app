@@ -54,7 +54,7 @@ const courseValidation = [
     .withMessage("Niveau d'intensité invalide"),
   body('teacher_type')
     .optional()
-    .isIn(['calculator', 'experimenter', 'memorizer', 'spark', 'builder', 'storyteller', 'lightning'])
+    .isIn(['direct', 'structure', 'immersif'])
     .withMessage("Type d'enseignant invalide"),
   body('vulgarization')
     .optional()
@@ -65,11 +65,6 @@ const courseValidation = [
     .isIn(Object.values(DURATIONS))
     .withMessage('Durée invalide'),
 
-  // Alias de compatibilité
-  body('teacherType')
-    .optional()
-    .isIn(['calculator', 'experimenter', 'memorizer', 'spark', 'builder', 'storyteller', 'lightning'])
-    .withMessage("Type d'enseignant invalide"),
   body('vulgarizationLevel')
     .optional()
     .isInt({ min: 1, max: 4 })
