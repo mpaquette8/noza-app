@@ -261,7 +261,7 @@ class CourseManager {
     document.getElementById('courseContent').style.display = 'block';
     
     // Appliquer le post-traitement de formatage
-    const formattedContent = this.formatConversationalContent(course.content);
+    const formattedContent = this.cleanMarkdownContent(course.content);
     
     // Sanitiser le contenu
     const sanitizedContent = typeof utils.sanitizeHTML === 'function'
@@ -285,9 +285,131 @@ class CourseManager {
     utils.initializeLucide();
   }
 
+  // Corrige les tableaux condensés sans séparateurs de colonnes
+  fixCondensedTables(content) {
+    // Pattern pour détecter tableau condensé : **en-têtes** suivi de tirets puis données
+    const condensedPattern = /\*\*([^*]+)\*\*\s*([-=]{8,})\s*((?:[A-Za-zÀ-ÿ0-9\s,.%€$-]+(?:\d+[-—]\d+%|[\d,.]+-[\d,.]%|[\d,.]+-[\d,.]+€|[\d,.]+%|[\d,.]+€)\s*)+)/g;
+
+    return content.replace(condensedPattern, (fullMatch, headerText, separator, dataText) => {
+      console.log("Correction d'un tableau condensé détecté");
+
+      // 1. Analyser l'en-tête pour identifier les colonnes
+      const keywordMarkers = /(Rendement|Coût|Prix|Puissance|Efficacité|Température|Durée|Type|Source|Valeur)/gi;
+      const headers = [];
+
+      // Trouver les mots-clés qui marquent le début de nouvelles colonnes
+      const keywords = [...headerText.matchAll(keywordMarkers)];
+
+      if (keywords.length > 0) {
+        // Extraire chaque segment entre les mots-clés
+        headers.push(headerText.substring(0, keywords[0].index).trim());
+
+        for (let i = 0; i < keywords.length - 1; i++) {
+          const start = keywords[i].index;
+          const end = keywords[i + 1].index;
+          headers.push(headerText.substring(start, end).trim());
+        }
+
+        // Dernier segment
+        const lastKeyword = keywords[keywords.length - 1];
+        headers.push(headerText.substring(lastKeyword.index).trim());
+      } else {
+        // Fallback: division sur les majuscules après minuscules
+        const segments = headerText.split(/(?<=[a-zà-ÿ])(?=[A-ZÀ-Ÿ])/);
+        headers.push(...segments.map(s => s.trim()).filter(s => s));
+      }
+
+      // Nettoyer les en-têtes vides ou trop courts
+      const cleanHeaders = headers.filter(h => h && h.length > 1);
+
+      // 2. Analyser les données ligne par ligne
+      const rows = [];
+      // Split sur les noms propres (majuscule au début de mot)
+      const lines = dataText.split(/(?=\n?[A-ZÀ-Ÿ][a-zà-ÿ])/).filter(l => l.trim());
+
+      for (let line of lines) {
+        line = line.trim().replace(/\n/g, ' ');
+        if (!line) continue;
+
+        // Pattern pour extraire: nom, pourcentage/valeur numérique, prix/unité
+        const patterns = [
+          // Pattern 1: Nom + pourcentage + prix (ex: "Solaire PV15-20%0,06-0,10€")
+          /^([A-Za-zÀ-ÿ\s]+?)([\d-]+%)([\d,.-]+€)$/,
+          // Pattern 2: Nom + valeur + unité (ex: "Charbon 850kg CO2/MWh")
+          /^([A-Za-zÀ-ÿ\s]+?)([\d,.-]+)\s*([A-Za-z€%/]+)$/,
+          // Pattern 3: Nom + deux valeurs numériques
+          /^([A-Za-zÀ-ÿ\s]+?)([\d,.-]+)\s*([\d,.-]+)$/
+        ];
+
+        let matched = false;
+        for (let pattern of patterns) {
+          const lineMatch = line.match(pattern);
+          if (lineMatch) {
+            const row = [
+              lineMatch[1].trim(),
+              lineMatch[2],
+              lineMatch[3] || ''
+            ].filter(cell => cell);
+
+            rows.push(row);
+            matched = true;
+            break;
+          }
+        }
+
+        // Si aucun pattern ne matche, essayer de diviser manuellement
+        if (!matched && line.length > 10) {
+          // Chercher les valeurs numériques comme points de division
+          const numericMatches = [...line.matchAll(/[\d,.-]+[%€]?/g)];
+          if (numericMatches.length >= 2) {
+            const lastNumeric = numericMatches[numericMatches.length - 1];
+            const secondLastNumeric = numericMatches[numericMatches.length - 2];
+
+            const name = line.substring(0, secondLastNumeric.index).trim();
+            const value1 = line.substring(secondLastNumeric.index, lastNumeric.index).trim();
+            const value2 = line.substring(lastNumeric.index).trim();
+
+            if (name && value1 && value2) {
+              rows.push([name, value1, value2]);
+            }
+          }
+        }
+      }
+
+      // 3. Construire le tableau markdown correctement formaté
+      if (cleanHeaders.length > 0 && rows.length > 0) {
+        let result = '\n\n| ' + cleanHeaders.join(' | ') + ' |\n';
+        result += '|' + cleanHeaders.map(() => ' ------- ').join('|') + '|\n';
+
+        for (let row of rows) {
+          // Ajuster le nombre de colonnes
+          while (row.length < cleanHeaders.length) row.push('');
+          while (row.length > cleanHeaders.length) row.pop();
+
+          result += '| ' + row.join(' | ') + ' |\n';
+        }
+
+        return result + '\n';
+      }
+
+      // Si échec du parsing, retourner tel quel
+      console.warn("Échec du parsing du tableau condensé:", fullMatch.substring(0, 50));
+      return fullMatch;
+    });
+  }
+
   // Fonction de post-traitement pour améliorer le formatage
-  formatConversationalContent(rawContent) {
-    return rawContent
+  cleanMarkdownContent(rawContent) {
+    if (!rawContent) return '';
+
+    let content = rawContent
+      .replace(/^/gm, '') // Nettoyer les débuts de ligne
+      .replace(/\r\n/g, '\n'); // Normaliser les fins de ligne
+
+    // Corriger les tableaux condensés avant tout autre traitement
+    content = this.fixCondensedTables(content);
+
+    return content
       // Nettoyer les sections mal formatées
       .replace(/INTRODUCTION\s*/gi, '## 🎯 Introduction\n')
       .replace(/POINTS CLÉ?S?\s*/gi, '## 📚 Points clés\n')
@@ -298,7 +420,7 @@ class CourseManager {
       .replace(/POUR ALLER PLUS LOIN\s*/gi, '## 🔍 Pour aller plus loin\n')
       .replace(/APPLICATIONS?\s*PRATIQUES?\s*/gi, '## 💡 Applications pratiques\n')
       .replace(/LIMITES?\s*DU\s*MODÈLE\s*/gi, '## ⚠️ Limites à connaître\n')
-      
+
       // Transformer les listes mal formatées
       .replace(/^\s*[•\-\*]\s+(.+)/gm, '- $1')
       .replace(/^\s*\d+\.\s+(.+)/gm, '1. $1')
@@ -349,7 +471,7 @@ class CourseManager {
         return match.replace(/\|\s*([^|]+)\s*\|/g, '| $1 |');
       })
 
-      // Nettoyage supplémentaire pour tableaux markdown standards malformés  
+      // Nettoyage supplémentaire pour tableaux markdown standards malformés
       .replace(/\n\s*\|\s*([^|\n]+(?:\s*\|\s*[^|\n]+)*)\s*\|\s*\n/g, function(match, row) {
         const cells = row.split('|').map(cell => cell.trim());
         return '\n| ' + cells.join(' | ') + ' |\n';
@@ -365,7 +487,7 @@ class CourseManager {
       // Ajouter des espaces entre les sections
       .replace(/\n([#]{1,3}\s)/g, '\n\n$1')
       .replace(/([.!?])\n([A-Z])/g, '$1\n\n$2')
-      
+
       // Nettoyer les espaces multiples
       .replace(/\n{3,}/g, '\n\n')
       .trim();
