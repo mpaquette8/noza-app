@@ -287,7 +287,38 @@ class CourseManager {
 
   // Fonction de post-traitement pour améliorer le formatage
   formatConversationalContent(rawContent) {
-    return rawContent
+    // Fonction pour nettoyer les lignes de tableau
+    const cleanTableLine = (line) => {
+      if (!line.includes('|')) return line;
+
+      const cells = line.split('|');
+      const cleanedCells = cells.map(cell => {
+        let cleaned = cell.trim();
+
+        // Supprimer les caractères de séparation isolés
+        if (cleaned.match(/^[\-:]+$/)) {
+          return '---';
+        }
+
+        // Nettoyer les espaces multiples
+        cleaned = cleaned.replace(/\s+/g, ' ');
+
+        return cleaned;
+      });
+
+      return cleanedCells.join(' | ');
+    };
+
+    // Appliquer le nettoyage ligne par ligne
+    const lines = rawContent.split('\n');
+    const cleanedLines = lines.map(line => {
+      if (line.includes('|')) {
+        return cleanTableLine(line);
+      }
+      return line;
+    });
+
+    return cleanedLines.join('\n')
       // Nettoyer les sections mal formatées
       .replace(/INTRODUCTION\s*/gi, '## 🎯 Introduction\n')
       .replace(/POINTS CLÉ?S?\s*/gi, '## 📚 Points clés\n')
@@ -298,36 +329,15 @@ class CourseManager {
       .replace(/POUR ALLER PLUS LOIN\s*/gi, '## 🔍 Pour aller plus loin\n')
       .replace(/APPLICATIONS?\s*PRATIQUES?\s*/gi, '## 💡 Applications pratiques\n')
       .replace(/LIMITES?\s*DU\s*MODÈLE\s*/gi, '## ⚠️ Limites à connaître\n')
-      
+
       // Transformer les listes mal formatées
       .replace(/^\s*[•\-\*]\s+(.+)/gm, '- $1')
       .replace(/^\s*\d+\.\s+(.+)/gm, '1. $1')
-      
-      // === NOUVEAU TRAITEMENT DES TABLEAUX ===
-      .replace(/\|([^|\n]+(?:\|[^|\n]+)*)\|/gm, function(match) {
-        // Ignorer les lignes de séparation (contenant uniquement des tirets, espaces, deux-points)
-        if (match.match(/^\s*\|[\s\-:|\s]+\|\s*$/)) {
-          return match; // Garder les séparateurs intacts
-        }
-
-        // Nettoyer et formater les cellules de données
-        const cells = match.split('|').filter(cell => cell !== '');
-        const cleanedCells = cells.map(cell => {
-          const trimmed = cell.trim();
-          // Ignorer les cellules qui ne contiennent que des tirets
-          if (trimmed.match(/^[\-]+$/)) {
-            return '-------';
-          }
-          return trimmed;
-        });
-
-        return '| ' + cleanedCells.join(' | ') + ' |';
-      })
 
       // Ajouter des espaces entre les sections
       .replace(/\n([#]{1,3}\s)/g, '\n\n$1')
       .replace(/([.!?])\n([A-Z])/g, '$1\n\n$2')
-      
+
       // Nettoyer les espaces multiples
       .replace(/\n{3,}/g, '\n\n')
       .trim();
@@ -335,64 +345,146 @@ class CourseManager {
 
   // Convertir markdown + LaTeX + tableaux en HTML esthétique
   convertMarkdownToHTML(content) {
-    return content
+    // Fonction helper pour détecter et parser les tableaux markdown de manière plus robuste
+    const parseMarkdownTable = (text) => {
+      // Pattern amélioré pour détecter les tableaux markdown
+      const tablePattern = /(?:^|\n)(\|[^\n]+\|(?:\n\|[^\n]+\|)*)/gm;
+
+      return text.replace(tablePattern, (match) => {
+        const lines = match.trim().split('\n');
+
+        if (lines.length < 2) return match;
+
+        // Identifier la ligne de séparation
+        let separatorIndex = -1;
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].replace(/\|/g, '').trim();
+          if (line.match(/^[\s:\-]+$/)) {
+            separatorIndex = i;
+            break;
+          }
+        }
+
+        // Si pas de séparateur, traiter la première ligne comme header
+        if (separatorIndex === -1) {
+          const pipeCounts = lines.map(l => (l.match(/\|/g) || []).length);
+          const allSame = pipeCounts.every(c => c === pipeCounts[0]);
+
+          if (!allSame || pipeCounts[0] < 2) return match;
+          separatorIndex = 1;
+        }
+
+        // Extraire header et body
+        const headerLines = lines.slice(0, separatorIndex);
+        const bodyLines = lines.slice(separatorIndex + 1);
+
+        // Parser le header
+        const headerCells = [];
+        headerLines.forEach(line => {
+          const cells = line.split('|')
+            .map(cell => cell.trim())
+            .filter(cell => cell !== '');
+
+          if (headerCells.length === 0) {
+            cells.forEach(cell => headerCells.push(cell));
+          } else {
+            cells.forEach((cell, i) => {
+              if (i < headerCells.length && cell) {
+                headerCells[i] += ' ' + cell;
+              }
+            });
+          }
+        });
+
+        // Parser le body
+        const bodyRows = [];
+        let currentRow = [];
+
+        bodyLines.forEach(line => {
+          if (!line.trim() || line.replace(/[\|\s\-:]+/g, '').length === 0) {
+            if (currentRow.length > 0) {
+              bodyRows.push(currentRow);
+              currentRow = [];
+            }
+            return;
+          }
+
+          const cells = line.split('|')
+            .map(cell => cell.trim())
+            .filter((cell, index, arr) => {
+              return index > 0 && index < arr.length - 1 || cell !== '';
+            });
+
+          if (currentRow.length === 0) {
+            currentRow = cells;
+          } else {
+            if (cells.length < headerCells.length) {
+              if (currentRow.length > 0) {
+                currentRow[currentRow.length - 1] += ' ' + cells.join(' ');
+              }
+            } else {
+              if (currentRow.length > 0) {
+                bodyRows.push(currentRow);
+              }
+              currentRow = cells;
+            }
+          }
+        });
+
+        if (currentRow.length > 0) {
+          bodyRows.push(currentRow);
+        }
+
+        // Construire le HTML
+        if (headerCells.length === 0) return match;
+
+        const headerHTML = '<thead><tr>' + 
+          headerCells.map(cell => `<th>${cell}</th>`).join('') + 
+          '</tr></thead>';
+
+        const bodyHTML = bodyRows.length > 0 
+          ? '<tbody>' + 
+            bodyRows.map(row => {
+              while (row.length < headerCells.length) {
+                row.push('');
+              }
+              return '<tr>' + 
+                row.slice(0, headerCells.length).map(cell => `<td>${cell}</td>`).join('') + 
+                '</tr>';
+            }).join('') + 
+            '</tbody>'
+          : '<tbody></tbody>';
+
+        return `<table class="styled-table">${headerHTML}${bodyHTML}</table>`;
+      });
+    };
+
+    // Appliquer le parsing de tableaux en premier
+    let result = parseMarkdownTable(content);
+
+    // Puis appliquer les autres transformations
+    result = result
       // Convertir les titres
       .replace(/^# (.+)$/gm, '<h1>$1</h1>')
       .replace(/^## (.+)$/gm, '<h2>$1</h2>')
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-      
+
       // Convertir les formules en blocs centrés
       .replace(/```\n([\s\S]*?)\n```/g, '<div class="formula">$1</div>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
-      
-      // Convertir les tableaux markdown en HTML stylé
-      .replace(/\|(.+)\|\n\|[\s\-:|]+\|\n((?:\|.*\|\n?)*)/gm, function(match, header, rows) {
-        // Parser l'en-tête
-        const headerCells = header.split('|')
-          .filter(cell => cell.trim() && !cell.trim().match(/^[\-]+$/))
-          .map(cell => `<th>${cell.trim()}</th>`)
-          .join('');
 
-        // Parser les lignes de données
-        const bodyRows = rows.trim().split('\n')
-          .filter(row => {
-            // Ignorer les lignes vides ou qui ne contiennent que des séparateurs
-            const trimmed = row.trim();
-            return trimmed && !trimmed.match(/^\|[\s\-:|]+\|$/);
-          })
-          .map(row => {
-            const cells = row.split('|')
-              .filter(cell => cell !== '')
-              .map(cell => {
-                const trimmed = cell.trim();
-                // Ne pas afficher les cellules qui ne contiennent que des tirets
-                if (trimmed.match(/^[\-]+$/)) {
-                  return '';
-                }
-                return `<td>${trimmed}</td>`;
-              })
-              .join('');
-            return cells ? `<tr>${cells}</tr>` : '';
-          })
-          .filter(row => row !== '')
-          .join('');
-
-        return `<table class="styled-table">
-    <thead><tr>${headerCells}</tr></thead>
-    <tbody>${bodyRows}</tbody>
-  </table>`;
-      })
-      
       // Convertir les listes
       .replace(/^- (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-      
-      // Convertir les paragraphes
-      .replace(/\n\n(.+?)(?=\n\n|$)/gs, '<p>$1</p>')
-      
+      .replace(/(<li>.*<\/li>)/s, (match) => '<ul>' + match + '</ul>')
+
+      // Convertir les paragraphes (éviter de toucher aux tableaux)
+      .replace(/\n\n([^<\n]+?)(?=\n\n|$)/gs, '<p>$1</p>')
+
       // Nettoyer les balises imbriquées
       .replace(/<\/ul>\s*<ul>/g, '')
       .replace(/<\/ol>\s*<ol>/g, '');
+
+    return result;
   }
 
   // Charger l'historique utilisateur
