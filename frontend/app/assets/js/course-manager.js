@@ -346,7 +346,7 @@ class CourseManager {
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       
       // Convertir les tableaux markdown en HTML stylé
-      .replace(/\|(.+)\|\n\|[\s\-:|]+\|\n((?:\|[^|\n]+\|\n?)*)/gm, function(match, header, rows) {
+      .replace(/\|(.+)\|\n\|[\s\-:|]+\|\n((?:\|.*\|\n?)*)/gm, function(match, header, rows) {
         // Parser l'en-tête
         const headerCells = header.split('|')
           .filter(cell => cell.trim() && !cell.trim().match(/^[\-]+$/))
