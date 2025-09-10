@@ -460,7 +460,8 @@ body::before {
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-top: 12px;
-    max-width: 900px; /* Limite la largeur totale */
+    width: 100%;
+    max-width: none;
 }
 
 /* Carte individuelle de professeur */
