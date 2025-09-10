@@ -302,64 +302,26 @@ class CourseManager {
       // Transformer les listes mal formatées
       .replace(/^\s*[•\-\*]\s+(.+)/gm, '- $1')
       .replace(/^\s*\d+\.\s+(.+)/gm, '1. $1')
-
-      // === NETTOYAGE AVANCÉ DES TABLEAUX MALFORMÉS ===
-      .replace(/(\*\s*)?\|\s*([^|]+(?:\|\s*[^|]+)*)\s*\|\s*(\|\s*[-:\s|]+\s*\|)?\s*((?:\|\s*[^|]+)*)/g, function(match, bullet, content) {
-        // Détecter si c'est un tableau condensé sur une ligne
-        if (content.includes('|') && content.split('|').length >= 4) {
-          const parts = content.split('|').map(p => p.trim()).filter(p => p.length > 0);
-
-          // Détecter les séparateurs (lignes avec des tirets)
-          let headerIndex = -1;
-          let separatorIndex = -1;
-
-          for (let i = 0; i < parts.length; i++) {
-            if (parts[i].match(/^[-:\s]+$/)) {
-              separatorIndex = i;
-              headerIndex = i - 3; // Les 3 éléments précédents sont l'en-tête
-              break;
-            }
-          }
-
-          // Si on trouve une structure cohérente, reformater
-          if (headerIndex >= 0 && separatorIndex > headerIndex) {
-            const headers = parts.slice(headerIndex, separatorIndex);
-            const remainingParts = parts.slice(separatorIndex + 1);
-
-            // Construire l'en-tête
-            let result = '\n| ' + headers.join(' | ') + ' |\n';
-
-            // Ajouter la ligne séparatrice
-            result += '|' + headers.map(() => '-------').join('|') + '|\n';
-
-            // Ajouter les lignes de données (groupées par nombre de colonnes)
-            const colCount = headers.length;
-            for (let i = 0; i < remainingParts.length; i += colCount) {
-              const row = remainingParts.slice(i, i + colCount);
-              if (row.length === colCount) {
-                result += '| ' + row.join(' | ') + ' |\n';
-              }
-            }
-
-            return result;
-          }
+      
+      // === NOUVEAU TRAITEMENT DES TABLEAUX ===
+      .replace(/\|([^|\n]+(?:\|[^|\n]+)*)\|/gm, function(match) {
+        // Ignorer les lignes de séparation (contenant uniquement des tirets, espaces, deux-points)
+        if (match.match(/^\s*\|[\s\-:|\s]+\|\s*$/)) {
+          return match; // Garder les séparateurs intacts
         }
 
-        // Fallback : nettoyage simple pour autres cas
-        return match.replace(/\|\s*([^|]+)\s*\|/g, '| $1 |');
-      })
+        // Nettoyer et formater les cellules de données
+        const cells = match.split('|').filter(cell => cell !== '');
+        const cleanedCells = cells.map(cell => {
+          const trimmed = cell.trim();
+          // Ignorer les cellules qui ne contiennent que des tirets
+          if (trimmed.match(/^[\-]+$/)) {
+            return '-------';
+          }
+          return trimmed;
+        });
 
-      // Nettoyage supplémentaire pour tableaux markdown standards malformés  
-      .replace(/\n\s*\|\s*([^|\n]+(?:\s*\|\s*[^|\n]+)*)\s*\|\s*\n/g, function(match, row) {
-        const cells = row.split('|').map(cell => cell.trim());
-        return '\n| ' + cells.join(' | ') + ' |\n';
-      })
-
-      // Assurer la cohérence des lignes de séparation
-      .replace(/\n\s*\|\s*([-:\s|]+)\s*\|\s*\n/g, function(match, separator) {
-        const parts = separator.split('|').map(p => p.trim());
-        const cleanSeps = parts.map(p => p.match(/[-:\s]/) ? '-------' : p);
-        return '\n|' + cleanSeps.join('|') + '|\n';
+        return '| ' + cleanedCells.join(' | ') + ' |';
       })
 
       // Ajouter des espaces entre les sections
@@ -384,19 +346,41 @@ class CourseManager {
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       
       // Convertir les tableaux markdown en HTML stylé
-      .replace(/\|(.+)\|\n\|[-\s|:]+\|\n((?:\|.+\|\n?)*)/g, function(match, header, rows) {
-        const headerCells = header.split('|').filter(cell => cell.trim()).map(cell => 
-          `<th>${cell.trim()}</th>`
-        ).join('');
-        
-        const bodyRows = rows.trim().split('\n').map(row => {
-          const cells = row.split('|').filter(cell => cell.trim()).map(cell => 
-            `<td>${cell.trim()}</td>`
-          ).join('');
-          return `<tr>${cells}</tr>`;
-        }).join('');
-        
-        return `<table class="styled-table"><thead><tr>${headerCells}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+      .replace(/\|(.+)\|\n\|[\s\-:|]+\|\n((?:\|[^|\n]+\|\n?)*)/gm, function(match, header, rows) {
+        // Parser l'en-tête
+        const headerCells = header.split('|')
+          .filter(cell => cell.trim() && !cell.trim().match(/^[\-]+$/))
+          .map(cell => `<th>${cell.trim()}</th>`)
+          .join('');
+
+        // Parser les lignes de données
+        const bodyRows = rows.trim().split('\n')
+          .filter(row => {
+            // Ignorer les lignes vides ou qui ne contiennent que des séparateurs
+            const trimmed = row.trim();
+            return trimmed && !trimmed.match(/^\|[\s\-:|]+\|$/);
+          })
+          .map(row => {
+            const cells = row.split('|')
+              .filter(cell => cell !== '')
+              .map(cell => {
+                const trimmed = cell.trim();
+                // Ne pas afficher les cellules qui ne contiennent que des tirets
+                if (trimmed.match(/^[\-]+$/)) {
+                  return '';
+                }
+                return `<td>${trimmed}</td>`;
+              })
+              .join('');
+            return cells ? `<tr>${cells}</tr>` : '';
+          })
+          .filter(row => row !== '')
+          .join('');
+
+        return `<table class="styled-table">
+    <thead><tr>${headerCells}</tr></thead>
+    <tbody>${bodyRows}</tbody>
+  </table>`;
       })
       
       // Convertir les listes
