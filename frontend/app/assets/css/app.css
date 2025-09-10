@@ -269,12 +269,10 @@ body::before {
     display: none !important;
 }
 
-.intensity-row,
 .teacher-row {
     width: 100%;
 }
 
-.intensity-row .selector-group,
 .teacher-row .selector-group {
     width: 100%;
 }
@@ -2700,77 +2698,6 @@ body::before {
     margin-right: 6px;
 }
 
-/* Slider d'intensité pédagogique */
-.intensity-slider-container {
-    padding: 20px 0;
-}
-
-.slider-wrapper {
-    position: relative;
-    margin: 20px 0;
-}
-
-.intensity-slider {
-    width: 100%;
-    height: 8px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: #e2e8f0;
-    border-radius: 5px;
-    outline: none;
-    cursor: pointer;
-}
-
-.intensity-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4299e1, #3182ce);
-    cursor: pointer;
-    box-shadow: 0 3px 10px rgba(66, 153, 225, 0.3);
-}
-
-.intensity-slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4299e1, #3182ce);
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 3px 10px rgba(66, 153, 225, 0.3);
-}
-
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.slider-label {
-    flex: 1;
-    text-align: center;
-    color: #64748b;
-    transition: all 0.3s ease;
-}
-
-.slider-label.active {
-    color: #3182ce;
-    transform: scale(1.1);
-}
-
-.intensity-description {
-    text-align: center;
-    margin-top: 15px;
-    padding: 12px;
-    background: #f7fafc;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: #4a5568;
-}
 /* Formules mathématiques centrées */
 .formula {
   background: #f8f9fa;

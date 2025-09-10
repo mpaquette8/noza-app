@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeApp() {
     setupFormControls();
-    initializeGauges();
 }
 
 function setupEventListeners() {
@@ -49,74 +48,12 @@ function setupEventListeners() {
     }
 }
 
-// Contrôle d'intensité pédagogique
-const intensityLevels = {
-    1: {
-        name: 'Rapide & Simple',
-        description: 'Cours concis et accessible, synthèse des points essentiels',
-        vulgarization: 'general_public',
-        duration: 'short'
-    },
-    2: {
-        name: 'Équilibré',
-        description: 'Cours complet avec bon équilibre accessibilité/profondeur',
-        vulgarization: 'enlightened',
-        duration: 'medium'
-    },
-    3: {
-        name: 'Approfondi & Expert',
-        description: 'Analyse détaillée avec vocabulaire technique et références',
-        vulgarization: 'expert',
-        duration: 'long'
-    }
-};
-
-function updateIntensitySlider() {
-    const slider = document.getElementById('intensitySlider');
-    const value = parseInt(slider.value);
-    const level = intensityLevels[value];
-
-    const descEl = document.getElementById('intensityDescription');
-    if (descEl) {
-        descEl.innerHTML = `<strong>${level.name} :</strong> ${level.description}`;
-    }
-
-    document.querySelectorAll('.slider-label').forEach(label => {
-        label.classList.remove('active');
-    });
-    const labels = document.querySelectorAll('.slider-label');
-    if (labels[value - 1]) {
-        labels[value - 1].classList.add('active');
-    }
-
-    window.currentIntensity = {
-        vulgarization: level.vulgarization,
-        duration: level.duration,
-        level: value
-    };
-}
-
-function initializeIntensitySlider() {
-    const slider = document.getElementById('intensitySlider');
-    if (slider) {
-        slider.addEventListener('input', updateIntensitySlider);
-        updateIntensitySlider();
-    }
-}
-
-function initializeGauges() {
-    initializeIntensitySlider();
-}
-
 function collectFormParameters() {
-    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'direct';
-    const intensity = window.currentIntensity || intensityLevels[2];
+    const teacherType = document.querySelector('[data-type="teacher_type"].active')?.dataset.value || 'calculator';
 
     return {
         teacher_type: teacherType,
-        intensity: intensity.level === 1 ? 'rapid_simple' : intensity.level === 2 ? 'balanced' : 'deep_expert',
-        vulgarization: intensity.vulgarization,
-        duration: intensity.duration
+        intensity: 'balanced' // Valeur par défaut fixe
     };
 }
 
