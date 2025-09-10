@@ -61,6 +61,91 @@ function getCache(key) {
   return null;
 }
 
+// Fonction helper pour détecter et parser les tableaux markdown de manière plus robuste
+const parseMarkdownTable = (text) => {
+  // Pattern plus robuste pour détecter les tableaux markdown
+  const tablePattern = /(?:^|\n)((?:\|[^\n]*\|(?:\n|$))+)/gm;
+
+  return text.replace(tablePattern, (match) => {
+    const lines = match.trim().split('\n').filter(line => line.trim());
+
+    if (lines.length < 2) return match;
+
+    // Nettoyer chaque ligne
+    const cleanLines = lines.map(line => {
+      // Supprimer les | en début et fin si présents
+      return line.replace(/^\||\|$/g, '').trim();
+    });
+
+    // Identifier la ligne de séparation (contient uniquement des -, :, et espaces)
+    let separatorIndex = -1;
+    for (let i = 0; i < cleanLines.length; i++) {
+      const line = cleanLines[i];
+      if (/^[\s\-:]+$/.test(line)) {
+        separatorIndex = i;
+        break;
+      }
+    }
+
+    // Si pas de séparateur trouvé, essayer de détecter un pattern cohérent
+    if (separatorIndex === -1) {
+      // Vérifier si toutes les lignes ont le même nombre de colonnes
+      const columnCounts = cleanLines.map(line => line.split('|').length);
+      const firstCount = columnCounts[0];
+
+      // Si le nombre de colonnes est cohérent, traiter la première ligne comme header
+      if (columnCounts.every(count => count === firstCount) && firstCount > 1) {
+        separatorIndex = 1; // Pas de ligne de séparation, header = première ligne
+      } else {
+        return match; // Pas un tableau valide
+      }
+    }
+
+    // Extraire header et body
+    const headerLines = cleanLines.slice(0, separatorIndex);
+    const bodyLines = cleanLines.slice(separatorIndex + 1);
+
+    // Parser le header
+    let headerCells = [];
+    if (headerLines.length > 0) {
+      headerCells = headerLines[0].split('|').map(cell => cell.trim());
+    }
+
+    // Si le header est vide ou invalide
+    if (headerCells.length === 0) return match;
+
+    // Parser les lignes du body
+    const bodyRows = [];
+    bodyLines.forEach(line => {
+      if (line.trim()) {
+        const cells = line.split('|').map(cell => cell.trim());
+        // Ajuster le nombre de cellules pour correspondre au header
+        while (cells.length < headerCells.length) {
+          cells.push('');
+        }
+        bodyRows.push(cells.slice(0, headerCells.length));
+      }
+    });
+
+    // Construire le HTML
+    const headerHTML = '<thead><tr>' +
+      headerCells.map(cell => `<th>${cell || ''}</th>`).join('') +
+      '</tr></thead>';
+
+    const bodyHTML = bodyRows.length > 0 
+      ? '<tbody>' + 
+        bodyRows.map(row => 
+          '<tr>' + 
+          row.map(cell => `<td>${cell || ''}</td>`).join('') + 
+          '</tr>'
+        ).join('') + 
+        '</tbody>'
+      : '<tbody></tbody>';
+
+    return `<table class="styled-table">${headerHTML}${bodyHTML}</table>`;
+  });
+};
+
 class CourseManager {
   constructor() {
     this.currentCourse = null;
@@ -345,144 +430,41 @@ class CourseManager {
 
   // Convertir markdown + LaTeX + tableaux en HTML esthétique
   convertMarkdownToHTML(content) {
-    // Fonction helper pour détecter et parser les tableaux markdown de manière plus robuste
-    const parseMarkdownTable = (text) => {
-      // Pattern amélioré pour détecter les tableaux markdown
-      const tablePattern = /(?:^|\n)(\|[^\n]+\|(?:\n\|[^\n]+\|)*)/gm;
-
-      return text.replace(tablePattern, (match) => {
-        const lines = match.trim().split('\n');
-
-        if (lines.length < 2) return match;
-
-        // Identifier la ligne de séparation
-        let separatorIndex = -1;
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].replace(/\|/g, '').trim();
-          if (line.match(/^[\s:\-]+$/)) {
-            separatorIndex = i;
-            break;
-          }
-        }
-
-        // Si pas de séparateur, traiter la première ligne comme header
-        if (separatorIndex === -1) {
-          const pipeCounts = lines.map(l => (l.match(/\|/g) || []).length);
-          const allSame = pipeCounts.every(c => c === pipeCounts[0]);
-
-          if (!allSame || pipeCounts[0] < 2) return match;
-          separatorIndex = 1;
-        }
-
-        // Extraire header et body
-        const headerLines = lines.slice(0, separatorIndex);
-        const bodyLines = lines.slice(separatorIndex + 1);
-
-        // Parser le header
-        const headerCells = [];
-        headerLines.forEach(line => {
-          const cells = line.split('|')
-            .map(cell => cell.trim())
-            .filter(cell => cell !== '');
-
-          if (headerCells.length === 0) {
-            cells.forEach(cell => headerCells.push(cell));
-          } else {
-            cells.forEach((cell, i) => {
-              if (i < headerCells.length && cell) {
-                headerCells[i] += ' ' + cell;
-              }
-            });
-          }
-        });
-
-        // Parser le body
-        const bodyRows = [];
-        let currentRow = [];
-
-        bodyLines.forEach(line => {
-          if (!line.trim() || line.replace(/[\|\s\-:]+/g, '').length === 0) {
-            if (currentRow.length > 0) {
-              bodyRows.push(currentRow);
-              currentRow = [];
-            }
-            return;
-          }
-
-          const cells = line.split('|')
-            .map(cell => cell.trim())
-            .filter((cell, index, arr) => {
-              return index > 0 && index < arr.length - 1 || cell !== '';
-            });
-
-          if (currentRow.length === 0) {
-            currentRow = cells;
-          } else {
-            if (cells.length < headerCells.length) {
-              if (currentRow.length > 0) {
-                currentRow[currentRow.length - 1] += ' ' + cells.join(' ');
-              }
-            } else {
-              if (currentRow.length > 0) {
-                bodyRows.push(currentRow);
-              }
-              currentRow = cells;
-            }
-          }
-        });
-
-        if (currentRow.length > 0) {
-          bodyRows.push(currentRow);
-        }
-
-        // Construire le HTML
-        if (headerCells.length === 0) return match;
-
-        const headerHTML = '<thead><tr>' + 
-          headerCells.map(cell => `<th>${cell}</th>`).join('') + 
-          '</tr></thead>';
-
-        const bodyHTML = bodyRows.length > 0 
-          ? '<tbody>' + 
-            bodyRows.map(row => {
-              while (row.length < headerCells.length) {
-                row.push('');
-              }
-              return '<tr>' + 
-                row.slice(0, headerCells.length).map(cell => `<td>${cell}</td>`).join('') + 
-                '</tr>';
-            }).join('') + 
-            '</tbody>'
-          : '<tbody></tbody>';
-
-        return `<table class="styled-table">${headerHTML}${bodyHTML}</table>`;
-      });
-    };
-
     // Appliquer le parsing de tableaux en premier
     let result = parseMarkdownTable(content);
 
-    // Puis appliquer les autres transformations
+    // Puis appliquer les autres transformations markdown
     result = result
       // Convertir les titres
       .replace(/^# (.+)$/gm, '<h1>$1</h1>')
       .replace(/^## (.+)$/gm, '<h2>$1</h2>')
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
 
-      // Convertir les formules en blocs centrés
-      .replace(/```\n([\s\S]*?)\n```/g, '<div class="formula">$1</div>')
+      // Convertir le texte en gras et italique
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+
+      // Convertir les formules et code
+      .replace(/```\n?([\s\S]*?)\n?```/g, '<div class="formula">$1</div>')
       .replace(/`([^`]+)`/g, '<code>$1</code>')
 
-      // Convertir les listes
+      // Convertir les listes à puces
       .replace(/^- (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>)/s, (match) => '<ul>' + match + '</ul>')
+      .replace(/(<li>.*?<\/li>)(\n<li>.*?<\/li>)* /gs, '<ul>$&</ul>')
 
-      // Convertir les paragraphes (éviter de toucher aux tableaux)
-      .replace(/\n\n([^<\n]+?)(?=\n\n|$)/gs, '<p>$1</p>')
+      // Convertir les listes numérotées
+      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
 
       // Nettoyer les balises imbriquées
       .replace(/<\/ul>\s*<ul>/g, '')
-      .replace(/<\/ol>\s*<ol>/g, '');
+      .replace(/<\/ol>\s*<ol>/g, '')
+
+      // Convertir les paragraphes (en évitant les éléments HTML existants)
+      .replace(/\n\n([^<\n][^\n]*?)(?=\n\n|$)/gs, '<p>$1</p>')
+
+      // Nettoyer les espaces multiples et les sauts de ligne
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/^\s+|\s+$/g, '');
 
     return result;
   }
